@@ -1,4 +1,5 @@
 <title>GajiOne — 인니 페이롤 서비스 기획 리뷰</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 68 68'><circle cx='36' cy='34' r='30' fill='%2316294d'/><path d='M1 60C8 45 16 33 28 28C22 39 18 48 10 56C7 58.5 3.5 59.5 1 60Z' fill='%23f2a71c'/><text x='39' y='45' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='900' font-size='28' fill='%23fff' letter-spacing='-1'>Ai</text></svg>">
 <style>
 :root{
   --bg:#eef1f7;
@@ -93,7 +94,8 @@ img,svg{max-width:100%}
 }
 .topbar-inner{max-width:1040px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:18px}
 .topbar .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13.5px;letter-spacing:-.2px;flex:none}
-.topbar .brand .mark{width:22px;height:22px;border-radius:6px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.topbar .brand .mark{width:22px;height:22px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;flex:0 0 22px}
+.topbar .brand .mark svg{width:100%;height:100%;display:block}
 .topnav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
 .topnav::-webkit-scrollbar{display:none}
 .topnav a{white-space:nowrap;font-size:12.5px;font-weight:700;color:var(--text-muted);text-decoration:none;padding:7px 11px;border-radius:999px;transition:background .15s,color .15s}
@@ -222,7 +224,7 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border-soft);
 
 <div class="topbar">
   <div class="topbar-inner">
-    <div class="brand"><span class="mark">Ga</span>GajiOne 리뷰</div>
+    <div class="brand"><span class="mark"><svg viewBox="0 0 68 68" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GajiOne"><circle cx="36" cy="34" r="30" fill="#16294d"/><path d="M1 60C8 45 16 33 28 28C22 39 18 48 10 56C7 58.5 3.5 59.5 1 60Z" fill="#f2a71c"/><text x="39" y="45" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="28" fill="#ffffff" letter-spacing="-1">Ai</text></svg></span>GajiOne 리뷰</div>
     <nav class="topnav">
       <a href="#overview">개요</a>
       <a href="#ia">정보구조</a>

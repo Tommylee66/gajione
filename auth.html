@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GajiOne — 가입 및 로그인</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 68 68'><circle cx='36' cy='34' r='30' fill='%2316294d'/><path d='M1 60C8 45 16 33 28 28C22 39 18 48 10 56C7 58.5 3.5 59.5 1 60Z' fill='%23f2a71c'/><text x='39' y='45' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='900' font-size='28' fill='%23fff' letter-spacing='-1'>Ai</text></svg>">
 <style>
   :root,
   :root[data-theme="light"] {
@@ -110,16 +111,13 @@
   .brand-badge {
     width: 44px;
     height: 44px;
-    border-radius: 12px;
-    background: var(--accent);
-    color: var(--on-accent);
+    border-radius: 50%;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 17px;
-    letter-spacing: -0.02em;
   }
+  .brand-badge svg{width:100%;height:100%;display:block;}
 
   .brand-word {
     font-size: 19px;
@@ -584,7 +582,7 @@
   <div class="auth-card">
 
     <div class="brand">
-      <div class="brand-badge">Ga</div>
+      <div class="brand-badge"><svg viewBox="0 0 68 68" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GajiOne"><circle cx="36" cy="34" r="30" fill="#16294d"/><path d="M1 60C8 45 16 33 28 28C22 39 18 48 10 56C7 58.5 3.5 59.5 1 60Z" fill="#f2a71c"/><text x="39" y="45" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="28" fill="#ffffff" letter-spacing="-1">Ai</text></svg></div>
       <div class="brand-word">GajiOne</div>
       <div class="brand-tagline" data-i18n="brand.tagline">인도네시아 제조업을 위한 급여 품질관리 플랫폼</div>
     </div>

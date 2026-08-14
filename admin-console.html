@@ -1,4 +1,5 @@
 <title>GajiOne — 운영 마스터 어드민</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 68 68'><circle cx='36' cy='34' r='30' fill='%2316294d'/><path d='M1 60C8 45 16 33 28 28C22 39 18 48 10 56C7 58.5 3.5 59.5 1 60Z' fill='%23f2a71c'/><text x='39' y='45' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-weight='900' font-size='28' fill='%23fff' letter-spacing='-1'>Ai</text></svg>">
 <style>
   :root{
     --bg:#eef0f4; --surface:#ffffff; --surface-alt:#f5f6f9; --border:#e1e4ea; --border-soft:#ecedf2;
@@ -74,9 +75,10 @@
   }
   .brand{display:flex; align-items:center; gap:10px; padding:4px 6px 18px 6px; border-bottom:1px solid var(--border-soft); margin-bottom:14px;}
   .brand-badge{
-    width:30px; height:30px; border-radius:9px; background:var(--navy); color:#fff; font-weight:800;
-    display:flex; align-items:center; justify-content:center; font-size:13px; flex:0 0 30px;
+    width:30px; height:30px; border-radius:50%; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; flex:0 0 30px;
   }
+  .brand-badge svg{width:100%;height:100%;display:block;}
   .brand-name{font-weight:800; font-size:16px; letter-spacing:-0.01em;}
   .brand-sub{
     margin-top:2px; display:inline-block; font-size:10.5px; font-weight:700; color:var(--accent);
@@ -281,7 +283,7 @@
   <!-- ================= SIDEBAR ================= -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-badge">Ga</div>
+      <div class="brand-badge"><svg viewBox="0 0 68 68" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GajiOne"><circle cx="36" cy="34" r="30" fill="#16294d"/><path d="M1 60C8 45 16 33 28 28C22 39 18 48 10 56C7 58.5 3.5 59.5 1 60Z" fill="#f2a71c"/><text x="39" y="45" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="28" fill="#ffffff" letter-spacing="-1">Ai</text></svg></div>
       <div>
         <div class="brand-name">GajiOne</div>
         <div class="brand-sub" data-i18n="sidebar.subtitle">운영 마스터 어드민 · Internal Only</div>
