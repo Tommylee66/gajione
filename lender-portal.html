@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GajiOne — 금융기관 파트너 포털</title>
+<style>
+  :root{
+    --bg:#e7ecf4; --surface:#ffffff; --surface-alt:#f6f8fc; --border:#e2e8f3; --border-soft:#edf1f7;
+    --text:#16294d; --text-muted:#5b6b85; --text-faint:#8a97ad;
+    --accent:#7c3aed; --accent-soft:#f7f3fe; --accent-dim:#e4d8fb; --navy:#16294d;
+    --success:#17a34a; --success-soft:#f3fbf6; --warning:#e08a00; --warning-text:#b45309; --warning-soft:#fdf8ef;
+    --danger:#d92d20; --danger-soft:#fdebe9; --radius-lg:18px; --radius-md:13px; --radius-sm:9px;
+    --on-accent:#ffffff; --on-success:#ffffff; --shadow-1:rgba(22,41,77,.04); --shadow-2:rgba(22,41,77,.10);
+  }
+  @media (prefers-color-scheme:light){
+    :root{
+      --bg:#e7ecf4; --surface:#ffffff; --surface-alt:#f6f8fc; --border:#e2e8f3; --border-soft:#edf1f7;
+      --text:#16294d; --text-muted:#5b6b85; --text-faint:#8a97ad;
+      --accent:#7c3aed; --accent-soft:#f7f3fe; --accent-dim:#e4d8fb; --navy:#16294d;
+      --success:#17a34a; --success-soft:#f3fbf6; --warning:#e08a00; --warning-text:#b45309; --warning-soft:#fdf8ef;
+      --danger:#d92d20; --danger-soft:#fdebe9;
+      --on-accent:#ffffff; --on-success:#ffffff; --shadow-1:rgba(22,41,77,.04); --shadow-2:rgba(22,41,77,.10);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#e7ecf4; --surface:#ffffff; --surface-alt:#f6f8fc; --border:#e2e8f3; --border-soft:#edf1f7;
+    --text:#16294d; --text-muted:#5b6b85; --text-faint:#8a97ad;
+    --accent:#7c3aed; --accent-soft:#f7f3fe; --accent-dim:#e4d8fb; --navy:#16294d;
+    --success:#17a34a; --success-soft:#f3fbf6; --warning:#e08a00; --warning-text:#b45309; --warning-soft:#fdf8ef;
+    --danger:#d92d20; --danger-soft:#fdebe9;
+    --on-accent:#ffffff; --on-success:#ffffff; --shadow-1:rgba(22,41,77,.04); --shadow-2:rgba(22,41,77,.10);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0c1526; --surface:#121d33; --surface-alt:#182842; --border:#26375a; --border-soft:#1e2f4d;
+      --text:#e9edf8; --text-muted:#a0accb; --text-faint:#71809f;
+      --accent:#a880f5; --accent-soft:#2a2050; --accent-dim:#3d2f66; --navy:#0c1526;
+      --success:#3fc482; --success-soft:#123526; --warning:#f0ac4a; --warning-text:#f0ac4a; --warning-soft:#3a2b12;
+      --danger:#f27164; --danger-soft:#3a1c19;
+      --on-accent:#1c1030; --on-success:#08210f; --shadow-1:rgba(0,0,0,.4); --shadow-2:rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c1526; --surface:#121d33; --surface-alt:#182842; --border:#26375a; --border-soft:#1e2f4d;
+    --text:#e9edf8; --text-muted:#a0accb; --text-faint:#71809f;
+    --accent:#a880f5; --accent-soft:#2a2050; --accent-dim:#3d2f66; --navy:#0c1526;
+    --success:#3fc482; --success-soft:#123526; --warning:#f0ac4a; --warning-text:#f0ac4a; --warning-soft:#3a2b12;
+    --danger:#f27164; --danger-soft:#3a1c19;
+    --on-accent:#1c1030; --on-success:#08210f; --shadow-1:rgba(0,0,0,.4); --shadow-2:rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI","Malgun Gothic","Noto Sans KR",sans-serif;
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .tabular{font-variant-numeric:tabular-nums;}
+
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select{font-family:inherit;}
+
+  :focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+    border-radius:4px;
+  }
+
+  .app{
+    display:flex;
+    min-height:100vh;
+    width:100%;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar{
+    width:260px;
+    flex-shrink:0;
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    padding:20px 16px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:4px 4px 14px 4px;
+  }
+  .brand-badge{
+    width:30px;height:30px;border-radius:9px;
+    background:var(--navy);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:13px;
+    flex-shrink:0;
+  }
+  .brand-name{font-weight:800;font-size:16px;color:var(--text);}
+  .partner-badge{
+    display:inline-block;
+    background:var(--accent-soft);
+    color:var(--accent);
+    border:1px solid var(--accent-dim);
+    font-size:11px;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:999px;
+    margin:2px 0 10px 0;
+  }
+  .login-context{
+    font-size:11.5px;
+    color:var(--text-muted);
+    background:var(--surface-alt);
+    border:1px solid var(--border-soft);
+    border-radius:var(--radius-sm);
+    padding:9px 10px;
+    margin-bottom:18px;
+    line-height:1.45;
+  }
+  .login-context strong{color:var(--text);font-weight:700;}
+
+  .nav-group{margin-bottom:14px;}
+  .nav-group-label{
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--text-faint);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    padding:0 10px;
+    margin-bottom:6px;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 10px;
+    border-radius:var(--radius-sm);
+    color:var(--text-muted);
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    margin-bottom:2px;
+    border:1px solid transparent;
+    background:transparent;
+    width:100%;
+    text-align:left;
+  }
+  .nav-item:hover{background:var(--surface-alt);color:var(--text);}
+  .nav-item.active{background:var(--navy);color:#fff;}
+  .nav-icon{
+    width:18px;height:18px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;
+  }
+
+  .sidebar-spacer{flex:1;}
+
+  .sidebar-bottom{
+    border-top:1px solid var(--border-soft);
+    padding-top:14px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .field-label{
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--text-faint);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin-bottom:4px;
+    display:block;
+  }
+  .lang-select{
+    width:100%;
+    padding:8px 9px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--text);
+    font-size:12.5px;
+    font-weight:600;
+  }
+  .theme-toggle{
+    width:100%;
+    padding:8px 9px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--text);
+    font-size:12.5px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  .theme-toggle:hover{background:var(--accent-soft);border-color:var(--accent-dim);}
+
+  /* ===== Main ===== */
+  .main{
+    flex:1;
+    min-width:0;
+    padding:24px 28px 60px 28px;
+  }
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .page-header{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:0 1px 2px var(--shadow-1),0 8px 24px -12px var(--shadow-2);
+    padding:20px 22px;
+    margin-bottom:20px;
+  }
+  .page-header-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .page-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .page-title{font-size:21px;font-weight:800;color:var(--text);margin:0;}
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:var(--success-soft);
+    color:var(--success);
+    border:1px solid var(--success);
+    font-size:11.5px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:999px;
+  }
+  .status-pill::before{
+    content:"";
+    width:6px;height:6px;border-radius:50%;
+    background:var(--success);
+  }
+  .clock-box{
+    text-align:right;
+  }
+  .clock-label{font-size:10.5px;color:var(--text-faint);font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .clock-value{font-size:16px;font-weight:800;color:var(--text);}
+
+  .kpi-strip{
+    display:flex;
+    margin-top:18px;
+    border-top:1px solid var(--border-soft);
+    padding-top:16px;
+    flex-wrap:wrap;
+  }
+  .kpi-item{
+    padding:0 22px;
+    border-left:1px solid var(--border-soft);
+  }
+  .kpi-item:first-child{border-left:none;padding-left:0;}
+  .kpi-label{font-size:10.5px;color:var(--text-faint);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;}
+  .kpi-value{font-size:17px;font-weight:800;color:var(--text);}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:0 1px 2px var(--shadow-1),0 8px 24px -12px var(--shadow-2);
+    padding:20px 22px;
+    margin-bottom:20px;
+  }
+  .card-title{font-size:15.5px;font-weight:800;color:var(--text);margin:0 0 14px 0;}
+
+  .story-box{
+    background:var(--accent-soft);
+    border:1px solid var(--accent-dim);
+    border-radius:var(--radius-md);
+    padding:14px 16px;
+    margin-bottom:20px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .story-badge{
+    display:inline-block;
+    font-size:10.5px;
+    font-weight:800;
+    color:var(--accent);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .story-text{font-size:12.5px;color:var(--text-muted);line-height:1.55;}
+  .privacy-note{
+    font-size:11.5px;
+    color:var(--text-muted);
+    background:var(--surface-alt);
+    border:1px dashed var(--border);
+    border-radius:var(--radius-sm);
+    padding:9px 11px;
+    margin-top:8px;
+  }
+
+  .table-scroll{overflow-x:auto;border-radius:var(--radius-md);border:1px solid var(--border-soft);}
+  table{width:100%;border-collapse:collapse;min-width:960px;}
+  thead th{
+    text-align:left;
+    font-size:10.8px;
+    font-weight:700;
+    color:var(--text-faint);
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    background:var(--surface-alt);
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:11px 12px;
+    border-bottom:1px solid var(--border-soft);
+    font-size:13px;
+    color:var(--text);
+    white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-alt);}
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    padding:3px 9px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .badge-warning{background:var(--warning-soft);color:var(--warning-text);border:1px solid var(--warning);}
+  .badge-info{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-dim);}
+  .badge-success{background:var(--success-soft);color:var(--success);border:1px solid var(--success);}
+  .badge-danger{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger);}
+  .badge-neutral{background:var(--surface-alt);color:var(--text-muted);border:1px solid var(--border);}
+
+  .risk-flag{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    margin-left:6px;
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--danger);
+  }
+
+  .btn{
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
+    padding:7px 12px;
+    font-size:12.5px;
+    font-weight:700;
+  }
+  .btn:hover{background:var(--surface-alt);}
+  .btn-primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--on-accent);
+    padding:10px 18px;
+    font-size:13.5px;
+  }
+  .btn-primary:hover{filter:brightness(1.06);}
+
+  /* View 2 */
+  .detail-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:20px;
+  }
+  @media (max-width:1100px){.detail-grid{grid-template-columns:1fr;}}
+
+  .profile-top{display:flex;gap:24px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+  .gauge-wrap{flex-shrink:0;width:230px;}
+  .gauge-score{font-size:30px;font-weight:800;color:var(--text);}
+  .gauge-score span{font-size:15px;font-weight:700;color:var(--text-faint);}
+  .gauge-bar{
+    height:10px;
+    border-radius:999px;
+    background:linear-gradient(to right, var(--danger) 0%, var(--warning) 40%, var(--success) 70%);
+    position:relative;
+    margin-top:8px;
+  }
+  .gauge-marker{
+    position:absolute;
+    top:-4px;
+    width:3px;
+    height:18px;
+    background:var(--navy);
+    border-radius:2px;
+  }
+  .gauge-zone-label{font-size:11px;color:var(--success);font-weight:700;margin-top:6px;}
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    flex:1;
+    min-width:280px;
+  }
+  .stat-box{
+    background:var(--surface-alt);
+    border:1px solid var(--border-soft);
+    border-radius:var(--radius-sm);
+    padding:10px 12px;
+  }
+  .stat-box .lbl{font-size:10.5px;color:var(--text-faint);font-weight:700;margin-bottom:4px;}
+  .stat-box .val{font-size:14.5px;font-weight:800;color:var(--text);}
+
+  .info-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border-soft);font-size:13px;}
+  .info-row:last-child{border-bottom:none;}
+  .info-row .k{color:var(--text-muted);}
+  .info-row .v{font-weight:700;color:var(--text);}
+
+  .form-row{margin-bottom:14px;}
+  .form-row label{display:block;font-size:11.5px;font-weight:700;color:var(--text-muted);margin-bottom:5px;}
+  .form-row input[type="number"],.form-row select{
+    width:100%;
+    padding:9px 10px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--text);
+    font-size:13.5px;
+  }
+  .form-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+  .est-box{
+    background:var(--accent-soft);
+    border:1px solid var(--accent-dim);
+    border-radius:var(--radius-md);
+    padding:14px 16px;
+    margin:6px 0 16px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .est-box .lbl{font-size:11.5px;color:var(--text-muted);font-weight:700;}
+  .est-box .val{font-size:22px;font-weight:800;color:var(--accent);}
+  .est-box .fee-note{font-size:11px;color:var(--text-faint);}
+
+  /* View 3 stepper */
+  .stepper{display:flex;align-items:flex-start;margin:6px 0 20px 0;}
+  .step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;text-align:center;}
+  .step-circle{
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:14px;
+    border:2px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--text-faint);
+    z-index:1;
+  }
+  .step.done .step-circle{background:var(--success);border-color:var(--success);color:var(--on-success);}
+  .step.current .step-circle{background:var(--accent);border-color:var(--accent);color:var(--on-accent);box-shadow:0 0 0 4px var(--accent-soft);}
+  .step-line{
+    position:absolute;
+    top:17px;left:calc(-50% + 17px);
+    width:calc(100% - 34px);
+    height:2px;
+    background:var(--border);
+    z-index:0;
+  }
+  .step:first-child .step-line{display:none;}
+  .step.done .step-line, .step.current .step-line{background:var(--success);}
+  .step-label{font-size:12px;font-weight:700;color:var(--text);margin-top:8px;}
+  .step-sub{font-size:10.5px;color:var(--text-faint);margin-top:2px;}
+
+  .timeline{list-style:none;padding:0;margin:0;}
+  .timeline li{
+    padding:10px 0 10px 20px;
+    border-left:2px solid var(--border-soft);
+    position:relative;
+    font-size:12.5px;
+    color:var(--text-muted);
+  }
+  .timeline li::before{
+    content:"";
+    position:absolute;
+    left:-6px;top:14px;
+    width:10px;height:10px;
+    border-radius:50%;
+    background:var(--accent);
+    border:2px solid var(--surface);
+  }
+  .timeline li:last-child{border-left:2px solid transparent;color:var(--warning-text);font-weight:700;}
+  .timeline li:last-child::before{background:var(--warning);}
+  .timeline li strong{color:var(--text);}
+
+  .kpi-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+  @media (max-width:900px){.kpi-cards{grid-template-columns:1fr;}}
+  .kpi-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:0 1px 2px var(--shadow-1),0 8px 24px -12px var(--shadow-2);
+    padding:16px 18px;
+  }
+  .kpi-card .lbl{font-size:10.5px;color:var(--text-faint);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
+  .kpi-card .val{font-size:20px;font-weight:800;color:var(--text);}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ===== Sidebar ===== -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">Ga</div>
+      <div class="brand-name">GajiOne</div>
+    </div>
+    <span class="partner-badge" data-i18n="sidebar.subtitle">금융기관 파트너 포털</span>
+    <div class="login-context">
+      <strong>PT Bank Mitra Sejahtera</strong>
+      <span data-i18n="sidebar.loginContext"> 담당자(Ahmad Fauzi)로 로그인됨</span>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label" data-i18n="nav.groupLabel">대출 심사 운영</div>
+      <button class="nav-item active" data-nav="view-dashboard">
+        <span class="nav-icon">▤</span>
+        <span data-i18n="nav.dashboard">대시보드 &amp; 신청 큐</span>
+      </button>
+      <button class="nav-item" data-nav="view-detail">
+        <span class="nav-icon">◎</span>
+        <span data-i18n="nav.detail">신청 상세 &amp; 오퍼 발송</span>
+      </button>
+      <button class="nav-item" data-nav="view-execution">
+        <span class="nav-icon">⇄</span>
+        <span data-i18n="nav.execution">실행 현황 &amp; 상환 모니터링</span>
+      </button>
+    </div>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-bottom">
+      <div>
+        <span class="field-label" data-i18n="sidebar.langLabel">언어 / Language</span>
+        <select id="langSelect" class="lang-select" aria-label="Language select">
+          <option value="ko">한국어</option>
+          <option value="en">English</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+      <button id="themeToggle" class="theme-toggle" type="button">
+        <span id="themeIcon">🌙</span>
+        <span id="themeText" data-i18n="theme.toggleDark">다크 모드로 전환</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== Main ===== -->
+  <div class="main">
+
+    <!-- ============ VIEW 1: 대시보드 & 신청 큐 ============ -->
+    <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <div class="page-header-top">
+          <div class="page-title-row">
+            <h1 class="page-title" data-i18n="page.dashboard.title">대시보드 &amp; 신청 큐</h1>
+            <span class="status-pill" data-i18n="common.statusLive">GajiOne 실시간 연동됨</span>
+          </div>
+          <div class="clock-box">
+            <div class="clock-label" data-i18n="common.clockLabel">현재 시각 (WIB)</div>
+            <div class="clock-value tabular" id="clockValue">--:--:--</div>
+          </div>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.newToday">오늘 신규 신청</div>
+            <div class="kpi-value tabular">5건</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.offerPending">오퍼 발송 대기</div>
+            <div class="kpi-value tabular">2건</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.approvalRate">이번달 승인율</div>
+            <div class="kpi-value tabular">82%</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.outstandingBalance">실행 잔액 총액</div>
+            <div class="kpi-value tabular">Rp 4.8B</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.delinquency30">30일 연체율</div>
+            <div class="kpi-value tabular">0.6%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story-box">
+        <span class="story-badge" data-i18n="story.badge">GajiOne 대출 중개 구조 안내</span>
+        <span class="story-text" data-i18n="story.text">GajiOne은 사내대출을 직접 실행하지 않습니다. 직원의 신청 정보와 급여 데이터 기반 신용 프로필을 제휴 금융기관에 전달하면, 금융기관이 심사·오퍼 발송·대출 실행·상환 정산을 직접 담당합니다.</span>
+        <span class="privacy-note" data-i18n="privacy.note">※ 개인정보 최소화 원칙: 이 포털에는 GajiOne이 산출·제공하는 신용 프로필 요약만 노출되며, 직원의 민감정보 원본 전체는 공유되지 않습니다.</span>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title" data-i18n="dashboard.queueTitle">대출 신청 큐</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="th.appId">신청ID</th>
+                <th data-i18n="th.empId">GajiOne 사번</th>
+                <th data-i18n="th.employer">고용주</th>
+                <th data-i18n="th.amount">신청액</th>
+                <th data-i18n="th.term">희망기간</th>
+                <th data-i18n="th.creditScore">GajiOne 신용점수</th>
+                <th data-i18n="th.tenure">근속</th>
+                <th data-i18n="th.appliedDate">신청일</th>
+                <th data-i18n="th.status">상태</th>
+                <th data-i18n="th.action">작업</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tabular">LN-20260812-001</td>
+                <td>MF-0104 (GajiOne)</td>
+                <td>PT Karya Metal Presisi</td>
+                <td class="tabular">Rp 8.0M</td>
+                <td class="tabular">10<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">742</td>
+                <td class="tabular">4.2<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-12</td>
+                <td><span class="badge badge-warning" data-i18n="status.pending">심사대기</span></td>
+                <td><button class="btn" data-goto-detail="view-detail" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+              <tr>
+                <td class="tabular">LN-20260811-014</td>
+                <td>MF-0587 (GajiOne)</td>
+                <td>PT Karya Metal Presisi</td>
+                <td class="tabular">Rp 12.0M</td>
+                <td class="tabular">10<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">631</td>
+                <td class="tabular">0.9<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-11</td>
+                <td>
+                  <span class="badge badge-warning" data-i18n="status.pending">심사대기</span>
+                  <span class="risk-flag" title="공제비율 높음 주의">⚠ <span data-i18n="risk.highDeduction">공제비율 높음</span></span>
+                </td>
+                <td><button class="btn" data-goto-detail="view-detail" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+              <tr>
+                <td class="tabular">LN-20260811-009</td>
+                <td>MF-0233 (GajiOne)</td>
+                <td>PT Sumber Baja Nusantara</td>
+                <td class="tabular">Rp 5.0M</td>
+                <td class="tabular">6<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">705</td>
+                <td class="tabular">2.1<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-11</td>
+                <td><span class="badge badge-info" data-i18n="status.offerSent">오퍼발송됨</span></td>
+                <td><button class="btn" data-goto-detail="view-detail" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+              <tr>
+                <td class="tabular">LN-20260810-027</td>
+                <td>MF-0812 (GajiOne)</td>
+                <td>PT Wijaya Plastik Industri</td>
+                <td class="tabular">Rp 15.0M</td>
+                <td class="tabular">12<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">768</td>
+                <td class="tabular">6.5<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-10</td>
+                <td><span class="badge badge-info" data-i18n="status.awaitingAccept">수락대기</span></td>
+                <td><button class="btn" data-goto-detail="view-detail" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+              <tr>
+                <td class="tabular">LN-20260809-018</td>
+                <td>MF-0459 (GajiOne)</td>
+                <td>PT Karya Metal Presisi</td>
+                <td class="tabular">Rp 8.5M</td>
+                <td class="tabular">10<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">690</td>
+                <td class="tabular">3.0<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-09</td>
+                <td><span class="badge badge-success" data-i18n="status.executed">실행완료</span></td>
+                <td><button class="btn" data-goto-detail="view-execution" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+              <tr>
+                <td class="tabular">LN-20260809-011</td>
+                <td>MF-0321 (GajiOne)</td>
+                <td>PT Sumber Baja Nusantara</td>
+                <td class="tabular">Rp 3.0M</td>
+                <td class="tabular">6<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">655</td>
+                <td class="tabular">1.4<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-09</td>
+                <td><span class="badge badge-success" data-i18n="status.executed">실행완료</span></td>
+                <td><button class="btn" data-goto-detail="view-execution" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+              <tr>
+                <td class="tabular">LN-20260808-005</td>
+                <td>MF-0678 (GajiOne)</td>
+                <td>PT Wijaya Plastik Industri</td>
+                <td class="tabular">Rp 10.0M</td>
+                <td class="tabular">8<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">598</td>
+                <td class="tabular">0.6<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-08</td>
+                <td><span class="badge badge-danger" data-i18n="status.rejected">반려</span></td>
+                <td><button class="btn" data-goto-detail="view-detail" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+              <tr>
+                <td class="tabular">LN-20260807-002</td>
+                <td>MF-0142 (GajiOne)</td>
+                <td>PT Karya Metal Presisi</td>
+                <td class="tabular">Rp 6.0M</td>
+                <td class="tabular">6<span data-i18n="unit.month">개월</span></td>
+                <td class="tabular">715</td>
+                <td class="tabular">5.0<span data-i18n="unit.year">년</span></td>
+                <td class="tabular">08-07</td>
+                <td><span class="badge badge-success" data-i18n="status.executed">실행완료</span></td>
+                <td><button class="btn" data-goto-detail="view-execution" data-i18n="btn.viewDetail">상세보기</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW 2: 신청 상세 & 오퍼 발송 ============ -->
+    <div class="view" id="view-detail">
+      <div class="page-header">
+        <div class="page-header-top">
+          <div class="page-title-row">
+            <h1 class="page-title" data-i18n="page.detail.title">신청 상세 &amp; 오퍼 발송</h1>
+            <span class="status-pill" data-i18n="status.pending">심사대기</span>
+          </div>
+          <div class="clock-box">
+            <div class="clock-label" data-i18n="common.clockLabel">현재 시각 (WIB)</div>
+            <div class="clock-value tabular" id="clockValue2">--:--:--</div>
+          </div>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="th.appId">신청ID</div>
+            <div class="kpi-value tabular">LN-20260812-001</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="th.empId">GajiOne 사번</div>
+            <div class="kpi-value tabular">MF-0104</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="th.employer">고용주</div>
+            <div class="kpi-value">PT Karya Metal Presisi</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="th.appliedDate">신청일</div>
+            <div class="kpi-value tabular">2026-08-12</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <div class="card">
+            <h2 class="card-title" data-i18n="detail.profileTitle">신청자 신용 프로필 (GajiOne 제공)</h2>
+            <div class="profile-top">
+              <div class="gauge-wrap">
+                <div class="kpi-label" data-i18n="detail.creditScoreLabel">GajiOne 신용점수</div>
+                <div class="gauge-score tabular">742 <span>/ 850</span></div>
+                <div class="gauge-bar"><div class="gauge-marker" style="left:87.3%;"></div></div>
+                <div class="gauge-zone-label" data-i18n="detail.autoApprovalZone">자동승인구간</div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-box">
+                  <div class="lbl" data-i18n="detail.attendanceRate">출근율</div>
+                  <div class="val tabular">99.1%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="lbl" data-i18n="detail.tenure">근속</div>
+                  <div class="val tabular">4.2<span data-i18n="unit.year">년</span></div>
+                </div>
+                <div class="stat-box">
+                  <div class="lbl" data-i18n="detail.delinquencyHistory">연체이력</div>
+                  <div class="val tabular">0<span data-i18n="unit.count">회</span></div>
+                </div>
+                <div class="stat-box">
+                  <div class="lbl" data-i18n="detail.incomeStability">6개월 실수령 안정성</div>
+                  <div class="val"><span class="badge badge-success" data-i18n="detail.stabilityStable">안정</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="privacy-note" data-i18n="detail.disclaimer">※ 이 프로필은 GajiOne이 급여·근태 데이터로 산출해 제공하며, 원본 개인정보는 공유되지 않습니다.</div>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title" data-i18n="detail.appInfoTitle">신청 정보</h2>
+            <div class="info-row"><span class="k" data-i18n="detail.appAmount">신청액</span><span class="v tabular">Rp 8,000,000</span></div>
+            <div class="info-row"><span class="k" data-i18n="detail.appTerm">희망기간</span><span class="v tabular">10<span data-i18n="unit.month">개월</span></span></div>
+            <div class="info-row"><span class="k" data-i18n="detail.appPurpose">용도</span><span class="v" data-i18n="detail.purposeGeneral">일반</span></div>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title" data-i18n="detail.repayHistoryTitle">이전 상환 이력</h2>
+            <div style="font-size:13px;color:var(--text-muted);">이전 대출 1건 완주 · 연체 0회</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <h2 class="card-title" data-i18n="detail.offerFormTitle">오퍼 작성</h2>
+            <div class="form-two">
+              <div class="form-row">
+                <label for="offerRate" data-i18n="detail.interestRate">연 이자율 (%)</label>
+                <input type="number" id="offerRate" value="18" step="0.1" min="0" />
+              </div>
+              <div class="form-row">
+                <label for="offerTerm" data-i18n="detail.repayTerm">상환기간 (개월)</label>
+                <input type="number" id="offerTerm" value="10" step="1" min="1" />
+              </div>
+            </div>
+            <div class="form-two">
+              <div class="form-row">
+                <label for="offerFee" data-i18n="detail.feeRate">수수료 (%)</label>
+                <input type="number" id="offerFee" value="1.5" step="0.1" min="0" />
+              </div>
+              <div class="form-row">
+                <label for="offerMethod" data-i18n="detail.repayMethod">상환방식</label>
+                <select id="offerMethod">
+                  <option value="equal-installment" data-i18n="detail.methodEqualInstallment">원리금균등</option>
+                  <option value="equal-principal" data-i18n="detail.methodEqualPrincipal">원금균등</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="est-box">
+              <div>
+                <div class="lbl" data-i18n="detail.estMonthly">예상 월 상환액</div>
+                <div class="val tabular" id="estMonthly">Rp 867,473</div>
+                <div class="fee-note tabular" id="estFeeNote">
+                  <span data-i18n="detail.oneTimeFee">최초 1회 수수료</span>: Rp <span id="estFee">120,000</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%;" data-i18n="detail.sendOffer">오퍼 발송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW 3: 실행 현황 & 상환 모니터링 ============ -->
+    <div class="view" id="view-execution">
+      <div class="page-header">
+        <div class="page-header-top">
+          <div class="page-title-row">
+            <h1 class="page-title" data-i18n="page.execution.title">실행 현황 &amp; 상환 모니터링</h1>
+            <span class="status-pill" data-i18n="common.statusLive">GajiOne 실시간 연동됨</span>
+          </div>
+          <div class="clock-box">
+            <div class="clock-label" data-i18n="common.clockLabel">현재 시각 (WIB)</div>
+            <div class="clock-value tabular" id="clockValue3">--:--:--</div>
+          </div>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.execTotal">이번달 실행 예정 총액</div>
+            <div class="kpi-value tabular">Rp 24.5M</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.repayTotal">상환 예정 총액</div>
+            <div class="kpi-value tabular">Rp 39.8M</div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-label" data-i18n="kpi.reconcileMismatch">대사 불일치</div>
+            <div class="kpi-value tabular">0건</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title" data-i18n="exec.stepperTitle">오퍼 진행 단계 — LN-20260811-009</h2>
+        <div class="stepper">
+          <div class="step done">
+            <div class="step-line"></div>
+            <div class="step-circle">✓</div>
+            <div class="step-label" data-i18n="step.offerSent">오퍼 발송</div>
+            <div class="step-sub" data-i18n="step.done">완료</div>
+          </div>
+          <div class="step current">
+            <div class="step-line"></div>
+            <div class="step-circle">2</div>
+            <div class="step-label" data-i18n="step.awaitingAccept">직원 수락대기</div>
+            <div class="step-sub" data-i18n="step.current">진행중</div>
+          </div>
+          <div class="step">
+            <div class="step-line"></div>
+            <div class="step-circle">3</div>
+            <div class="step-label" data-i18n="step.disbursement">대출 실행</div>
+            <div class="step-sub" data-i18n="step.waiting">대기</div>
+          </div>
+          <div class="step">
+            <div class="step-line"></div>
+            <div class="step-circle">4</div>
+            <div class="step-label" data-i18n="step.scheduleReg">상환스케줄 등록</div>
+            <div class="step-sub" data-i18n="step.waiting">대기</div>
+          </div>
+        </div>
+
+        <h2 class="card-title" data-i18n="exec.timelineTitle">진행 상세 로그</h2>
+        <ul class="timeline">
+          <li><strong>08-12 09:40</strong> — 오퍼 발송 (연 18%·10개월·수수료 1.5%)</li>
+          <li><strong>08-12 09:41</strong> — GajiOne 앱에 알림 전달됨</li>
+          <li><strong>수락 대기중</strong> — 만료 08-15 23:59</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title" data-i18n="exec.monitorTitle">상환 모니터링 (실행된 대출)</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="th.borrower">차입자</th>
+                <th data-i18n="th.employer">고용주</th>
+                <th data-i18n="th.principal">원금</th>
+                <th data-i18n="th.monthlyPayment">월상환액</th>
+                <th data-i18n="th.progress">진행회차</th>
+                <th data-i18n="th.reconcileStatus">GajiOne 공제 대사 상태</th>
+                <th data-i18n="th.overdue">연체여부</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Budi Santoso</td>
+                <td>PT Karya Metal Presisi</td>
+                <td class="tabular">Rp 8.0M</td>
+                <td class="tabular">Rp 800K</td>
+                <td class="tabular">4 / 10<span data-i18n="unit.installment">회차</span></td>
+                <td><span class="badge badge-success">08월 공제 확인됨 (GajiOne 연동)</span></td>
+                <td><span class="badge badge-success" data-i18n="overdue.normal">정상</span></td>
+              </tr>
+              <tr>
+                <td>Hendra Gunawan</td>
+                <td>PT Karya Metal Presisi</td>
+                <td class="tabular">Rp 8.5M</td>
+                <td class="tabular">Rp 850K</td>
+                <td class="tabular">6 / 10<span data-i18n="unit.installment">회차</span></td>
+                <td><span class="badge badge-warning">08월 공제 유예 — 무급휴가 사유</span></td>
+                <td><span class="badge badge-danger" data-i18n="overdue.once">연체 1회</span></td>
+              </tr>
+              <tr>
+                <td>Siti Aminah</td>
+                <td>PT Sumber Baja Nusantara</td>
+                <td class="tabular">Rp 5.0M</td>
+                <td class="tabular">Rp 875K</td>
+                <td class="tabular">3 / 6<span data-i18n="unit.installment">회차</span></td>
+                <td><span class="badge badge-success">08월 공제 확인됨 (GajiOne 연동)</span></td>
+                <td><span class="badge badge-success" data-i18n="overdue.normal">정상</span></td>
+              </tr>
+              <tr>
+                <td>Rudi Hartono</td>
+                <td>PT Wijaya Plastik Industri</td>
+                <td class="tabular">Rp 15.0M</td>
+                <td class="tabular">Rp 1.35M</td>
+                <td class="tabular">8 / 12<span data-i18n="unit.installment">회차</span></td>
+                <td><span class="badge badge-success">08월 공제 확인됨 (GajiOne 연동)</span></td>
+                <td><span class="badge badge-success" data-i18n="overdue.normal">정상</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="kpi-cards">
+        <div class="kpi-card">
+          <div class="lbl" data-i18n="kpi.execTotal">이번달 실행 예정 총액</div>
+          <div class="val tabular">Rp 24,500,000</div>
+        </div>
+        <div class="kpi-card">
+          <div class="lbl" data-i18n="kpi.repayTotal">상환 예정 총액</div>
+          <div class="val tabular">Rp 39,800,000</div>
+        </div>
+        <div class="kpi-card">
+          <div class="lbl" data-i18n="kpi.reconcileMismatch">대사 불일치</div>
+          <div class="val tabular">0<span data-i18n="unit.cases">건</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ===== SPA navigation =====
+  document.querySelectorAll('.nav-item').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = btn.getAttribute('data-nav');
+      document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('[data-goto-detail]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = btn.getAttribute('data-goto-detail');
+      document.querySelectorAll('.nav-item').forEach(function(b){
+        b.classList.toggle('active', b.getAttribute('data-nav') === target);
+      });
+      document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+      document.getElementById(target).classList.add('active');
+      window.scrollTo({top:0, behavior:'instant'});
+    });
+  });
+
+  // ===== Theme toggle =====
+  var themeToggle = document.getElementById('themeToggle');
+  var themeIcon = document.getElementById('themeIcon');
+  var themeTextEl = document.getElementById('themeText');
+  var currentLang = 'ko';
+
+  function setTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    if(theme === 'dark'){
+      themeIcon.textContent = '☀️';
+      var e = I18N['theme.toggleLight'];
+      themeTextEl.textContent = (e && e[currentLang]) ? e[currentLang] : '라이트 모드로 전환';
+      themeTextEl.setAttribute('data-i18n','theme.toggleLight');
+    } else {
+      themeIcon.textContent = '🌙';
+      var e2 = I18N['theme.toggleDark'];
+      themeTextEl.textContent = (e2 && e2[currentLang]) ? e2[currentLang] : '다크 모드로 전환';
+      themeTextEl.setAttribute('data-i18n','theme.toggleDark');
+    }
+  }
+  themeToggle.addEventListener('click', function(){
+    var cur = document.documentElement.getAttribute('data-theme');
+    setTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+  setTheme('light');
+
+  // ===== Clock (WIB) =====
+  function updateClock(){
+    var now = new Date();
+    var str;
+    try{
+      str = now.toLocaleTimeString('id-ID', {timeZone:'Asia/Jakarta', hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    }catch(e){
+      str = now.toLocaleTimeString();
+    }
+    ['clockValue','clockValue2','clockValue3'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.textContent = str + ' WIB';
+    });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ===== Offer calculator =====
+  function fmtRp(n){
+    return Math.round(n).toLocaleString('en-US');
+  }
+  function calcOffer(){
+    var P = 8000000;
+    var rate = parseFloat(document.getElementById('offerRate').value) || 0;
+    var term = parseInt(document.getElementById('offerTerm').value, 10) || 1;
+    var fee = parseFloat(document.getElementById('offerFee').value) || 0;
+    var method = document.getElementById('offerMethod').value;
+    var r = rate / 100 / 12;
+    var monthly;
+    if(method === 'equal-installment'){
+      if(r === 0){ monthly = P / term; }
+      else { monthly = P * r * Math.pow(1+r, term) / (Math.pow(1+r, term) - 1); }
+    } else {
+      var principalPortion = P / term;
+      var avgInterest = r * P * (term + 1) / (2 * term);
+      monthly = principalPortion + avgInterest;
+    }
+    var feeAmount = P * fee / 100;
+    document.getElementById('estMonthly').textContent = 'Rp ' + fmtRp(monthly);
+    document.getElementById('estFee').textContent = fmtRp(feeAmount);
+  }
+  ['offerRate','offerTerm','offerFee','offerMethod'].forEach(function(id){
+    var el = document.getElementById(id);
+    el.addEventListener('input', calcOffer);
+    el.addEventListener('change', calcOffer);
+  });
+  calcOffer();
+
+  // ===== i18n =====
+  var I18N = {
+    "sidebar.subtitle": {ko:"금융기관 파트너 포털", en:"Financial Partner Portal", id:"Portal Mitra Keuangan", zh:"金融机构合作伙伴门户", ja:"金融機関パートナーポータル"},
+    "sidebar.loginContext": {ko:" 담당자(Ahmad Fauzi)로 로그인됨", en:" — logged in as officer Ahmad Fauzi", id:" — masuk sebagai petugas Ahmad Fauzi", zh:" — 以负责人 Ahmad Fauzi 身份登录", ja:" — 担当者Ahmad Fauziとしてログイン中"},
+    "sidebar.langLabel": {ko:"언어 / Language", en:"Language", id:"Bahasa", zh:"语言", ja:"言語"},
+    "nav.groupLabel": {ko:"대출 심사 운영", en:"Loan Underwriting Ops", id:"Operasi Underwriting Pinjaman", zh:"贷款审核运营", ja:"融資審査オペレーション"},
+    "nav.dashboard": {ko:"대시보드 & 신청 큐", en:"Dashboard & Application Queue", id:"Dasbor & Antrean Pengajuan", zh:"仪表盘与申请队列", ja:"ダッシュボード＆申請キュー"},
+    "nav.detail": {ko:"신청 상세 & 오퍼 발송", en:"Application Detail & Offer", id:"Detail Pengajuan & Penawaran", zh:"申请详情与报价发送", ja:"申請詳細＆オファー送信"},
+    "nav.execution": {ko:"실행 현황 & 상환 모니터링", en:"Disbursement & Repayment Monitor", id:"Pencairan & Monitor Pembayaran", zh:"放款现状与还款监控", ja:"実行状況＆返済モニタリング"},
+    "theme.toggleDark": {ko:"다크 모드로 전환", en:"Switch to dark mode", id:"Beralih ke mode gelap", zh:"切换到深色模式", ja:"ダークモードに切り替え"},
+    "theme.toggleLight": {ko:"라이트 모드로 전환", en:"Switch to light mode", id:"Beralih ke mode terang", zh:"切换到浅色模式", ja:"ライトモードに切り替え"},
+    "common.statusLive": {ko:"GajiOne 실시간 연동됨", en:"Live-synced with GajiOne", id:"Tersinkron langsung dengan GajiOne", zh:"与GajiOne实时同步", ja:"GajiOneとリアルタイム連携中"},
+    "common.clockLabel": {ko:"현재 시각 (WIB)", en:"Current Time (WIB)", id:"Waktu Saat Ini (WIB)", zh:"当前时间（西印尼时间）", ja:"現在時刻（WIB）"},
+    "page.dashboard.title": {ko:"대시보드 & 신청 큐", en:"Dashboard & Application Queue", id:"Dasbor & Antrean Pengajuan", zh:"仪表盘与申请队列", ja:"ダッシュボード＆申請キュー"},
+    "page.detail.title": {ko:"신청 상세 & 오퍼 발송", en:"Application Detail & Offer", id:"Detail Pengajuan & Penawaran", zh:"申请详情与报价发送", ja:"申請詳細＆オファー送信"},
+    "page.execution.title": {ko:"실행 현황 & 상환 모니터링", en:"Disbursement & Repayment Monitor", id:"Pencairan & Monitor Pembayaran", zh:"放款现状与还款监控", ja:"実行状況＆返済モニタリング"},
+    "kpi.newToday": {ko:"오늘 신규 신청", en:"New Applications Today", id:"Pengajuan Baru Hari Ini", zh:"今日新申请", ja:"本日の新規申請"},
+    "kpi.offerPending": {ko:"오퍼 발송 대기", en:"Offers Pending", id:"Penawaran Menunggu Kirim", zh:"待发送报价", ja:"オファー送信待ち"},
+    "kpi.approvalRate": {ko:"이번달 승인율", en:"Approval Rate (MTD)", id:"Tingkat Persetujuan (Bulan Ini)", zh:"本月批准率", ja:"今月の承認率"},
+    "kpi.outstandingBalance": {ko:"실행 잔액 총액", en:"Total Outstanding Balance", id:"Total Saldo Terutang", zh:"放款余额总额", ja:"実行残高合計"},
+    "kpi.delinquency30": {ko:"30일 연체율", en:"30-Day Delinquency Rate", id:"Tingkat Tunggakan 30 Hari", zh:"30天逾期率", ja:"30日延滞率"},
+    "story.badge": {ko:"GajiOne 대출 중개 구조 안내", en:"How GajiOne's Lending Model Works", id:"Cara Kerja Model Pinjaman GajiOne", zh:"GajiOne 贷款中介结构说明", ja:"GajiOneの融資仲介の仕組み"},
+    "story.text": {ko:"GajiOne은 사내대출을 직접 실행하지 않습니다. 직원의 신청 정보와 급여 데이터 기반 신용 프로필을 제휴 금융기관에 전달하면, 금융기관이 심사·오퍼 발송·대출 실행·상환 정산을 직접 담당합니다.", en:"GajiOne does not disburse employee loans directly. It forwards the application and a payroll-based credit profile to a partner institution, which underwrites, sends the offer, disburses funds, and settles repayments.", id:"GajiOne tidak mencairkan pinjaman karyawan secara langsung. GajiOne meneruskan pengajuan dan profil kredit berbasis data payroll ke lembaga mitra, yang melakukan underwriting, mengirim penawaran, mencairkan dana, dan menyelesaikan pembayaran.", zh:"GajiOne 不直接发放员工贷款。GajiOne 将申请信息及基于薪资数据的信用画像转发给合作金融机构，由其负责审核、发送报价、放款及还款结算。", ja:"GajiOneは従業員向け融資を直接実行しません。申請情報と給与データに基づく信用プロファイルを提携金融機関に連携し、当該機関が審査・オファー送付・融資実行・返済精算を行います。"},
+    "privacy.note": {ko:"※ 개인정보 최소화 원칙: 이 포털에는 GajiOne이 산출·제공하는 신용 프로필 요약만 노출되며, 직원의 민감정보 원본 전체는 공유되지 않습니다.", en:"※ Data minimization: this portal only shows the credit profile summary computed by GajiOne — the employee's full raw personal data is never shared.", id:"※ Minimalisasi data: portal ini hanya menampilkan ringkasan profil kredit yang dihitung oleh GajiOne — data pribadi mentah karyawan tidak pernah dibagikan.", zh:"※ 个人信息最小化原则：本门户仅展示由 GajiOne 计算提供的信用画像摘要，员工的原始敏感信息不会被共享。", ja:"※ 個人情報最小化の原則：本ポータルにはGajiOneが算出した信用プロファイルの要約のみが表示され、従業員の機密情報の原本は共有されません。"},
+    "dashboard.queueTitle": {ko:"대출 신청 큐", en:"Loan Application Queue", id:"Antrean Pengajuan Pinjaman", zh:"贷款申请队列", ja:"融資申請キュー"},
+    "th.appId": {ko:"신청ID", en:"Application ID", id:"ID Pengajuan", zh:"申请编号", ja:"申請ID"},
+    "th.empId": {ko:"GajiOne 사번", en:"GajiOne Employee ID", id:"ID Karyawan GajiOne", zh:"GajiOne 员工编号", ja:"GajiOne社員番号"},
+    "th.employer": {ko:"고용주", en:"Employer", id:"Pemberi Kerja", zh:"雇主", ja:"雇用主"},
+    "th.amount": {ko:"신청액", en:"Requested Amount", id:"Jumlah Diajukan", zh:"申请金额", ja:"申請額"},
+    "th.term": {ko:"희망기간", en:"Requested Term", id:"Tenor Diajukan", zh:"期望期限", ja:"希望期間"},
+    "th.creditScore": {ko:"GajiOne 신용점수", en:"GajiOne Credit Score", id:"Skor Kredit GajiOne", zh:"GajiOne 信用评分", ja:"GajiOne信用スコア"},
+    "th.tenure": {ko:"근속", en:"Tenure", id:"Masa Kerja", zh:"司龄", ja:"勤続年数"},
+    "th.appliedDate": {ko:"신청일", en:"Applied Date", id:"Tanggal Pengajuan", zh:"申请日期", ja:"申請日"},
+    "th.status": {ko:"상태", en:"Status", id:"Status", zh:"状态", ja:"ステータス"},
+    "th.action": {ko:"작업", en:"Action", id:"Aksi", zh:"操作", ja:"操作"},
+    "th.borrower": {ko:"차입자", en:"Borrower", id:"Peminjam", zh:"借款人", ja:"借入者"},
+    "th.principal": {ko:"원금", en:"Principal", id:"Pokok Pinjaman", zh:"本金", ja:"元金"},
+    "th.monthlyPayment": {ko:"월상환액", en:"Monthly Payment", id:"Cicilan Bulanan", zh:"月还款额", ja:"月返済額"},
+    "th.progress": {ko:"진행회차", en:"Progress (Installments)", id:"Progres Angsuran", zh:"进度（期数）", ja:"進捗（回数）"},
+    "th.reconcileStatus": {ko:"GajiOne 공제 대사 상태", en:"GajiOne Deduction Reconciliation", id:"Rekonsiliasi Potongan GajiOne", zh:"GajiOne 扣款对账状态", ja:"GajiOne控除消込ステータス"},
+    "th.overdue": {ko:"연체여부", en:"Overdue Status", id:"Status Tunggakan", zh:"逾期情况", ja:"延滞状況"},
+    "unit.month": {ko:"개월", en:"mo", id:"bln", zh:"个月", ja:"ヶ月"},
+    "unit.year": {ko:"년", en:"yr", id:"thn", zh:"年", ja:"年"},
+    "unit.count": {ko:"회", en:"", id:"", zh:"次", ja:"回"},
+    "unit.cases": {ko:"건", en:"", id:"", zh:"件", ja:"件"},
+    "unit.installment": {ko:"회차", en:"installments", id:"angsuran", zh:"期", ja:"回"},
+    "status.pending": {ko:"심사대기", en:"Under Review", id:"Menunggu Peninjauan", zh:"待审核", ja:"審査待ち"},
+    "status.offerSent": {ko:"오퍼발송됨", en:"Offer Sent", id:"Penawaran Terkirim", zh:"报价已发送", ja:"オファー送信済み"},
+    "status.awaitingAccept": {ko:"수락대기", en:"Awaiting Acceptance", id:"Menunggu Persetujuan", zh:"待接受", ja:"承諾待ち"},
+    "status.executed": {ko:"실행완료", en:"Disbursed", id:"Sudah Dicairkan", zh:"已放款", ja:"実行完了"},
+    "status.rejected": {ko:"반려", en:"Rejected", id:"Ditolak", zh:"已驳回", ja:"却下"},
+    "risk.highDeduction": {ko:"공제비율 높음", en:"High deduction ratio", id:"Rasio potongan tinggi", zh:"扣款比例过高", ja:"控除比率が高い"},
+    "btn.viewDetail": {ko:"상세보기", en:"View Detail", id:"Lihat Detail", zh:"查看详情", ja:"詳細を見る"},
+    "detail.profileTitle": {ko:"신청자 신용 프로필 (GajiOne 제공)", en:"Applicant Credit Profile (from GajiOne)", id:"Profil Kredit Pemohon (dari GajiOne)", zh:"申请人信用画像（GajiOne 提供）", ja:"申請者信用プロファイル（GajiOne提供）"},
+    "detail.creditScoreLabel": {ko:"GajiOne 신용점수", en:"GajiOne Credit Score", id:"Skor Kredit GajiOne", zh:"GajiOne 信用评分", ja:"GajiOne信用スコア"},
+    "detail.autoApprovalZone": {ko:"자동승인구간", en:"Auto-approval zone", id:"Zona persetujuan otomatis", zh:"自动批准区间", ja:"自動承認ゾーン"},
+    "detail.attendanceRate": {ko:"출근율", en:"Attendance Rate", id:"Tingkat Kehadiran", zh:"出勤率", ja:"出勤率"},
+    "detail.tenure": {ko:"근속", en:"Tenure", id:"Masa Kerja", zh:"司龄", ja:"勤続年数"},
+    "detail.delinquencyHistory": {ko:"연체이력", en:"Delinquency History", id:"Riwayat Tunggakan", zh:"逾期记录", ja:"延滞履歴"},
+    "detail.incomeStability": {ko:"6개월 실수령 안정성", en:"6-Mo Net Pay Stability", id:"Stabilitas Gaji Bersih 6 Bln", zh:"6个月实发工资稳定性", ja:"6ヶ月手取り安定性"},
+    "detail.stabilityStable": {ko:"안정", en:"Stable", id:"Stabil", zh:"稳定", ja:"安定"},
+    "detail.disclaimer": {ko:"※ 이 프로필은 GajiOne이 급여·근태 데이터로 산출해 제공하며, 원본 개인정보는 공유되지 않습니다.", en:"※ This profile is computed by GajiOne from payroll and attendance data; raw personal data is not shared.", id:"※ Profil ini dihitung oleh GajiOne dari data payroll dan kehadiran; data pribadi mentah tidak dibagikan.", zh:"※ 该画像由 GajiOne 基于薪资与考勤数据计算生成，不会共享原始个人信息。", ja:"※ 本プロファイルはGajiOneが給与・勤怠データから算出したものであり、個人情報の原本は共有されません。"},
+    "detail.appInfoTitle": {ko:"신청 정보", en:"Application Info", id:"Informasi Pengajuan", zh:"申请信息", ja:"申請情報"},
+    "detail.appAmount": {ko:"신청액", en:"Requested Amount", id:"Jumlah Diajukan", zh:"申请金额", ja:"申請額"},
+    "detail.appTerm": {ko:"희망기간", en:"Requested Term", id:"Tenor Diajukan", zh:"期望期限", ja:"希望期間"},
+    "detail.appPurpose": {ko:"용도", en:"Purpose", id:"Tujuan", zh:"用途", ja:"用途"},
+    "detail.purposeGeneral": {ko:"일반", en:"General", id:"Umum", zh:"一般", ja:"一般"},
+    "detail.repayHistoryTitle": {ko:"이전 상환 이력", en:"Prior Repayment History", id:"Riwayat Pembayaran Sebelumnya", zh:"既往还款记录", ja:"過去の返済履歴"},
+    "detail.offerFormTitle": {ko:"오퍼 작성", en:"Compose Offer", id:"Buat Penawaran", zh:"编写报价", ja:"オファー作成"},
+    "detail.interestRate": {ko:"연 이자율 (%)", en:"Annual Interest Rate (%)", id:"Suku Bunga Tahunan (%)", zh:"年利率（%）", ja:"年利率（%）"},
+    "detail.repayTerm": {ko:"상환기간 (개월)", en:"Repayment Term (months)", id:"Tenor Pembayaran (bulan)", zh:"还款期限（月）", ja:"返済期間（ヶ月）"},
+    "detail.feeRate": {ko:"수수료 (%)", en:"Fee (%)", id:"Biaya (%)", zh:"手续费（%）", ja:"手数料（%）"},
+    "detail.repayMethod": {ko:"상환방식", en:"Repayment Method", id:"Metode Pembayaran", zh:"还款方式", ja:"返済方式"},
+    "detail.methodEqualInstallment": {ko:"원리금균등", en:"Equal Installment", id:"Angsuran Tetap", zh:"等额本息", ja:"元利均等"},
+    "detail.methodEqualPrincipal": {ko:"원금균등", en:"Equal Principal", id:"Pokok Tetap", zh:"等额本金", ja:"元金均等"},
+    "detail.estMonthly": {ko:"예상 월 상환액", en:"Estimated Monthly Payment", id:"Perkiraan Cicilan Bulanan", zh:"预计月还款额", ja:"想定月返済額"},
+    "detail.oneTimeFee": {ko:"최초 1회 수수료", en:"One-time fee", id:"Biaya sekali bayar", zh:"一次性手续费", ja:"初回一括手数料"},
+    "detail.sendOffer": {ko:"오퍼 발송", en:"Send Offer", id:"Kirim Penawaran", zh:"发送报价", ja:"オファー送信"},
+    "exec.stepperTitle": {ko:"오퍼 진행 단계 — LN-20260811-009", en:"Offer Progress — LN-20260811-009", id:"Progres Penawaran — LN-20260811-009", zh:"报价进度 — LN-20260811-009", ja:"オファー進捗 — LN-20260811-009"},
+    "step.offerSent": {ko:"오퍼 발송", en:"Offer Sent", id:"Penawaran Terkirim", zh:"报价已发送", ja:"オファー送信"},
+    "step.awaitingAccept": {ko:"직원 수락대기", en:"Awaiting Employee Acceptance", id:"Menunggu Persetujuan Karyawan", zh:"等待员工接受", ja:"従業員承諾待ち"},
+    "step.disbursement": {ko:"대출 실행", en:"Disbursement", id:"Pencairan Dana", zh:"贷款放款", ja:"融資実行"},
+    "step.scheduleReg": {ko:"상환스케줄 등록", en:"Repayment Schedule Setup", id:"Pengaturan Jadwal Pembayaran", zh:"还款计划登记", ja:"返済スケジュール登録"},
+    "step.done": {ko:"완료", en:"Done", id:"Selesai", zh:"已完成", ja:"完了"},
+    "step.current": {ko:"진행중", en:"In Progress", id:"Sedang Berlangsung", zh:"进行中", ja:"進行中"},
+    "step.waiting": {ko:"대기", en:"Pending", id:"Menunggu", zh:"待处理", ja:"待機中"},
+    "exec.timelineTitle": {ko:"진행 상세 로그", en:"Progress Log", id:"Log Progres", zh:"进度详细日志", ja:"進捗詳細ログ"},
+    "exec.monitorTitle": {ko:"상환 모니터링 (실행된 대출)", en:"Repayment Monitoring (Disbursed Loans)", id:"Monitoring Pembayaran (Pinjaman Tercair)", zh:"还款监控（已放款贷款）", ja:"返済モニタリング（実行済み融資）"},
+    "kpi.execTotal": {ko:"이번달 실행 예정 총액", en:"Total Scheduled Disbursement (MTD)", id:"Total Pencairan Terjadwal (Bulan Ini)", zh:"本月计划放款总额", ja:"今月実行予定総額"},
+    "kpi.repayTotal": {ko:"상환 예정 총액", en:"Total Scheduled Repayment", id:"Total Pembayaran Terjadwal", zh:"预计还款总额", ja:"返済予定総額"},
+    "kpi.reconcileMismatch": {ko:"대사 불일치", en:"Reconciliation Mismatches", id:"Ketidakcocokan Rekonsiliasi", zh:"对账不一致", ja:"消込不一致"},
+    "overdue.normal": {ko:"정상", en:"Normal", id:"Normal", zh:"正常", ja:"正常"},
+    "overdue.once": {ko:"연체 1회", en:"1 Overdue", id:"1x Tunggakan", zh:"逾期1次", ja:"延滞1回"}
+  };
+
+  function applyLang(lang){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var e = I18N[el.getAttribute('data-i18n')];
+      if(e && e[lang]) el.textContent = e[lang];
+    });
+    document.documentElement.lang = lang;
+    currentLang = lang;
+  }
+  document.getElementById('langSelect').addEventListener('change', function(ev){ applyLang(ev.target.value); });
+  applyLang('ko');
+</script>
+</body>
+</html>

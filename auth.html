@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GajiOne — 가입 및 로그인</title>
+<style>
+  :root,
+  :root[data-theme="light"] {
+    --bg:#e7ecf4; --surface:#ffffff; --surface-alt:#f6f8fc; --border:#e2e8f3; --border-soft:#edf1f7;
+    --text:#16294d; --text-muted:#5b6b85; --text-faint:#8a97ad;
+    --accent:#2f6fed; --accent-soft:#eef3fb; --accent-dim:#c9d7f5; --navy:#16294d; --on-accent:#fff;
+    --success:#17a34a; --success-soft:#f3fbf6; --warning:#e08a00; --warning-text:#b45309; --warning-soft:#fdf8ef;
+    --danger:#d92d20; --danger-soft:#fdebe9; --radius-lg:18px; --radius-md:13px; --radius-sm:9px;
+    --shadow-1:0 1px 2px rgba(22,41,77,.04); --shadow-2:0 8px 24px -12px rgba(22,41,77,.10); --shadow-tab:0 1px 2px rgba(22,41,77,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0c1526; --surface:#121d33; --surface-alt:#182842; --border:#26375a; --border-soft:#1e2f4d;
+      --text:#e9edf8; --text-muted:#a0accb; --text-faint:#71809f;
+      --accent:#6c98ff; --accent-soft:#1c2c50; --accent-dim:#2c3f68; --navy:#0c1526; --on-accent:#0c1526;
+      --success:#3fc482; --success-soft:#123526; --warning:#f0ac4a; --warning-text:#f0ac4a; --warning-soft:#3a2b12;
+      --danger:#f27164; --danger-soft:#3a1c19;
+      --shadow-1:0 1px 2px rgba(0,0,0,.45); --shadow-2:0 8px 24px -12px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03); --shadow-tab:0 1px 2px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0c1526; --surface:#121d33; --surface-alt:#182842; --border:#26375a; --border-soft:#1e2f4d;
+    --text:#e9edf8; --text-muted:#a0accb; --text-faint:#71809f;
+    --accent:#6c98ff; --accent-soft:#1c2c50; --accent-dim:#2c3f68; --navy:#0c1526; --on-accent:#0c1526;
+    --success:#3fc482; --success-soft:#123526; --warning:#f0ac4a; --warning-text:#f0ac4a; --warning-soft:#3a2b12;
+    --danger:#f27164; --danger-soft:#3a1c19;
+    --shadow-1:0 1px 2px rgba(0,0,0,.45); --shadow-2:0 8px 24px -12px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03); --shadow-tab:0 1px 2px rgba(0,0,0,.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    min-width: 900px;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    color: var(--text);
+    background: radial-gradient(1200px 700px at 50% -10%, var(--accent-soft), transparent), var(--bg);
+    min-height: 100vh;
+    font-variant-numeric: tabular-nums;
+  }
+
+  a { color: var(--accent); }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 32px 0;
+  }
+
+  .util-select, .theme-btn {
+    height: 36px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    padding: 0 10px;
+    cursor: pointer;
+  }
+
+  .theme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    padding: 0;
+    font-size: 16px;
+  }
+
+  .page-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 24px 32px 80px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1), var(--shadow-2);
+    padding: 36px 40px 40px;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .brand-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--on-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+  }
+
+  .brand-word {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+
+  .brand-tagline {
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    margin-bottom: 28px;
+  }
+
+  .tab-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 9px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .tab-btn.active {
+    background: var(--surface);
+    color: var(--accent);
+    box-shadow: var(--shadow-tab);
+  }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  h1.view-title {
+    font-size: 19px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 24px;
+    color: var(--navy);
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .field .hint {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    margin-top: 5px;
+  }
+
+  input[type="text"], input[type="email"], input[type="password"], input[type="tel"], select {
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+    font-size: 13.5px;
+    font-family: inherit;
+  }
+
+  input::placeholder { color: var(--text-faint); }
+
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 42px; }
+  .pw-toggle {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .pw-toggle:hover { background: var(--surface); color: var(--text-muted); }
+
+  .phone-row {
+    display: flex;
+    gap: 8px;
+  }
+  .phone-prefix {
+    width: 56px;
+    height: 42px;
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .check-row input { margin-top: 3px; width: 15px; height: 15px; flex-shrink: 0; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+  }
+  .btn-primary { background: var(--accent); color: var(--on-accent); }
+  .btn-primary:hover { filter: brightness(1.05); }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--surface-alt); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+  }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 22px; }
+  .btn-row .btn { width: auto; flex: 1; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--text-faint);
+    font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .g-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .foot-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 22px;
+  }
+  .foot-link a { font-weight: 700; text-decoration: none; }
+  .foot-link a:hover { text-decoration: underline; }
+
+  .remember-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .remember-row label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .remember-row input { width: 15px; height: 15px; }
+  .remember-row a { font-size: 13px; text-decoration: none; font-weight: 600; }
+  .remember-row a:hover { text-decoration: underline; }
+
+  /* Stepper */
+  .stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-faint);
+    font-family: inherit;
+  }
+  .step-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-faint);
+  }
+  .step-item.active .step-circle {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .step-item.done .step-circle {
+    background: var(--success-soft);
+    border-color: var(--success);
+    color: var(--success);
+  }
+  .step-item .step-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .step-item.active .step-label { color: var(--accent); }
+  .step-connector {
+    height: 1px;
+    background: var(--border);
+    flex: 0.6;
+    margin-bottom: 18px;
+  }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .strength-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .strength-bar span {
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+    background: var(--border);
+  }
+  .strength-label {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 5px;
+  }
+
+  .terms-clause-box {
+    margin-top: 8px;
+    margin-left: 24px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-height: 90px;
+    overflow-y: auto;
+    display: none;
+  }
+  .terms-clause-box.open { display: block; }
+
+  .terms-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .view-full-link {
+    font-size: 11.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .view-full-link:hover { text-decoration: underline; }
+
+  .master-agree {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--navy);
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .master-agree input { width: 16px; height: 16px; }
+
+  .agree-list { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Done state */
+  .done-wrap { text-align: center; padding: 10px 0; }
+  .done-icon { margin: 0 auto 18px; display: block; }
+  .done-title { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .done-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    background: var(--success-soft);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+
+  /* Forgot password */
+  .sub-card {
+    background: var(--surface-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .sub-card h3 {
+    font-size: 13.5px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: var(--navy);
+  }
+  .sent-box {
+    display: none;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-dim);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .sent-box.show { display: block; }
+  .sent-box .timer { color: var(--text-faint); font-size: 11.5px; margin-top: 6px; }
+  .request-form.hidden { display: none; }
+
+  /* Terms center */
+  .terms-center-layout {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 18px;
+  }
+  .terms-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .terms-nav-btn {
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 10px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.4;
+  }
+  .terms-nav-btn.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .terms-doc {
+    display: none;
+    background: var(--surface-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 18px;
+  }
+  .terms-doc.active { display: block; }
+  .terms-doc h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 4px;
+  }
+  .terms-doc .meta {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+  }
+  .terms-doc p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin: 0 0 8px;
+  }
+  .dl-btn {
+    margin-top: 10px;
+    height: 34px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <select id="langSelect" class="util-select" aria-label="Language">
+    <option value="ko">한국어</option>
+    <option value="en">English</option>
+    <option value="id">Bahasa Indonesia</option>
+    <option value="zh">中文</option>
+    <option value="ja">日本語</option>
+  </select>
+  <button type="button" id="themeToggle" class="theme-btn" aria-label="Toggle theme">🌙</button>
+</div>
+
+<div class="page-wrap">
+  <div class="auth-card">
+
+    <div class="brand">
+      <div class="brand-badge">Ga</div>
+      <div class="brand-word">GajiOne</div>
+      <div class="brand-tagline" data-i18n="brand.tagline">인도네시아 제조업을 위한 급여 품질관리 플랫폼</div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab-btn active" data-tab="login" data-i18n="tab.login">로그인</button>
+      <button type="button" class="tab-btn" data-tab="signup" data-i18n="tab.signup">회원가입</button>
+      <button type="button" class="tab-btn" data-tab="forgot" data-i18n="tab.forgot">비밀번호 찾기</button>
+      <button type="button" class="tab-btn" data-tab="terms" data-i18n="tab.terms">약관 동의</button>
+    </div>
+
+    <!-- ============ VIEW: LOGIN ============ -->
+    <section class="view active" id="view-login">
+      <h1 class="view-title" data-i18n="login.title">페이롤 관리자 로그인</h1>
+
+      <div class="field">
+        <label for="loginEmail" data-i18n="login.email.label">이메일 또는 회사 ID</label>
+        <input type="text" id="loginEmail" data-i18n-placeholder="login.email.placeholder" placeholder="admin@perusahaan-anda.co.id">
+      </div>
+
+      <div class="field">
+        <label for="loginPassword" data-i18n="login.password.label">비밀번호</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPassword" data-i18n-placeholder="login.password.placeholder" placeholder="비밀번호를 입력하세요">
+          <button type="button" class="pw-toggle" data-target="loginPassword" data-i18n="pw.show">표시</button>
+        </div>
+      </div>
+
+      <div class="remember-row">
+        <label>
+          <input type="checkbox" id="rememberMe">
+          <span data-i18n="login.remember">로그인 상태 유지</span>
+        </label>
+        <a href="#" data-goto-tab="forgot" data-i18n="login.forgot">비밀번호를 잊으셨나요?</a>
+      </div>
+
+      <button type="button" class="btn btn-primary" data-i18n="login.submit">로그인</button>
+
+      <div class="divider"><span data-i18n="login.or">또는</span></div>
+
+      <button type="button" class="btn btn-secondary">
+        <span class="g-icon">G</span>
+        <span data-i18n="login.google">Google 계정으로 계속하기</span>
+      </button>
+
+      <div class="foot-link">
+        <span data-i18n="login.noaccount">계정이 없으신가요?</span>
+        <a href="#" data-goto-tab="signup" data-i18n="login.signupLink">회원가입</a>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: SIGNUP ============ -->
+    <section class="view" id="view-signup">
+      <h1 class="view-title" data-i18n="signup.title">신규 고객사 회원가입</h1>
+
+      <div class="stepper">
+        <button type="button" class="step-item active" data-step="1">
+          <span class="step-circle">1</span>
+          <span class="step-label" data-i18n="step.company">회사 정보</span>
+        </button>
+        <div class="step-connector"></div>
+        <button type="button" class="step-item" data-step="2">
+          <span class="step-circle">2</span>
+          <span class="step-label" data-i18n="step.admin">관리자 계정</span>
+        </button>
+        <div class="step-connector"></div>
+        <button type="button" class="step-item" data-step="3">
+          <span class="step-circle">3</span>
+          <span class="step-label" data-i18n="step.terms">약관 동의</span>
+        </button>
+        <div class="step-connector"></div>
+        <button type="button" class="step-item" data-step="4">
+          <span class="step-circle">4</span>
+          <span class="step-label" data-i18n="step.done">완료</span>
+        </button>
+      </div>
+
+      <!-- Step 1: Company info -->
+      <div class="step-panel active" id="step-1">
+        <div class="field">
+          <label for="companyName" data-i18n="field.companyName.label">회사명</label>
+          <input type="text" id="companyName" data-i18n-placeholder="field.companyName.placeholder" placeholder="PT Sejahtera Manufaktur Indonesia">
+        </div>
+        <div class="field">
+          <label for="npwp" data-i18n="field.npwp.label">사업자등록번호 (NPWP)</label>
+          <input type="text" id="npwp" data-i18n-placeholder="field.npwp.placeholder" placeholder="12.345.678.9-012.000">
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="industry" data-i18n="field.industry.label">업종</label>
+            <select id="industry">
+              <option data-i18n="opt.industry.metal">제조업 - 금속가공</option>
+              <option data-i18n="opt.industry.textile">제조업 - 섬유</option>
+              <option data-i18n="opt.industry.electronics">제조업 - 전자</option>
+              <option data-i18n="opt.industry.food">식음료</option>
+              <option data-i18n="opt.industry.logistics">물류</option>
+              <option data-i18n="opt.industry.other">기타</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="empCount" data-i18n="field.empCount.label">예상 관리 직원 수</label>
+            <select id="empCount">
+              <option data-i18n="opt.emp.1">1 - 50명</option>
+              <option data-i18n="opt.emp.2">51 - 200명</option>
+              <option data-i18n="opt.emp.3">201 - 500명</option>
+              <option data-i18n="opt.emp.4">500명 이상</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="location" data-i18n="field.location.label">회사 소재지</label>
+          <select id="location">
+            <option data-i18n="opt.loc.jakarta">DKI Jakarta</option>
+            <option data-i18n="opt.loc.jabar">Jawa Barat</option>
+            <option data-i18n="opt.loc.jatim">Jawa Timur</option>
+            <option data-i18n="opt.loc.banten">Banten</option>
+            <option data-i18n="opt.loc.other">기타 지역</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" data-next="2" data-i18n="btn.next">다음</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Admin account -->
+      <div class="step-panel" id="step-2">
+        <div class="field">
+          <label for="contactName" data-i18n="field.contactName.label">담당자 이름</label>
+          <input type="text" id="contactName" data-i18n-placeholder="field.contactName.placeholder" placeholder="Budi Santoso">
+        </div>
+        <div class="field">
+          <label for="position" data-i18n="field.position.label">직책</label>
+          <input type="text" id="position" data-i18n-placeholder="field.position.placeholder" placeholder="HR & GA Manager">
+        </div>
+        <div class="field">
+          <label for="signupEmail" data-i18n="field.email2.label">이메일 (로그인 ID로 사용됨)</label>
+          <input type="email" id="signupEmail" data-i18n-placeholder="field.email2.placeholder" placeholder="budi.santoso@perusahaan-anda.co.id">
+          <div class="hint" data-i18n="field.email2.hint">이 이메일 주소가 향후 로그인 ID로 사용됩니다.</div>
+        </div>
+        <div class="field">
+          <label for="phone" data-i18n="field.phone.label">휴대폰번호</label>
+          <div class="phone-row">
+            <div class="phone-prefix">+62</div>
+            <input type="tel" id="phone" data-i18n-placeholder="field.phone.placeholder" placeholder="812-3456-7890">
+          </div>
+        </div>
+        <div class="field">
+          <label for="signupPassword" data-i18n="field.password2.label">비밀번호</label>
+          <div class="pw-wrap">
+            <input type="password" id="signupPassword" data-i18n-placeholder="field.password2.placeholder" placeholder="영문, 숫자 포함 8자 이상">
+            <button type="button" class="pw-toggle" data-target="signupPassword" data-i18n="pw.show">표시</button>
+          </div>
+          <div class="strength-bar"><span></span><span></span><span></span><span></span></div>
+          <div class="strength-label" id="strengthLabel" data-i18n="pw.strength.empty">비밀번호 강도</div>
+        </div>
+        <div class="field">
+          <label for="signupPasswordConfirm" data-i18n="field.passwordConfirm.label">비밀번호 확인</label>
+          <div class="pw-wrap">
+            <input type="password" id="signupPasswordConfirm" data-i18n-placeholder="field.passwordConfirm.placeholder" placeholder="비밀번호를 다시 입력하세요">
+            <button type="button" class="pw-toggle" data-target="signupPasswordConfirm" data-i18n="pw.show">표시</button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-secondary" data-prev="1" data-i18n="btn.prev">이전</button>
+          <button type="button" class="btn btn-primary" data-next="3" data-i18n="btn.next">다음</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Terms agreement -->
+      <div class="step-panel" id="step-3">
+        <label class="master-agree">
+          <input type="checkbox" id="agreeAll">
+          <span data-i18n="agree.all">전체 동의합니다</span>
+        </label>
+
+        <div class="agree-list">
+          <div>
+            <div class="terms-item-row">
+              <label class="check-row">
+                <input type="checkbox" class="agree-sub" id="agreeTerms">
+                <span data-i18n="agree.terms">[필수] GajiOne 이용약관에 동의합니다</span>
+              </label>
+              <a href="#" class="view-full-link" data-clause="terms" data-i18n="agree.viewFull">전문 보기</a>
+            </div>
+            <div class="terms-clause-box" data-clause-box="terms">
+              <p data-i18n="clause.terms.1">제1조(목적) 본 약관은 GajiOne 서비스 이용에 관한 조건 및 절차를 규정함을 목적으로 합니다.</p>
+              <p data-i18n="clause.terms.2">제2조(이용계약) 이용계약은 이용자가 본 약관에 동의하고 가입을 신청한 후, 회사가 이를 승낙함으로써 성립합니다.</p>
+              <p data-i18n="clause.terms.3">제3조(서비스 이용) 회사는 안정적인 서비스 제공을 위해 노력하며, 부득이한 경우 사전 공지 후 서비스를 변경할 수 있습니다.</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="terms-item-row">
+              <label class="check-row">
+                <input type="checkbox" class="agree-sub" id="agreePrivacy">
+                <span data-i18n="agree.privacy">[필수] 개인정보처리방침에 동의합니다</span>
+              </label>
+              <a href="#" class="view-full-link" data-clause="privacy" data-i18n="agree.viewFull">전문 보기</a>
+            </div>
+            <div class="terms-clause-box" data-clause-box="privacy">
+              <p data-i18n="clause.privacy.1">제1조(수집 항목) 회사는 서비스 제공을 위해 담당자 성명, 연락처, 이메일 등 최소한의 정보를 수집합니다.</p>
+              <p data-i18n="clause.privacy.2">제2조(이용 목적) 수집된 정보는 계정 인증, 고객 지원, 서비스 안내 목적으로만 사용됩니다.</p>
+              <p data-i18n="clause.privacy.3">제3조(보관 기간) 회원 탈퇴 시 관련 법령이 정한 기간을 제외하고 지체 없이 파기합니다.</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="terms-item-row">
+              <label class="check-row">
+                <input type="checkbox" class="agree-sub" id="agreeMarketing">
+                <span data-i18n="agree.marketing">[선택] 마케팅 정보 수신에 동의합니다</span>
+              </label>
+              <a href="#" class="view-full-link" data-clause="marketing" data-i18n="agree.viewFull">전문 보기</a>
+            </div>
+            <div class="terms-clause-box" data-clause-box="marketing">
+              <p data-i18n="clause.marketing.1">제1조(수신 정보) 신규 기능, 프로모션, 세무·급여 규정 변경 안내 등을 이메일 및 SMS로 발송할 수 있습니다.</p>
+              <p data-i18n="clause.marketing.2">제2조(수신 동의 철회) 이용자는 언제든지 설정 메뉴 또는 수신 거부 링크를 통해 동의를 철회할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-secondary" data-prev="2" data-i18n="btn.prev">이전</button>
+          <button type="button" class="btn btn-primary" data-next="4" id="signupSubmitBtn" data-i18n="btn.submit">가입 신청</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Done -->
+      <div class="step-panel" id="step-4">
+        <div class="done-wrap">
+          <svg class="done-icon" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="27" stroke="var(--success)" stroke-width="2" fill="var(--success-soft)"/>
+            <path d="M17 29L24.5 36.5L39.5 20" stroke="var(--success)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="done-title" data-i18n="done.title">가입 신청이 완료되었습니다</div>
+          <div class="done-desc" data-i18n="done.desc">입력하신 이메일로 인증 링크를 발송했습니다. 인증 후 GajiOne 운영팀 승인을 거쳐 계정이 활성화됩니다 (영업일 기준 1일 이내).</div>
+          <button type="button" class="btn btn-primary" data-goto-tab="login" data-i18n="done.toLogin">로그인 화면으로</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: FORGOT PASSWORD ============ -->
+    <section class="view" id="view-forgot">
+      <h1 class="view-title" data-i18n="forgot.title">비밀번호 찾기</h1>
+
+      <div class="sub-card">
+        <h3 data-i18n="forgot.step1.title">1. 재설정 링크 요청</h3>
+        <div class="request-form" id="requestForm">
+          <div class="field">
+            <label for="forgotEmail" data-i18n="forgot.email.label">가입한 이메일 주소</label>
+            <input type="email" id="forgotEmail" data-i18n-placeholder="forgot.email.placeholder" placeholder="admin@perusahaan-anda.co.id">
+          </div>
+          <button type="button" class="btn btn-primary" id="sendResetBtn" data-i18n="forgot.submit">재설정 링크 받기</button>
+        </div>
+        <div class="sent-box" id="sentBox">
+          <div data-i18n="forgot.sentDesc">입력하신 이메일로 재설정 링크를 보냈습니다. 받은편지함(또는 스팸함)을 확인해 주세요.</div>
+          <div class="timer" data-i18n="forgot.resendTimer">재전송 가능까지 00:47</div>
+        </div>
+      </div>
+
+      <div class="sub-card">
+        <h3 data-i18n="forgot.step2.title">2. 새 비밀번호 설정</h3>
+        <div class="field">
+          <label for="newPassword" data-i18n="forgot.newPassword.label">새 비밀번호</label>
+          <div class="pw-wrap">
+            <input type="password" id="newPassword" data-i18n-placeholder="forgot.newPassword.placeholder" placeholder="영문, 숫자 포함 8자 이상">
+            <button type="button" class="pw-toggle" data-target="newPassword" data-i18n="pw.show">표시</button>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:4px;">
+          <label for="newPasswordConfirm" data-i18n="forgot.newPasswordConfirm.label">새 비밀번호 확인</label>
+          <div class="pw-wrap">
+            <input type="password" id="newPasswordConfirm" data-i18n-placeholder="forgot.newPasswordConfirm.placeholder" placeholder="새 비밀번호를 다시 입력하세요">
+            <button type="button" class="pw-toggle" data-target="newPasswordConfirm" data-i18n="pw.show">표시</button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" data-i18n="forgot.changeSubmit">비밀번호 변경</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: TERMS CENTER ============ -->
+    <section class="view" id="view-terms">
+      <h1 class="view-title" data-i18n="termsCenter.title">서비스 정책 센터</h1>
+
+      <div class="terms-center-layout">
+        <div class="terms-nav">
+          <button type="button" class="terms-nav-btn active" data-doc="tos" data-i18n="termsCenter.nav.tos">이용약관</button>
+          <button type="button" class="terms-nav-btn" data-doc="privacy" data-i18n="termsCenter.nav.privacy">개인정보처리방침</button>
+          <button type="button" class="terms-nav-btn" data-doc="dataproc" data-i18n="termsCenter.nav.dataproc">데이터 처리 위탁 계약</button>
+          <button type="button" class="terms-nav-btn" data-doc="efin" data-i18n="termsCenter.nav.efin">전자금융거래 이용약관</button>
+        </div>
+
+        <div class="terms-doc-wrap">
+          <div class="terms-doc active" id="doc-tos">
+            <h3 data-i18n="termsCenter.doc.tos.title">GajiOne 이용약관</h3>
+            <div class="meta"><span data-i18n="termsCenter.meta.revised">최종 개정일</span> 2026-06-01</div>
+            <p data-i18n="termsCenter.doc.tos.p1">제1조(목적) 본 약관은 GajiOne 서비스(이하 "서비스")의 이용 조건 및 절차, 회사와 이용자의 권리·의무를 규정합니다.</p>
+            <p data-i18n="termsCenter.doc.tos.p2">제2조(용어의 정의) "이용자"란 본 약관에 따라 서비스를 이용하는 고객사 및 그 소속 담당자를 말합니다.</p>
+            <p data-i18n="termsCenter.doc.tos.p3">제3조(약관의 효력 및 변경) 회사는 관계 법령을 위반하지 않는 범위에서 약관을 개정할 수 있으며, 개정 시 사전 공지합니다.</p>
+            <p data-i18n="termsCenter.doc.tos.p4">제4조(서비스 중단) 회사는 시스템 점검, 장애 등 부득이한 사유가 있는 경우 서비스 제공을 일시 중단할 수 있습니다.</p>
+            <button type="button" class="btn btn-ghost dl-btn" data-i18n="termsCenter.download">PDF 다운로드</button>
+          </div>
+
+          <div class="terms-doc" id="doc-privacy">
+            <h3 data-i18n="termsCenter.doc.privacy.title">개인정보처리방침</h3>
+            <div class="meta"><span data-i18n="termsCenter.meta.revised">최종 개정일</span> 2026-06-01</div>
+            <p data-i18n="termsCenter.doc.privacy.p1">제1조(수집하는 개인정보 항목) 회사는 계정 관리 및 서비스 제공을 위해 담당자 성명, 직책, 이메일, 연락처를 수집합니다.</p>
+            <p data-i18n="termsCenter.doc.privacy.p2">제2조(개인정보의 이용) 수집한 정보는 본인 확인, 고객 지원, 공지사항 전달 목적 외에는 사용하지 않습니다.</p>
+            <p data-i18n="termsCenter.doc.privacy.p3">제3조(제3자 제공) 회사는 법령에 특별한 규정이 있는 경우를 제외하고 이용자의 동의 없이 개인정보를 제3자에게 제공하지 않습니다.</p>
+            <p data-i18n="termsCenter.doc.privacy.p4">제4조(안전성 확보 조치) 회사는 개인정보 보호를 위해 접근 권한 관리, 암호화 등 합리적인 보안 조치를 시행합니다.</p>
+            <button type="button" class="btn btn-ghost dl-btn" data-i18n="termsCenter.download">PDF 다운로드</button>
+          </div>
+
+          <div class="terms-doc" id="doc-dataproc">
+            <h3 data-i18n="termsCenter.doc.dataproc.title">데이터 처리 위탁 계약</h3>
+            <div class="meta"><span data-i18n="termsCenter.meta.revised">최종 개정일</span> 2026-06-01</div>
+            <p data-i18n="termsCenter.doc.dataproc.p1">제1조(위탁 업무의 범위) 고객사는 급여 계산 및 근태 관리에 필요한 임직원 데이터의 처리를 회사에 위탁합니다.</p>
+            <p data-i18n="termsCenter.doc.dataproc.p2">제2조(처리 기간 및 목적) 위탁된 데이터는 계약 기간 동안 급여·세무 처리 목적으로만 사용됩니다.</p>
+            <p data-i18n="termsCenter.doc.dataproc.p3">제3조(재위탁 제한) 회사는 고객사의 사전 서면 동의 없이 위탁받은 업무를 제3자에게 재위탁하지 않습니다.</p>
+            <p data-i18n="termsCenter.doc.dataproc.p4">제4조(계약 종료 시 처리) 계약 종료 시 회사는 위탁받은 데이터를 지체 없이 반환하거나 파기합니다.</p>
+            <button type="button" class="btn btn-ghost dl-btn" data-i18n="termsCenter.download">PDF 다운로드</button>
+          </div>
+
+          <div class="terms-doc" id="doc-efin">
+            <h3 data-i18n="termsCenter.doc.efin.title">전자금융거래 이용약관</h3>
+            <div class="meta"><span data-i18n="termsCenter.meta.revised">최종 개정일</span> 2026-06-01</div>
+            <p data-i18n="termsCenter.doc.efin.p1">제1조(적용 범위) 본 약관은 GajiOne과 연계된 급여성 대출 등 전자금융거래 서비스 이용에 적용됩니다.</p>
+            <p data-i18n="termsCenter.doc.efin.p2">제2조(거래 지시) 이용자는 서비스 내에서 제공하는 절차에 따라 전자적 방법으로 거래를 지시할 수 있습니다.</p>
+            <p data-i18n="termsCenter.doc.efin.p3">제3조(면책 사항) 이용자의 귀책사유로 발생한 손해에 대해서는 관련 법령이 정하는 범위 내에서 회사가 책임을 지지 않습니다.</p>
+            <p data-i18n="termsCenter.doc.efin.p4">본 내용은 일반적인 안내를 위한 것이며 개별 계약의 법률 자문을 대체하지 않습니다.</p>
+            <button type="button" class="btn btn-ghost dl-btn" data-i18n="termsCenter.download">PDF 다운로드</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---------- Theme toggle ----------
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('themeToggle');
+  function applyThemeIcon(t){ themeBtn.textContent = t === 'dark' ? '☀️' : '🌙'; }
+  function setTheme(t){
+    root.setAttribute('data-theme', t);
+    applyThemeIcon(t);
+  }
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(prefersDark ? 'dark' : 'light');
+  themeBtn.addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    setTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // ---------- Tab navigation ----------
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var views = document.querySelectorAll('.view');
+  function gotoTab(name){
+    tabBtns.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tab') === name); });
+    views.forEach(function(v){ v.classList.toggle('active', v.id === 'view-' + name); });
+  }
+  tabBtns.forEach(function(b){
+    b.addEventListener('click', function(){ gotoTab(b.getAttribute('data-tab')); });
+  });
+  document.querySelectorAll('[data-goto-tab]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      gotoTab(el.getAttribute('data-goto-tab'));
+    });
+  });
+
+  // ---------- Password show/hide ----------
+  document.querySelectorAll('.pw-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var targetId = btn.getAttribute('data-target');
+      var input = document.getElementById(targetId);
+      var showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      var key = showing ? 'pw.show' : 'pw.hide';
+      btn.setAttribute('data-i18n', key);
+      var lang = document.getElementById('langSelect').value;
+      var entry = I18N[key];
+      btn.textContent = (entry && entry[lang]) ? entry[lang] : (showing ? '표시' : '숨김');
+    });
+  });
+
+  // ---------- Signup stepper ----------
+  var stepItems = document.querySelectorAll('.step-item');
+  var stepPanels = document.querySelectorAll('.step-panel');
+  function gotoStep(n){
+    n = parseInt(n, 10);
+    stepItems.forEach(function(s){
+      var sn = parseInt(s.getAttribute('data-step'), 10);
+      s.classList.toggle('active', sn === n);
+      s.classList.toggle('done', sn < n);
+    });
+    stepPanels.forEach(function(p){
+      p.classList.toggle('active', p.id === 'step-' + n);
+    });
+  }
+  stepItems.forEach(function(s){
+    s.addEventListener('click', function(){ gotoStep(s.getAttribute('data-step')); });
+  });
+  document.querySelectorAll('[data-next]').forEach(function(b){
+    b.addEventListener('click', function(){ gotoStep(b.getAttribute('data-next')); });
+  });
+  document.querySelectorAll('[data-prev]').forEach(function(b){
+    b.addEventListener('click', function(){ gotoStep(b.getAttribute('data-prev')); });
+  });
+
+  // ---------- Password strength (step 2) ----------
+  var pwInput = document.getElementById('signupPassword');
+  var strengthBars = document.querySelectorAll('.strength-bar span');
+  var strengthLabel = document.getElementById('strengthLabel');
+  function updateStrength(){
+    var val = pwInput.value;
+    var score = 0;
+    if (val.length >= 6) score = 1;
+    if (val.length >= 9) score = 2;
+    if (val.length >= 12) score = 3;
+    if (val.length >= 16) score = 4;
+    var colors = ['var(--border)', 'var(--danger)', 'var(--warning)', 'var(--accent)', 'var(--success)'];
+    strengthBars.forEach(function(bar, i){
+      bar.style.background = (i < score) ? colors[score] : 'var(--border)';
+    });
+    var labelKey = 'pw.strength.empty';
+    if (val.length === 0) labelKey = 'pw.strength.empty';
+    else if (score <= 1) labelKey = 'pw.strength.weak';
+    else if (score <= 2) labelKey = 'pw.strength.medium';
+    else labelKey = 'pw.strength.strong';
+    var lang = document.getElementById('langSelect').value;
+    var entry = I18N[labelKey];
+    strengthLabel.setAttribute('data-i18n', labelKey);
+    strengthLabel.textContent = (entry && entry[lang]) ? entry[lang] : labelKey;
+  }
+  pwInput.addEventListener('input', updateStrength);
+
+  // ---------- Terms agreement checkboxes ----------
+  var agreeAll = document.getElementById('agreeAll');
+  var agreeSubs = document.querySelectorAll('.agree-sub');
+  agreeAll.addEventListener('change', function(){
+    agreeSubs.forEach(function(cb){ cb.checked = agreeAll.checked; });
+  });
+  agreeSubs.forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var allChecked = Array.prototype.every.call(agreeSubs, function(c){ return c.checked; });
+      agreeAll.checked = allChecked;
+    });
+  });
+
+  // ---------- View full clause toggles ----------
+  document.querySelectorAll('.view-full-link').forEach(function(link){
+    link.addEventListener('click', function(e){
+      e.preventDefault();
+      var key = link.getAttribute('data-clause');
+      var box = document.querySelector('.terms-clause-box[data-clause-box="' + key + '"]');
+      if (box) box.classList.toggle('open');
+    });
+  });
+
+  // ---------- Forgot password flow ----------
+  var sendResetBtn = document.getElementById('sendResetBtn');
+  var requestForm = document.getElementById('requestForm');
+  var sentBox = document.getElementById('sentBox');
+  sendResetBtn.addEventListener('click', function(){
+    requestForm.classList.add('hidden');
+    sentBox.classList.add('show');
+  });
+
+  // ---------- Terms center nav ----------
+  var termsNavBtns = document.querySelectorAll('.terms-nav-btn');
+  var termsDocMap = { tos: 'doc-tos', privacy: 'doc-privacy', dataproc: 'doc-dataproc', efin: 'doc-efin' };
+  termsNavBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      termsNavBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var docId = termsDocMap[btn.getAttribute('data-doc')];
+      document.querySelectorAll('.terms-doc').forEach(function(d){ d.classList.toggle('active', d.id === docId); });
+    });
+  });
+})();
+</script>
+
+<script>
+const I18N = {
+  "brand.tagline": { ko:"인도네시아 제조업을 위한 급여 품질관리 플랫폼", en:"The payroll quality-control platform for Indonesian manufacturers", id:"Platform kendali mutu penggajian untuk industri manufaktur Indonesia", zh:"面向印尼制造业的薪资质量管控平台", ja:"インドネシア製造業向け給与品質管理プラットフォーム" },
+
+  "tab.login": { ko:"로그인", en:"Log in", id:"Masuk", zh:"登录", ja:"ログイン" },
+  "tab.signup": { ko:"회원가입", en:"Sign up", id:"Daftar", zh:"注册", ja:"新規登録" },
+  "tab.forgot": { ko:"비밀번호 찾기", en:"Forgot password", id:"Lupa kata sandi", zh:"忘记密码", ja:"パスワードをお忘れの方" },
+  "tab.terms": { ko:"약관 동의", en:"Policy Center", id:"Pusat Kebijakan", zh:"政策中心", ja:"規約センター" },
+
+  "login.title": { ko:"페이롤 관리자 로그인", en:"Payroll Admin Login", id:"Login Admin Penggajian", zh:"薪资管理员登录", ja:"給与管理者ログイン" },
+  "login.email.label": { ko:"이메일 또는 회사 ID", en:"Email or Company ID", id:"Email atau ID Perusahaan", zh:"邮箱或公司账号", ja:"メールアドレスまたは会社ID" },
+  "login.email.placeholder": { ko:"admin@perusahaan-anda.co.id", en:"admin@your-company.co.id", id:"admin@perusahaan-anda.co.id", zh:"admin@perusahaan-anda.co.id", ja:"admin@perusahaan-anda.co.id" },
+  "login.password.label": { ko:"비밀번호", en:"Password", id:"Kata Sandi", zh:"密码", ja:"パスワード" },
+  "login.password.placeholder": { ko:"비밀번호를 입력하세요", en:"Enter your password", id:"Masukkan kata sandi Anda", zh:"请输入密码", ja:"パスワードを入力してください" },
+  "login.remember": { ko:"로그인 상태 유지", en:"Keep me signed in", id:"Ingat saya", zh:"保持登录状态", ja:"ログイン状態を保持する" },
+  "login.forgot": { ko:"비밀번호를 잊으셨나요?", en:"Forgot your password?", id:"Lupa kata sandi Anda?", zh:"忘记密码？", ja:"パスワードをお忘れですか？" },
+  "login.submit": { ko:"로그인", en:"Log in", id:"Masuk", zh:"登录", ja:"ログイン" },
+  "login.or": { ko:"또는", en:"or", id:"atau", zh:"或", ja:"または" },
+  "login.google": { ko:"Google 계정으로 계속하기", en:"Continue with Google", id:"Lanjutkan dengan Google", zh:"使用 Google 账号继续", ja:"Googleアカウントで続ける" },
+  "login.noaccount": { ko:"계정이 없으신가요?", en:"Don't have an account?", id:"Belum punya akun?", zh:"还没有账号？", ja:"アカウントをお持ちでないですか？" },
+  "login.signupLink": { ko:"회원가입", en:"Sign up", id:"Daftar", zh:"立即注册", ja:"新規登録" },
+
+  "pw.show": { ko:"표시", en:"Show", id:"Tampilkan", zh:"显示", ja:"表示" },
+  "pw.hide": { ko:"숨김", en:"Hide", id:"Sembunyikan", zh:"隐藏", ja:"非表示" },
+
+  "signup.title": { ko:"신규 고객사 회원가입", en:"New Company Sign-up", id:"Pendaftaran Perusahaan Baru", zh:"新客户企业注册", ja:"新規顧客企業登録" },
+  "step.company": { ko:"회사 정보", en:"Company Info", id:"Info Perusahaan", zh:"公司信息", ja:"会社情報" },
+  "step.admin": { ko:"관리자 계정", en:"Admin Account", id:"Akun Admin", zh:"管理员账户", ja:"管理者アカウント" },
+  "step.terms": { ko:"약관 동의", en:"Agreement", id:"Persetujuan", zh:"条款同意", ja:"規約同意" },
+  "step.done": { ko:"완료", en:"Done", id:"Selesai", zh:"完成", ja:"完了" },
+
+  "field.companyName.label": { ko:"회사명", en:"Company Name", id:"Nama Perusahaan", zh:"公司名称", ja:"会社名" },
+  "field.companyName.placeholder": { ko:"PT Sejahtera Manufaktur Indonesia", en:"PT Sejahtera Manufaktur Indonesia", id:"PT Sejahtera Manufaktur Indonesia", zh:"PT Sejahtera Manufaktur Indonesia", ja:"PT Sejahtera Manufaktur Indonesia" },
+  "field.npwp.label": { ko:"사업자등록번호 (NPWP)", en:"Tax ID (NPWP)", id:"Nomor Pokok Wajib Pajak (NPWP)", zh:"税号 (NPWP)", ja:"納税者番号（NPWP）" },
+  "field.npwp.placeholder": { ko:"12.345.678.9-012.000", en:"12.345.678.9-012.000", id:"12.345.678.9-012.000", zh:"12.345.678.9-012.000", ja:"12.345.678.9-012.000" },
+  "field.industry.label": { ko:"업종", en:"Industry", id:"Bidang Usaha", zh:"行业类型", ja:"業種" },
+  "field.empCount.label": { ko:"예상 관리 직원 수", en:"Estimated Employee Count", id:"Perkiraan Jumlah Karyawan", zh:"预计管理员工人数", ja:"想定管理従業員数" },
+  "field.location.label": { ko:"회사 소재지", en:"Company Location", id:"Lokasi Perusahaan", zh:"公司所在地", ja:"会社所在地" },
+
+  "opt.industry.metal": { ko:"제조업 - 금속가공", en:"Manufacturing - Metalworking", id:"Manufaktur - Pengerjaan Logam", zh:"制造业 - 金属加工", ja:"製造業 - 金属加工" },
+  "opt.industry.textile": { ko:"제조업 - 섬유", en:"Manufacturing - Textile", id:"Manufaktur - Tekstil", zh:"制造业 - 纺织", ja:"製造業 - 繊維" },
+  "opt.industry.electronics": { ko:"제조업 - 전자", en:"Manufacturing - Electronics", id:"Manufaktur - Elektronik", zh:"制造业 - 电子", ja:"製造業 - 電子" },
+  "opt.industry.food": { ko:"식음료", en:"Food & Beverage", id:"Makanan & Minuman", zh:"食品饮料", ja:"食品飲料" },
+  "opt.industry.logistics": { ko:"물류", en:"Logistics", id:"Logistik", zh:"物流", ja:"物流" },
+  "opt.industry.other": { ko:"기타", en:"Other", id:"Lainnya", zh:"其他", ja:"その他" },
+
+  "opt.emp.1": { ko:"1 - 50명", en:"1 - 50 employees", id:"1 - 50 karyawan", zh:"1-50 人", ja:"1〜50名" },
+  "opt.emp.2": { ko:"51 - 200명", en:"51 - 200 employees", id:"51 - 200 karyawan", zh:"51-200 人", ja:"51〜200名" },
+  "opt.emp.3": { ko:"201 - 500명", en:"201 - 500 employees", id:"201 - 500 karyawan", zh:"201-500 人", ja:"201〜500名" },
+  "opt.emp.4": { ko:"500명 이상", en:"500+ employees", id:"Lebih dari 500 karyawan", zh:"500 人以上", ja:"500名以上" },
+
+  "opt.loc.jakarta": { ko:"DKI Jakarta", en:"DKI Jakarta", id:"DKI Jakarta", zh:"DKI Jakarta", ja:"DKI Jakarta" },
+  "opt.loc.jabar": { ko:"Jawa Barat", en:"Jawa Barat", id:"Jawa Barat", zh:"Jawa Barat", ja:"Jawa Barat" },
+  "opt.loc.jatim": { ko:"Jawa Timur", en:"Jawa Timur", id:"Jawa Timur", zh:"Jawa Timur", ja:"Jawa Timur" },
+  "opt.loc.banten": { ko:"Banten", en:"Banten", id:"Banten", zh:"Banten", ja:"Banten" },
+  "opt.loc.other": { ko:"기타 지역", en:"Other region", id:"Wilayah lainnya", zh:"其他地区", ja:"その他の地域" },
+
+  "btn.next": { ko:"다음", en:"Next", id:"Berikutnya", zh:"下一步", ja:"次へ" },
+  "btn.prev": { ko:"이전", en:"Back", id:"Kembali", zh:"上一步", ja:"戻る" },
+  "btn.submit": { ko:"가입 신청", en:"Submit Application", id:"Ajukan Pendaftaran", zh:"提交申请", ja:"申し込む" },
+
+  "field.contactName.label": { ko:"담당자 이름", en:"Contact Name", id:"Nama Penanggung Jawab", zh:"负责人姓名", ja:"担当者名" },
+  "field.contactName.placeholder": { ko:"Budi Santoso", en:"Budi Santoso", id:"Budi Santoso", zh:"Budi Santoso", ja:"Budi Santoso" },
+  "field.position.label": { ko:"직책", en:"Job Title", id:"Jabatan", zh:"职位", ja:"役職" },
+  "field.position.placeholder": { ko:"HR & GA Manager", en:"HR & GA Manager", id:"HR & GA Manager", zh:"HR & GA Manager", ja:"HR & GA Manager" },
+  "field.email2.label": { ko:"이메일 (로그인 ID로 사용됨)", en:"Email (used as login ID)", id:"Email (digunakan sebagai ID login)", zh:"邮箱（将作为登录账号）", ja:"メールアドレス（ログインIDとして使用）" },
+  "field.email2.placeholder": { ko:"budi.santoso@perusahaan-anda.co.id", en:"budi.santoso@your-company.co.id", id:"budi.santoso@perusahaan-anda.co.id", zh:"budi.santoso@perusahaan-anda.co.id", ja:"budi.santoso@perusahaan-anda.co.id" },
+  "field.email2.hint": { ko:"이 이메일 주소가 향후 로그인 ID로 사용됩니다.", en:"This email address will be used as your login ID.", id:"Alamat email ini akan digunakan sebagai ID login Anda.", zh:"该邮箱地址将作为您未来的登录账号。", ja:"このメールアドレスが今後のログインIDとして使用されます。" },
+  "field.phone.label": { ko:"휴대폰번호", en:"Mobile Phone Number", id:"Nomor Ponsel", zh:"手机号码", ja:"携帯電話番号" },
+  "field.phone.placeholder": { ko:"812-3456-7890", en:"812-3456-7890", id:"812-3456-7890", zh:"812-3456-7890", ja:"812-3456-7890" },
+  "field.password2.label": { ko:"비밀번호", en:"Password", id:"Kata Sandi", zh:"密码", ja:"パスワード" },
+  "field.password2.placeholder": { ko:"영문, 숫자 포함 8자 이상", en:"At least 8 characters, letters + numbers", id:"Minimal 8 karakter, huruf & angka", zh:"至少8位，含字母和数字", ja:"英数字含む8文字以上" },
+  "field.passwordConfirm.label": { ko:"비밀번호 확인", en:"Confirm Password", id:"Konfirmasi Kata Sandi", zh:"确认密码", ja:"パスワード（確認）" },
+  "field.passwordConfirm.placeholder": { ko:"비밀번호를 다시 입력하세요", en:"Re-enter your password", id:"Masukkan ulang kata sandi Anda", zh:"请再次输入密码", ja:"パスワードを再入力してください" },
+
+  "pw.strength.empty": { ko:"비밀번호 강도", en:"Password strength", id:"Kekuatan kata sandi", zh:"密码强度", ja:"パスワード強度" },
+  "pw.strength.weak": { ko:"약함", en:"Weak", id:"Lemah", zh:"弱", ja:"弱い" },
+  "pw.strength.medium": { ko:"보통", en:"Medium", id:"Sedang", zh:"中等", ja:"普通" },
+  "pw.strength.strong": { ko:"강함", en:"Strong", id:"Kuat", zh:"强", ja:"強い" },
+
+  "agree.all": { ko:"전체 동의합니다", en:"Agree to all", id:"Setujui semua", zh:"全部同意", ja:"すべてに同意する" },
+  "agree.terms": { ko:"[필수] GajiOne 이용약관에 동의합니다", en:"[Required] I agree to the GajiOne Terms of Service", id:"[Wajib] Saya menyetujui Syarat & Ketentuan GajiOne", zh:"【必选】我同意《GajiOne 服务条款》", ja:"【必須】GajiOne利用規約に同意します" },
+  "agree.privacy": { ko:"[필수] 개인정보처리방침에 동의합니다", en:"[Required] I agree to the Privacy Policy", id:"[Wajib] Saya menyetujui Kebijakan Privasi", zh:"【必选】我同意《隐私政策》", ja:"【必須】個人情報処理方針に同意します" },
+  "agree.marketing": { ko:"[선택] 마케팅 정보 수신에 동의합니다", en:"[Optional] I agree to receive marketing communications", id:"[Opsional] Saya setuju menerima informasi pemasaran", zh:"【可选】我同意接收营销信息", ja:"【任意】マーケティング情報の受信に同意します" },
+  "agree.viewFull": { ko:"전문 보기", en:"View full text", id:"Lihat teks lengkap", zh:"查看全文", ja:"全文を見る" },
+
+  "clause.terms.1": { ko:"제1조(목적) 본 약관은 GajiOne 서비스 이용에 관한 조건 및 절차를 규정함을 목적으로 합니다.", en:"Article 1 (Purpose) These Terms set out the conditions and procedures for use of the GajiOne service.", id:"Pasal 1 (Tujuan) Syarat ini mengatur ketentuan dan prosedur penggunaan layanan GajiOne.", zh:"第一条（目的）本条款旨在规定使用 GajiOne 服务的条件与程序。", ja:"第1条（目的）本規約はGajiOneサービスの利用条件及び手続きを定めることを目的とします。" },
+  "clause.terms.2": { ko:"제2조(이용계약) 이용계약은 이용자가 본 약관에 동의하고 가입을 신청한 후, 회사가 이를 승낙함으로써 성립합니다.", en:"Article 2 (Service Agreement) The agreement is formed when the user agrees to these Terms, applies for registration, and the Company accepts the application.", id:"Pasal 2 (Perjanjian Layanan) Perjanjian terbentuk saat pengguna menyetujui Syarat ini, mengajukan pendaftaran, dan disetujui oleh Perusahaan.", zh:"第二条（使用合同）用户同意本条款并申请注册，经公司受理后，合同即成立。", ja:"第2条（利用契約）利用契約は、利用者が本規約に同意し加入を申請した後、会社がこれを承諾することで成立します。" },
+  "clause.terms.3": { ko:"제3조(서비스 이용) 회사는 안정적인 서비스 제공을 위해 노력하며, 부득이한 경우 사전 공지 후 서비스를 변경할 수 있습니다.", en:"Article 3 (Use of Service) The Company strives to provide a stable service and may change the service after prior notice when unavoidable.", id:"Pasal 3 (Penggunaan Layanan) Perusahaan berupaya menyediakan layanan yang stabil dan dapat mengubah layanan setelah pemberitahuan sebelumnya bila diperlukan.", zh:"第三条（服务使用）公司致力于提供稳定的服务，如有不可避免的情况，将提前公告后变更服务。", ja:"第3条（サービス利用）会社は安定的なサービス提供に努め、やむを得ない場合は事前告知の上でサービスを変更できます。" },
+
+  "clause.privacy.1": { ko:"제1조(수집 항목) 회사는 서비스 제공을 위해 담당자 성명, 연락처, 이메일 등 최소한의 정보를 수집합니다.", en:"Article 1 (Items Collected) The Company collects minimal information such as contact name, phone number, and email to provide the service.", id:"Pasal 1 (Data yang Dikumpulkan) Perusahaan mengumpulkan data minimum seperti nama, nomor telepon, dan email untuk menyediakan layanan.", zh:"第一条（收集项目）公司为提供服务，收集负责人姓名、联系方式、邮箱等最少必要信息。", ja:"第1条（収集項目）会社はサービス提供のため、担当者氏名、連絡先、メールアドレス等の最小限の情報を収集します。" },
+  "clause.privacy.2": { ko:"제2조(이용 목적) 수집된 정보는 계정 인증, 고객 지원, 서비스 안내 목적으로만 사용됩니다.", en:"Article 2 (Purpose of Use) Collected information is used only for account verification, customer support, and service notices.", id:"Pasal 2 (Tujuan Penggunaan) Data yang dikumpulkan hanya digunakan untuk verifikasi akun, dukungan pelanggan, dan pemberitahuan layanan.", zh:"第二条（使用目的）所收集的信息仅用于账户验证、客户支持及服务通知。", ja:"第2条（利用目的）収集した情報はアカウント認証、顧客サポート、サービス案内の目的にのみ使用されます。" },
+  "clause.privacy.3": { ko:"제3조(보관 기간) 회원 탈퇴 시 관련 법령이 정한 기간을 제외하고 지체 없이 파기합니다.", en:"Article 3 (Retention Period) Upon withdrawal, information is destroyed without delay except as required by applicable law.", id:"Pasal 3 (Masa Penyimpanan) Saat keluar keanggotaan, data akan dihapus segera kecuali diwajibkan oleh peraturan yang berlaku.", zh:"第三条（保存期限）会员注销时，除法律法规另有规定外，将立即销毁相关信息。", ja:"第3条（保管期間）会員退会時、関連法令が定める期間を除き遅滞なく破棄します。" },
+
+  "clause.marketing.1": { ko:"제1조(수신 정보) 신규 기능, 프로모션, 세무·급여 규정 변경 안내 등을 이메일 및 SMS로 발송할 수 있습니다.", en:"Article 1 (Content) The Company may send new feature updates, promotions, and payroll/tax regulation notices via email and SMS.", id:"Pasal 1 (Isi Informasi) Perusahaan dapat mengirimkan pembaruan fitur, promosi, dan info perubahan aturan pajak/penggajian melalui email dan SMS.", zh:"第一条（推送内容）公司可通过邮件及短信发送新功能、促销及税务薪资法规变更通知等信息。", ja:"第1条（配信内容）新機能、プロモーション、税務・給与規定変更のご案内等をメール及びSMSで配信することがあります。" },
+  "clause.marketing.2": { ko:"제2조(수신 동의 철회) 이용자는 언제든지 설정 메뉴 또는 수신 거부 링크를 통해 동의를 철회할 수 있습니다.", en:"Article 2 (Withdrawal of Consent) Users may withdraw consent at any time via settings or the unsubscribe link.", id:"Pasal 2 (Penarikan Persetujuan) Pengguna dapat menarik persetujuan kapan saja melalui menu pengaturan atau tautan berhenti berlangganan.", zh:"第二条（撤回同意）用户可随时通过设置菜单或退订链接撤回同意。", ja:"第2条（同意の撤回）利用者はいつでも設定メニューまたは配信停止リンクから同意を撤回できます。" },
+
+  "done.title": { ko:"가입 신청이 완료되었습니다", en:"Your application has been submitted", id:"Pendaftaran Anda telah berhasil dikirim", zh:"注册申请已完成", ja:"お申し込みが完了しました" },
+  "done.desc": { ko:"입력하신 이메일로 인증 링크를 발송했습니다. 인증 후 GajiOne 운영팀 승인을 거쳐 계정이 활성화됩니다 (영업일 기준 1일 이내).", en:"We've sent a verification link to your email. Once verified, your account will be activated after approval by the GajiOne operations team (within 1 business day).", id:"Kami telah mengirimkan tautan verifikasi ke email Anda. Setelah verifikasi, akun Anda akan diaktifkan setelah disetujui oleh tim operasional GajiOne (dalam 1 hari kerja).", zh:"验证链接已发送至您的邮箱。验证后，账户将经 GajiOne 运营团队审核批准后激活（1个工作日内）。", ja:"ご入力いただいたメールアドレスに認証リンクを送信しました。認証後、GajiOne運営チームの承認を経てアカウントが有効化されます（営業日基準1日以内）。" },
+  "done.toLogin": { ko:"로그인 화면으로", en:"Go to Login", id:"Kembali ke Halaman Masuk", zh:"返回登录页面", ja:"ログイン画面へ" },
+
+  "forgot.title": { ko:"비밀번호 찾기", en:"Forgot Password", id:"Lupa Kata Sandi", zh:"找回密码", ja:"パスワードをお忘れの方" },
+  "forgot.step1.title": { ko:"1. 재설정 링크 요청", en:"1. Request Reset Link", id:"1. Minta Tautan Reset", zh:"1. 请求重置链接", ja:"1. リセットリンクをリクエスト" },
+  "forgot.email.label": { ko:"가입한 이메일 주소", en:"Registered Email Address", id:"Alamat Email Terdaftar", zh:"注册邮箱地址", ja:"登録済みメールアドレス" },
+  "forgot.email.placeholder": { ko:"admin@perusahaan-anda.co.id", en:"admin@your-company.co.id", id:"admin@perusahaan-anda.co.id", zh:"admin@perusahaan-anda.co.id", ja:"admin@perusahaan-anda.co.id" },
+  "forgot.submit": { ko:"재설정 링크 받기", en:"Send Reset Link", id:"Kirim Tautan Reset", zh:"获取重置链接", ja:"リセットリンクを受け取る" },
+  "forgot.sentDesc": { ko:"입력하신 이메일로 재설정 링크를 보냈습니다. 받은편지함(또는 스팸함)을 확인해 주세요.", en:"We've sent a reset link to your email. Please check your inbox (or spam folder).", id:"Kami telah mengirimkan tautan reset ke email Anda. Silakan periksa kotak masuk (atau folder spam).", zh:"重置链接已发送至您的邮箱，请查收（或检查垃圾邮件文件夹）。", ja:"ご入力いただいたメールアドレスにリセットリンクを送信しました。受信トレイ（迷惑メールフォルダ含む）をご確認ください。" },
+  "forgot.resendTimer": { ko:"재전송 가능까지 00:47", en:"Resend available in 00:47", id:"Kirim ulang tersedia dalam 00:47", zh:"00:47 后可重新发送", ja:"再送信まで 00:47" },
+  "forgot.step2.title": { ko:"2. 새 비밀번호 설정", en:"2. Set New Password", id:"2. Atur Kata Sandi Baru", zh:"2. 设置新密码", ja:"2. 新しいパスワードの設定" },
+  "forgot.newPassword.label": { ko:"새 비밀번호", en:"New Password", id:"Kata Sandi Baru", zh:"新密码", ja:"新しいパスワード" },
+  "forgot.newPassword.placeholder": { ko:"영문, 숫자 포함 8자 이상", en:"At least 8 characters, letters + numbers", id:"Minimal 8 karakter, huruf & angka", zh:"至少8位，含字母和数字", ja:"英数字含む8文字以上" },
+  "forgot.newPasswordConfirm.label": { ko:"새 비밀번호 확인", en:"Confirm New Password", id:"Konfirmasi Kata Sandi Baru", zh:"确认新密码", ja:"新しいパスワード（確認）" },
+  "forgot.newPasswordConfirm.placeholder": { ko:"새 비밀번호를 다시 입력하세요", en:"Re-enter your new password", id:"Masukkan ulang kata sandi baru Anda", zh:"请再次输入新密码", ja:"新しいパスワードを再入力してください" },
+  "forgot.changeSubmit": { ko:"비밀번호 변경", en:"Change Password", id:"Ubah Kata Sandi", zh:"修改密码", ja:"パスワードを変更" },
+
+  "termsCenter.title": { ko:"서비스 정책 센터", en:"Policy Center", id:"Pusat Kebijakan", zh:"政策中心", ja:"規約センター" },
+  "termsCenter.nav.tos": { ko:"이용약관", en:"Terms of Service", id:"Syarat & Ketentuan", zh:"服务条款", ja:"利用規約" },
+  "termsCenter.nav.privacy": { ko:"개인정보처리방침", en:"Privacy Policy", id:"Kebijakan Privasi", zh:"隐私政策", ja:"個人情報処理方針" },
+  "termsCenter.nav.dataproc": { ko:"데이터 처리 위탁 계약", en:"Data Processing Agreement", id:"Perjanjian Pemrosesan Data", zh:"数据处理委托协议", ja:"データ処理委託契約" },
+  "termsCenter.nav.efin": { ko:"전자금융거래 이용약관", en:"Electronic Financial Transactions Terms", id:"Syarat Transaksi Keuangan Elektronik", zh:"电子金融交易使用条款", ja:"電子金融取引利用規約" },
+  "termsCenter.meta.revised": { ko:"최종 개정일", en:"Last revised", id:"Terakhir direvisi", zh:"最后修订日", ja:"最終改定日" },
+  "termsCenter.download": { ko:"PDF 다운로드", en:"Download PDF", id:"Unduh PDF", zh:"下载 PDF", ja:"PDFをダウンロード" },
+
+  "termsCenter.doc.tos.title": { ko:"GajiOne 이용약관", en:"GajiOne Terms of Service", id:"Syarat & Ketentuan GajiOne", zh:"GajiOne 服务条款", ja:"GajiOne利用規約" },
+  "termsCenter.doc.tos.p1": { ko:"제1조(목적) 본 약관은 GajiOne 서비스(이하 \"서비스\")의 이용 조건 및 절차, 회사와 이용자의 권리·의무를 규정합니다.", en:"Article 1 (Purpose) These Terms govern the conditions and procedures for using the GajiOne service (the \"Service\") and the rights and obligations of the Company and users.", id:"Pasal 1 (Tujuan) Syarat ini mengatur ketentuan dan prosedur penggunaan layanan GajiOne (\"Layanan\"), serta hak dan kewajiban Perusahaan dan pengguna.", zh:"第一条（目的）本条款规定 GajiOne 服务（以下简称\"服务\"）的使用条件及程序，以及公司与用户的权利义务。", ja:"第1条（目的）本規約はGajiOneサービス（以下「サービス」）の利用条件及び手続き、会社と利用者の権利義務を定めます。" },
+  "termsCenter.doc.tos.p2": { ko:"제2조(용어의 정의) \"이용자\"란 본 약관에 따라 서비스를 이용하는 고객사 및 그 소속 담당자를 말합니다.", en:"Article 2 (Definitions) \"User\" refers to the client company and its personnel using the Service under these Terms.", id:"Pasal 2 (Definisi) \"Pengguna\" berarti perusahaan klien dan personelnya yang menggunakan Layanan berdasarkan Syarat ini.", zh:"第二条（术语定义）\"用户\"是指依据本条款使用服务的客户企业及其所属负责人。", ja:"第2条（用語の定義）「利用者」とは本規約に基づきサービスを利用する顧客企業及びその所属担当者をいいます。" },
+  "termsCenter.doc.tos.p3": { ko:"제3조(약관의 효력 및 변경) 회사는 관계 법령을 위반하지 않는 범위에서 약관을 개정할 수 있으며, 개정 시 사전 공지합니다.", en:"Article 3 (Effect and Amendment) The Company may amend these Terms within the scope permitted by law and will provide prior notice of any amendment.", id:"Pasal 3 (Keberlakuan dan Perubahan) Perusahaan dapat mengubah Syarat ini sepanjang tidak melanggar peraturan yang berlaku dan akan memberikan pemberitahuan sebelumnya.", zh:"第三条（条款效力及变更）公司可在不违反相关法律法规的范围内修订本条款，修订时将提前公告。", ja:"第3条（規約の効力及び変更）会社は関係法令に違反しない範囲で規約を改定でき、改定時は事前告知します。" },
+  "termsCenter.doc.tos.p4": { ko:"제4조(서비스 중단) 회사는 시스템 점검, 장애 등 부득이한 사유가 있는 경우 서비스 제공을 일시 중단할 수 있습니다.", en:"Article 4 (Service Suspension) The Company may temporarily suspend the Service in unavoidable cases such as system maintenance or failure.", id:"Pasal 4 (Penghentian Layanan) Perusahaan dapat menghentikan sementara Layanan dalam kondisi tak terhindarkan seperti pemeliharaan sistem atau gangguan.", zh:"第四条（服务中断）如遇系统维护、故障等不可避免情形，公司可暂时中断服务提供。", ja:"第4条（サービス中断）会社はシステム点検、障害等のやむを得ない事由がある場合、サービス提供を一時中断できます。" },
+
+  "termsCenter.doc.privacy.title": { ko:"개인정보처리방침", en:"Privacy Policy", id:"Kebijakan Privasi", zh:"隐私政策", ja:"個人情報処理方針" },
+  "termsCenter.doc.privacy.p1": { ko:"제1조(수집하는 개인정보 항목) 회사는 계정 관리 및 서비스 제공을 위해 담당자 성명, 직책, 이메일, 연락처를 수집합니다.", en:"Article 1 (Items Collected) The Company collects contact name, job title, email, and phone number for account management and service provision.", id:"Pasal 1 (Data yang Dikumpulkan) Perusahaan mengumpulkan nama, jabatan, email, dan nomor telepon untuk manajemen akun dan penyediaan layanan.", zh:"第一条（收集的个人信息项目）公司为账户管理及服务提供，收集负责人姓名、职位、邮箱、联系方式。", ja:"第1条（収集する個人情報項目）会社はアカウント管理及びサービス提供のため、担当者氏名、役職、メールアドレス、連絡先を収集します。" },
+  "termsCenter.doc.privacy.p2": { ko:"제2조(개인정보의 이용) 수집한 정보는 본인 확인, 고객 지원, 공지사항 전달 목적 외에는 사용하지 않습니다.", en:"Article 2 (Use of Information) Collected information is used only for identity verification, customer support, and notices.", id:"Pasal 2 (Penggunaan Informasi) Informasi yang dikumpulkan hanya digunakan untuk verifikasi identitas, dukungan pelanggan, dan pemberitahuan.", zh:"第二条（个人信息使用）所收集信息仅用于身份确认、客户支持及通知传达目的。", ja:"第2条（個人情報の利用）収集した情報は本人確認、顧客サポート、告知事項の伝達目的以外には使用しません。" },
+  "termsCenter.doc.privacy.p3": { ko:"제3조(제3자 제공) 회사는 법령에 특별한 규정이 있는 경우를 제외하고 이용자의 동의 없이 개인정보를 제3자에게 제공하지 않습니다.", en:"Article 3 (Third-Party Disclosure) The Company does not provide personal information to third parties without user consent, except as required by law.", id:"Pasal 3 (Pengungkapan kepada Pihak Ketiga) Perusahaan tidak memberikan informasi pribadi kepada pihak ketiga tanpa persetujuan pengguna, kecuali diwajibkan oleh hukum.", zh:"第三条（向第三方提供）除法律法规另有规定外，公司不会在未经用户同意的情况下向第三方提供个人信息。", ja:"第3条（第三者提供）会社は法令に特別な規定がある場合を除き、利用者の同意なく個人情報を第三者に提供しません。" },
+  "termsCenter.doc.privacy.p4": { ko:"제4조(안전성 확보 조치) 회사는 개인정보 보호를 위해 접근 권한 관리, 암호화 등 합리적인 보안 조치를 시행합니다.", en:"Article 4 (Security Measures) The Company implements reasonable security measures such as access control and encryption to protect personal information.", id:"Pasal 4 (Langkah Keamanan) Perusahaan menerapkan langkah keamanan yang wajar seperti kontrol akses dan enkripsi untuk melindungi informasi pribadi.", zh:"第四条（安全保障措施）公司为保护个人信息，实施访问权限管理、加密等合理的安全措施。", ja:"第4条（安全性確保措置）会社は個人情報保護のためアクセス権限管理、暗号化等の合理的なセキュリティ措置を実施します。" },
+
+  "termsCenter.doc.dataproc.title": { ko:"데이터 처리 위탁 계약", en:"Data Processing Agreement", id:"Perjanjian Pemrosesan Data", zh:"数据处理委托协议", ja:"データ処理委託契約" },
+  "termsCenter.doc.dataproc.p1": { ko:"제1조(위탁 업무의 범위) 고객사는 급여 계산 및 근태 관리에 필요한 임직원 데이터의 처리를 회사에 위탁합니다.", en:"Article 1 (Scope of Entrustment) The client entrusts the Company with processing employee data required for payroll calculation and attendance management.", id:"Pasal 1 (Ruang Lingkup Pendelegasian) Klien mendelegasikan pemrosesan data karyawan yang diperlukan untuk perhitungan gaji dan manajemen kehadiran kepada Perusahaan.", zh:"第一条（受托业务范围）客户企业委托公司处理薪资计算及考勤管理所需的员工数据。", ja:"第1条（委託業務の範囲）顧客企業は給与計算及び勤怠管理に必要な従業員データの処理を会社に委託します。" },
+  "termsCenter.doc.dataproc.p2": { ko:"제2조(처리 기간 및 목적) 위탁된 데이터는 계약 기간 동안 급여·세무 처리 목적으로만 사용됩니다.", en:"Article 2 (Processing Period and Purpose) Entrusted data is used solely for payroll and tax processing during the contract period.", id:"Pasal 2 (Periode dan Tujuan Pemrosesan) Data yang didelegasikan hanya digunakan untuk pemrosesan gaji dan pajak selama masa kontrak.", zh:"第二条（处理期限及目的）受托数据仅在合同期内用于薪资、税务处理目的。", ja:"第2条（処理期間及び目的）委託されたデータは契約期間中、給与・税務処理の目的にのみ使用されます。" },
+  "termsCenter.doc.dataproc.p3": { ko:"제3조(재위탁 제한) 회사는 고객사의 사전 서면 동의 없이 위탁받은 업무를 제3자에게 재위탁하지 않습니다.", en:"Article 3 (Restriction on Sub-entrustment) The Company will not sub-entrust the work to a third party without the client's prior written consent.", id:"Pasal 3 (Pembatasan Sub-pendelegasian) Perusahaan tidak akan mendelegasikan ulang pekerjaan kepada pihak ketiga tanpa persetujuan tertulis sebelumnya dari klien.", zh:"第三条（再委托限制）未经客户企业事先书面同意，公司不得将受托业务再委托给第三方。", ja:"第3条（再委託の制限）会社は顧客企業の事前書面同意なく受託業務を第三者に再委託しません。" },
+  "termsCenter.doc.dataproc.p4": { ko:"제4조(계약 종료 시 처리) 계약 종료 시 회사는 위탁받은 데이터를 지체 없이 반환하거나 파기합니다.", en:"Article 4 (Handling at Termination) Upon termination, the Company will promptly return or destroy the entrusted data.", id:"Pasal 4 (Penanganan saat Berakhir) Setelah berakhirnya kontrak, Perusahaan akan segera mengembalikan atau memusnahkan data yang didelegasikan.", zh:"第四条（合同终止时的处理）合同终止时，公司应立即返还或销毁受托数据。", ja:"第4条（契約終了時の処理）契約終了時、会社は委託されたデータを遅滞なく返還または破棄します。" },
+
+  "termsCenter.doc.efin.title": { ko:"전자금융거래 이용약관", en:"Electronic Financial Transactions Terms", id:"Syarat Transaksi Keuangan Elektronik", zh:"电子金融交易使用条款", ja:"電子金融取引利用規約" },
+  "termsCenter.doc.efin.p1": { ko:"제1조(적용 범위) 본 약관은 GajiOne과 연계된 급여성 대출 등 전자금융거래 서비스 이용에 적용됩니다.", en:"Article 1 (Scope) These Terms apply to the use of electronic financial transaction services, such as salary-linked loans, connected with GajiOne.", id:"Pasal 1 (Ruang Lingkup) Syarat ini berlaku untuk penggunaan layanan transaksi keuangan elektronik seperti pinjaman berbasis gaji yang terhubung dengan GajiOne.", zh:"第一条（适用范围）本条款适用于与 GajiOne 关联的薪资类贷款等电子金融交易服务的使用。", ja:"第1条（適用範囲）本規約はGajiOneと連携した給与性ローン等の電子金融取引サービスの利用に適用されます。" },
+  "termsCenter.doc.efin.p2": { ko:"제2조(거래 지시) 이용자는 서비스 내에서 제공하는 절차에 따라 전자적 방법으로 거래를 지시할 수 있습니다.", en:"Article 2 (Transaction Instructions) Users may instruct transactions electronically following the procedures provided within the Service.", id:"Pasal 2 (Instruksi Transaksi) Pengguna dapat memberikan instruksi transaksi secara elektronik sesuai prosedur yang disediakan dalam Layanan.", zh:"第二条（交易指示）用户可依据服务内提供的程序，以电子方式发出交易指示。", ja:"第2条（取引指示）利用者はサービス内で提供される手続きに従い、電子的方法で取引を指示できます。" },
+  "termsCenter.doc.efin.p3": { ko:"제3조(면책 사항) 이용자의 귀책사유로 발생한 손해에 대해서는 관련 법령이 정하는 범위 내에서 회사가 책임을 지지 않습니다.", en:"Article 3 (Disclaimer) The Company is not liable for damages caused by the user's fault, within the scope permitted by applicable law.", id:"Pasal 3 (Penyangkalan) Perusahaan tidak bertanggung jawab atas kerugian yang disebabkan oleh kesalahan pengguna, dalam batas yang diizinkan oleh hukum yang berlaku.", zh:"第三条（免责事项）因用户过错造成的损失，在相关法律法规允许的范围内，公司不承担责任。", ja:"第3条（免責事項）利用者の帰責事由により発生した損害については、関連法令が定める範囲内で会社は責任を負いません。" },
+  "termsCenter.doc.efin.p4": { ko:"본 내용은 일반적인 안내를 위한 것이며 개별 계약의 법률 자문을 대체하지 않습니다.", en:"This content is provided for general guidance and does not substitute for legal advice on individual contracts.", id:"Konten ini disediakan untuk panduan umum dan tidak menggantikan nasihat hukum untuk kontrak individual.", zh:"本内容仅供一般性说明参考，不能替代针对个别合同的法律咨询。", ja:"本内容は一般的なご案内のためのものであり、個別契約の法的助言に代わるものではありません。" }
+};
+
+function applyLang(lang){
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var entry = I18N[el.getAttribute('data-i18n')];
+    if (entry && entry[lang]) el.textContent = entry[lang];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+    var entry = I18N[el.getAttribute('data-i18n-placeholder')];
+    if (entry && entry[lang]) el.setAttribute('placeholder', entry[lang]);
+  });
+  document.documentElement.lang = lang;
+}
+document.getElementById('langSelect').addEventListener('change', function(ev){ applyLang(ev.target.value); });
+applyLang('ko');
+</script>
+
+</body>
+</html>

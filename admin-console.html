@@ -1,0 +1,1103 @@
+<title>GajiOne — 운영 마스터 어드민</title>
+<style>
+  :root{
+    --bg:#eef0f4; --surface:#ffffff; --surface-alt:#f5f6f9; --border:#e1e4ea; --border-soft:#ecedf2;
+    --text:#161a23; --text-muted:#5a5f70; --text-faint:#8b8f9e;
+    --accent:#0f766e; --accent-soft:#e6f4f2; --accent-dim:#bfe3df; --navy:#161a23;
+    --success:#17a34a; --success-soft:#f0f9f3; --warning:#b45309; --warning-soft:#fdf3e2; --danger:#c22a1e; --danger-soft:#fbeae8;
+    --info:#2563eb; --info-soft:#e8eefd;
+    --radius-lg:18px; --radius-md:13px; --radius-sm:9px;
+    --shadow-1:0 1px 2px rgba(0,0,0,.04), 0 8px 24px -12px rgba(0,0,0,.12);
+    --shadow-2:-12px 0 32px rgba(0,0,0,.18);
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef0f4; --surface:#ffffff; --surface-alt:#f5f6f9; --border:#e1e4ea; --border-soft:#ecedf2;
+      --text:#161a23; --text-muted:#5a5f70; --text-faint:#8b8f9e;
+      --accent:#0f766e; --accent-soft:#e6f4f2; --accent-dim:#bfe3df; --navy:#161a23;
+      --success:#17a34a; --success-soft:#f0f9f3; --warning:#b45309; --warning-soft:#fdf3e2; --danger:#c22a1e; --danger-soft:#fbeae8;
+      --info:#2563eb; --info-soft:#e8eefd;
+      --shadow-1:0 1px 2px rgba(0,0,0,.04), 0 8px 24px -12px rgba(0,0,0,.12);
+      --shadow-2:-12px 0 32px rgba(0,0,0,.18);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#eef0f4; --surface:#ffffff; --surface-alt:#f5f6f9; --border:#e1e4ea; --border-soft:#ecedf2;
+    --text:#161a23; --text-muted:#5a5f70; --text-faint:#8b8f9e;
+    --accent:#0f766e; --accent-soft:#e6f4f2; --accent-dim:#bfe3df; --navy:#161a23;
+    --success:#17a34a; --success-soft:#f0f9f3; --warning:#b45309; --warning-soft:#fdf3e2; --danger:#c22a1e; --danger-soft:#fbeae8;
+    --info:#2563eb; --info-soft:#e8eefd;
+    --shadow-1:0 1px 2px rgba(0,0,0,.04), 0 8px 24px -12px rgba(0,0,0,.12);
+    --shadow-2:-12px 0 32px rgba(0,0,0,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0b0f17; --surface:#12161f; --surface-alt:#171c27; --border:#242b3a; --border-soft:#1c222f;
+      --text:#e7eaf2; --text-muted:#9aa1b5; --text-faint:#6b7286;
+      --accent:#2dd4bf; --accent-soft:#0e2b28; --accent-dim:#144742; --navy:#0b0f17;
+      --success:#3fc482; --success-soft:#0f2a1c; --warning:#f0ac4a; --warning-soft:#332711; --danger:#f27164; --danger-soft:#341714;
+      --info:#5b93f5; --info-soft:#16233d;
+      --shadow-1:0 1px 2px rgba(0,0,0,.55), 0 10px 30px -10px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.05);
+      --shadow-2:-12px 0 40px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b0f17; --surface:#12161f; --surface-alt:#171c27; --border:#242b3a; --border-soft:#1c222f;
+    --text:#e7eaf2; --text-muted:#9aa1b5; --text-faint:#6b7286;
+    --accent:#2dd4bf; --accent-soft:#0e2b28; --accent-dim:#144742; --navy:#0b0f17;
+    --success:#3fc482; --success-soft:#0f2a1c; --warning:#f0ac4a; --warning-soft:#332711; --danger:#f27164; --danger-soft:#341714;
+    --info:#5b93f5; --info-soft:#16233d;
+    --shadow-1:0 1px 2px rgba(0,0,0,.55), 0 10px 30px -10px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.05);
+    --shadow-2:-12px 0 40px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI","Malgun Gothic","Noto Sans KR",sans-serif;
+    font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{font-variant-numeric:tabular-nums;}
+  button,input,select{font-family:inherit;}
+  a{color:inherit;}
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:6px;}
+
+  .app{display:flex; min-height:100vh;}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:252px; flex:0 0 252px; background:var(--surface); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; height:100vh; position:sticky; top:0; padding:20px 16px;
+  }
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 6px 18px 6px; border-bottom:1px solid var(--border-soft); margin-bottom:14px;}
+  .brand-badge{
+    width:30px; height:30px; border-radius:9px; background:var(--navy); color:#fff; font-weight:800;
+    display:flex; align-items:center; justify-content:center; font-size:13px; flex:0 0 30px;
+  }
+  .brand-name{font-weight:800; font-size:16px; letter-spacing:-0.01em;}
+  .brand-sub{
+    margin-top:2px; display:inline-block; font-size:10.5px; font-weight:700; color:var(--accent);
+    background:var(--accent-soft); border-radius:6px; padding:2px 6px; letter-spacing:0.01em;
+  }
+
+  .nav-group{margin-bottom:18px;}
+  .nav-group-label{
+    font-size:11px; font-weight:700; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em;
+    padding:0 10px; margin-bottom:6px;
+  }
+  .nav-item{
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left; padding:9px 10px; border-radius:var(--radius-sm);
+    border:none; background:transparent; color:var(--text-muted); font-size:13.5px; font-weight:600; cursor:pointer;
+    margin-bottom:2px;
+  }
+  .nav-item svg{width:17px; height:17px; flex:0 0 17px; opacity:0.85;}
+  .nav-item:hover{background:var(--surface-alt); color:var(--text);}
+  .nav-item.active{background:var(--navy); color:#fff;}
+  :root[data-theme="dark"] .nav-item.active{background:var(--accent); color:#08130f;}
+  @media (prefers-color-scheme: dark){ .nav-item.active{background:var(--accent); color:#08130f;} }
+
+  .sidebar-bottom{margin-top:auto; padding-top:14px; border-top:1px solid var(--border-soft); display:flex; flex-direction:column; gap:8px;}
+  .side-control-row{display:flex; align-items:center; gap:8px;}
+  .side-select, .theme-btn{
+    flex:1; font-size:12.5px; font-weight:600; color:var(--text); background:var(--surface-alt);
+    border:1px solid var(--border); border-radius:var(--radius-sm); padding:7px 8px; cursor:pointer;
+  }
+  .account-row{display:flex; align-items:center; gap:8px; padding:8px 4px 2px 4px;}
+  .account-avatar{
+    width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
+    font-weight:800; font-size:11px; display:flex; align-items:center; justify-content:center; flex:0 0 26px;
+  }
+  .account-text{font-size:11.5px; color:var(--text-muted); line-height:1.35;}
+  .account-text strong{color:var(--text); font-weight:700; display:block; font-size:12px;}
+
+  /* ---------- Main ---------- */
+  .main{flex:1; min-width:0; padding:26px 32px 60px 32px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .header-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-1);
+    padding:22px 24px; margin-bottom:20px;
+  }
+  .header-top{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .header-title-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .header-title{font-size:21px; font-weight:800; letter-spacing:-0.01em;}
+  .pill{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;}
+  .pill-success{background:var(--success-soft); color:var(--success);}
+  .pill-warning{background:var(--warning-soft); color:var(--warning);}
+  .pill::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .header-sub{color:var(--text-muted); font-size:12.5px; margin-top:5px;}
+  .clock-box{text-align:right; flex:0 0 auto;}
+  .clock-time{font-size:19px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .clock-date{font-size:11.5px; color:var(--text-faint); margin-top:1px;}
+
+  .kpi-strip{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:14px; margin-top:20px;}
+  .kpi-item{background:var(--surface-alt); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:12px 14px;}
+  .kpi-label{font-size:11.5px; color:var(--text-muted); font-weight:600;}
+  .kpi-value{font-size:19px; font-weight:800; margin-top:4px; font-variant-numeric:tabular-nums;}
+  .kpi-value.up{color:var(--success);}
+  .kpi-value.down{color:var(--danger);}
+
+  .grid-2{display:grid; grid-template-columns:1.1fr 0.9fr; gap:20px; align-items:start;}
+  @media (max-width:1100px){ .grid-2{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-1);
+    padding:20px 22px; margin-bottom:20px;
+  }
+  .card-title{font-size:15px; font-weight:800; margin-bottom:4px;}
+  .card-sub{font-size:12px; color:var(--text-muted); margin-bottom:16px;}
+
+  .health-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .health-item{background:var(--surface-alt); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:14px;}
+  .health-label{font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:6px;}
+  .health-value{font-size:20px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .health-value.good{color:var(--success);}
+  .health-value.warn{color:var(--warning);}
+
+  .donut-wrap{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .legend{display:flex; flex-direction:column; gap:10px; flex:1; min-width:200px;}
+  .legend-row{display:flex; align-items:center; gap:9px; font-size:12.5px;}
+  .legend-dot{width:10px; height:10px; border-radius:3px; flex:0 0 10px;}
+  .legend-text{flex:1; color:var(--text-muted);}
+  .legend-val{font-weight:800; color:var(--text); font-variant-numeric:tabular-nums;}
+
+  .timeline{display:flex; flex-direction:column; gap:0;}
+  .tl-item{display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border-soft);}
+  .tl-item:last-child{border-bottom:none;}
+  .tl-dot{width:9px; height:9px; border-radius:50%; margin-top:5px; flex:0 0 9px;}
+  .tl-dot.new{background:var(--success);}
+  .tl-dot.churn{background:var(--danger);}
+  .tl-dot.renew{background:var(--accent);}
+  .tl-date{font-size:11px; color:var(--text-faint); font-weight:700; font-variant-numeric:tabular-nums;}
+  .tl-text{font-size:13px; margin-top:2px;}
+  .tl-badge{display:inline-block; font-size:10.5px; font-weight:700; padding:1px 7px; border-radius:999px; margin-left:6px;}
+  .badge-standard{background:var(--info-soft); color:var(--info);}
+  .badge-basic{background:var(--border-soft); color:var(--text-muted);}
+  .badge-pro{background:var(--accent-soft); color:var(--accent);}
+
+  /* ---------- Table ---------- */
+  .table-wrap{overflow-x:auto; border:1px solid var(--border-soft); border-radius:var(--radius-md);}
+  table{border-collapse:collapse; width:100%; min-width:760px;}
+  thead th{
+    text-align:left; font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;
+    letter-spacing:0.03em; background:var(--surface-alt); padding:10px 14px; border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  tbody td{padding:11px 14px; border-bottom:1px solid var(--border-soft); font-size:13px; white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr.data-row{cursor:pointer;}
+  tbody tr.data-row:hover{background:var(--surface-alt);}
+  tbody tr.data-row.row-selected{background:var(--accent-soft);}
+  td.num, th.num{text-align:right; font-variant-numeric:tabular-nums;}
+
+  .status-tag{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px;}
+  .status-tag::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .status-active{background:var(--success-soft); color:var(--success);}
+  .status-trial{background:var(--warning-soft); color:var(--warning);}
+  .status-churn{background:var(--danger-soft); color:var(--danger);}
+  .badge-new{display:inline-block; margin-left:6px; font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:var(--info-soft); color:var(--info);}
+
+  .filters-row{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  .filter-chip{
+    border:1px solid var(--border); background:var(--surface-alt); color:var(--text-muted); font-size:12.5px; font-weight:700;
+    padding:7px 14px; border-radius:999px; cursor:pointer;
+  }
+  .filter-chip.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+  :root[data-theme="dark"] .filter-chip.active{background:var(--accent); color:#08130f; border-color:var(--accent);}
+  @media (prefers-color-scheme: dark){ .filter-chip.active{background:var(--accent); color:#08130f; border-color:var(--accent);} }
+
+  /* ---------- Slideover ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(10,12,18,0.38); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:40;
+  }
+  .overlay.open{opacity:1; pointer-events:auto;}
+  .slideover{
+    position:fixed; top:0; right:-440px; width:420px; height:100vh; background:var(--surface); border-left:1px solid var(--border);
+    box-shadow:var(--shadow-2); transition:right .25s ease; z-index:41; overflow-y:auto; padding:22px 22px 40px 22px;
+  }
+  .slideover.open{right:0;}
+  .slideover-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:4px;}
+  .slideover-title{font-size:17px; font-weight:800;}
+  .slideover-industry{font-size:12px; color:var(--text-muted); margin-top:2px;}
+  .close-btn{
+    border:1px solid var(--border); background:var(--surface-alt); border-radius:8px; width:28px; height:28px; cursor:pointer;
+    color:var(--text-muted); font-size:15px; line-height:1; flex:0 0 28px;
+  }
+  .detail-section{margin-top:20px;}
+  .detail-section-title{font-size:12.5px; font-weight:800; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;}
+  .detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px 14px;}
+  .detail-field-label{font-size:11.5px; color:var(--text-muted);}
+  .detail-field-value{font-size:13px; font-weight:700; margin-top:2px;}
+  .inquiry-item{background:var(--surface-alt); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:9px 11px; font-size:12.5px; margin-bottom:7px;}
+  .spark-row{display:flex; align-items:center; gap:12px; background:var(--surface-alt); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:12px;}
+  .loan-tag{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px;}
+  .loan-yes{background:var(--accent-soft); color:var(--accent);}
+  .loan-no{background:var(--border-soft); color:var(--text-muted);}
+
+  /* ---------- Billing ---------- */
+  .plan-tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .plan-tab{
+    flex:1; text-align:center; padding:10px; border-radius:var(--radius-md); border:1px solid var(--border); background:var(--surface-alt);
+    font-weight:700; font-size:13.5px; cursor:pointer; color:var(--text-muted);
+  }
+  .plan-tab.active{background:var(--accent-soft); border-color:var(--accent-dim); color:var(--accent);}
+  .plan-panel{display:none;}
+  .plan-panel.active{display:block;}
+  .field-row{display:grid; grid-template-columns:200px 1fr; align-items:center; gap:14px; margin-bottom:13px;}
+  .field-label{font-size:13px; font-weight:600; color:var(--text-muted);}
+  .field-input, .select-input{
+    width:100%; padding:9px 11px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface);
+    color:var(--text); font-size:13.5px; font-variant-numeric:tabular-nums;
+  }
+  .tier-list{display:flex; flex-direction:column; gap:8px;}
+  .tier-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .tier-row span{font-size:12.5px; color:var(--text-muted); white-space:nowrap;}
+  .tier-row input{width:90px; padding:7px 9px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface); color:var(--text); font-variant-numeric:tabular-nums;}
+  .btn{
+    border:none; border-radius:var(--radius-sm); font-weight:700; font-size:13px; padding:9px 16px; cursor:pointer;
+  }
+  .btn-primary{background:var(--navy); color:#fff;}
+  :root[data-theme="dark"] .btn-primary{background:var(--accent); color:#08130f;}
+  @media (prefers-color-scheme: dark){ .btn-primary{background:var(--accent); color:#08130f;} }
+  .btn-ghost{background:var(--surface-alt); border:1px solid var(--border); color:var(--text);}
+  .btn-add-tier{background:transparent; border:1px dashed var(--border); color:var(--accent); font-size:12px; font-weight:700; padding:7px 12px; border-radius:var(--radius-sm); cursor:pointer; align-self:flex-start; margin-top:2px;}
+  .save-toast{display:inline-block; margin-left:10px; font-size:12px; font-weight:700; color:var(--success); opacity:0; transition:opacity .3s ease;}
+  .save-toast.show{opacity:1;}
+
+  .billing-controls{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px;}
+  .billing-controls-left{display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;}
+  .export-row{display:flex; gap:8px;}
+  .total-row td{font-weight:800; background:var(--surface-alt); border-top:2px solid var(--border);}
+  .field-hint{font-size:11px; color:var(--text-faint); margin-top:6px;}
+</style>
+
+<div class="app">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">Ga</div>
+      <div>
+        <div class="brand-name">GajiOne</div>
+        <div class="brand-sub" data-i18n="sidebar.subtitle">운영 마스터 어드민 · Internal Only</div>
+      </div>
+    </div>
+
+    <nav class="nav-group">
+      <div class="nav-group-label" data-i18n="nav.group">운영 관리</div>
+      <button class="nav-item active" data-view="view-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span data-i18n="nav.dashboard">운영 대시보드</span>
+      </button>
+      <button class="nav-item" data-view="view-customers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V6a1 1 0 0 1 1-1h7v16"/><path d="M12 21V10h7a1 1 0 0 1 1 1v10"/><path d="M7.5 9h.01M7.5 12h.01M7.5 15h.01M15.5 13h.01M15.5 16h.01"/></svg>
+        <span data-i18n="nav.customers">고객사 관리</span>
+      </button>
+      <button class="nav-item" data-view="view-billing">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19"/><path d="M6 15h4"/></svg>
+        <span data-i18n="nav.billing">요금제 & 빌링</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="side-control-row">
+        <select class="side-select" id="langSelect" aria-label="Language">
+          <option value="ko">한국어</option>
+          <option value="en">English</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+      <div class="side-control-row">
+        <button class="theme-btn" id="themeToggle" type="button" data-i18n="sidebar.themeDark">다크 모드</button>
+      </div>
+      <div class="account-row">
+        <div class="account-avatar">OP</div>
+        <div class="account-text"><strong>ops@gajione.io</strong><span data-i18n="sidebar.team">운영팀</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+
+    <!-- ========== VIEW 1: DASHBOARD ========== -->
+    <section class="view active" id="view-dashboard">
+      <div class="header-card">
+        <div class="header-top">
+          <div>
+            <div class="header-title-row">
+              <span class="header-title" data-i18n="header.dashboard.title">운영 대시보드</span>
+              <span class="pill pill-success" data-i18n="header.dashboard.status">정상 운영중</span>
+            </div>
+            <div class="header-sub" data-i18n="header.dashboard.subtitle">전체 고객사 배치 처리 현황을 실시간으로 모니터링합니다</div>
+          </div>
+          <div class="clock-box">
+            <div class="clock-time num" id="liveClock1">--:--:--</div>
+            <div class="clock-date" id="liveDate1">----.--.--</div>
+          </div>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.activeCustomers">활성 고객사</div><div class="kpi-value num">32개</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.totalEmployees">전체 관리 직원 수</div><div class="kpi-value num">41,280명</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.expectedBilling">이번달 청구 예정 총액</div><div class="kpi-value num">Rp 1.84B</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.mrrGrowth">MRR 성장률</div><div class="kpi-value num up">↑ +6.2%</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.newCustomers">이번달 신규 고객사</div><div class="kpi-value num">3개</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.churn">이탈(해지 예정)</div><div class="kpi-value num down">1개</div></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-title" data-i18n="section.systemHealth">시스템 헬스</div>
+            <div class="card-sub" data-i18n="section.systemHealthSub">이번 차수 급여 배치 처리 현황</div>
+            <div class="health-grid">
+              <div class="health-item">
+                <div class="health-label" data-i18n="health.batchSuccess">배치 성공률</div>
+                <div class="health-value good num">100% <span style="font-size:12px;font-weight:600;color:var(--text-faint);">(32/32)</span></div>
+              </div>
+              <div class="health-item">
+                <div class="health-label" data-i18n="health.avgPayoutTime">평균 급여 지급 처리 시간</div>
+                <div class="health-value num" data-i18n="health.avgPayoutTimeValue">차수 오픈 후 6.2일</div>
+              </div>
+              <div class="health-item">
+                <div class="health-label" data-i18n="health.openTickets">지원 티켓 미해결</div>
+                <div class="health-value warn num">4건</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title" data-i18n="section.recentActivity">최근 가입 / 이탈 현황</div>
+            <div class="card-sub" data-i18n="section.recentActivitySub">최근 4주간 고객사 변동 타임라인</div>
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot new"></div>
+                <div>
+                  <div class="tl-date">08-05</div>
+                  <div class="tl-text"><span data-i18n="tl.new">신규가입</span> PT Sinar Tekstil Abadi (280명)<span class="tl-badge badge-standard">Standard</span></div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot new"></div>
+                <div>
+                  <div class="tl-date">08-01</div>
+                  <div class="tl-text"><span data-i18n="tl.new">신규가입</span> PT Logam Jaya (150명)<span class="tl-badge badge-basic">Basic</span></div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot renew"></div>
+                <div>
+                  <div class="tl-date">07-30</div>
+                  <div class="tl-text"><span data-i18n="tl.renew">연간 갱신</span> PT Otomotif Komponen Indonesia<span class="tl-badge badge-pro">Pro</span></div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot churn"></div>
+                <div>
+                  <div class="tl-date">07-28</div>
+                  <div class="tl-text"><span data-i18n="tl.churn">해지예정</span> PT Cipta Boga (45명, <span data-i18n="tl.churnReason">사유: 내부 시스템 전환</span>)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title" data-i18n="section.revenueBreakdown">이번달 매출 구성</div>
+            <div class="card-sub" data-i18n="section.revenueBreakdownSub">Rp 1,840,000,000 기준</div>
+            <div class="donut-wrap">
+              <svg width="164" height="164" viewBox="0 0 164 164">
+                <circle cx="82" cy="82" r="70" fill="none" stroke="var(--border-soft)" stroke-width="20"/>
+                <circle cx="82" cy="82" r="70" fill="none" stroke="var(--accent)" stroke-width="20"
+                  stroke-dasharray="114.75 439.82" stroke-dashoffset="0" transform="rotate(-90 82 82)"/>
+                <circle cx="82" cy="82" r="70" fill="none" stroke="var(--navy)" stroke-width="20"
+                  stroke-dasharray="308.35 439.82" stroke-dashoffset="-114.75" transform="rotate(-90 82 82)"/>
+                <circle cx="82" cy="82" r="70" fill="none" stroke="var(--warning)" stroke-width="20"
+                  stroke-dasharray="16.72 439.82" stroke-dashoffset="-423.10" transform="rotate(-90 82 82)"/>
+                <text x="82" y="79" text-anchor="middle" font-size="19" font-weight="800" fill="var(--text)">Rp 1.84B</text>
+                <text x="82" y="96" text-anchor="middle" font-size="10.5" fill="var(--text-faint)" data-i18n="chart.totalLabel">이번달 총매출</text>
+              </svg>
+              <div class="legend">
+                <div class="legend-row"><span class="legend-dot" style="background:var(--accent);"></span><span class="legend-text" data-i18n="revenue.baseFee">정액 기본요금</span><span class="legend-val num">Rp 480M</span></div>
+                <div class="legend-row"><span class="legend-dot" style="background:var(--navy);"></span><span class="legend-text" data-i18n="revenue.perEmployeeFee">직원수 연동요금</span><span class="legend-val num">Rp 1,290M</span></div>
+                <div class="legend-row"><span class="legend-dot" style="background:var(--warning);"></span><span class="legend-text" data-i18n="revenue.addOnFee">부가서비스</span><span class="legend-val num">Rp 70M</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== VIEW 2: CUSTOMERS ========== -->
+    <section class="view" id="view-customers">
+      <div class="header-card">
+        <div class="header-top">
+          <div>
+            <div class="header-title-row">
+              <span class="header-title" data-i18n="header.customers.title">고객사 관리</span>
+              <span class="pill pill-success" data-i18n="header.customers.status">데이터 최신</span>
+            </div>
+            <div class="header-sub" data-i18n="header.customers.subtitle">계약 상태, 요금제, 사용 현황을 한눈에 확인합니다</div>
+          </div>
+          <div class="clock-box">
+            <div class="clock-time num" id="liveClock2">--:--:--</div>
+            <div class="clock-date" id="liveDate2">----.--.--</div>
+          </div>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.totalCustomers">전체 고객사</div><div class="kpi-value num">36개</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.activeCustomersOnly">활성</div><div class="kpi-value num">32개</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.trialCount">체험중</div><div class="kpi-value num">3개</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.churnCount">해지예정</div><div class="kpi-value num down">1개</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="filters-row">
+          <button class="filter-chip active" data-filter="all" data-i18n="filter.all">전체</button>
+          <button class="filter-chip" data-filter="active" data-i18n="filter.active">활성</button>
+          <button class="filter-chip" data-filter="trial" data-i18n="filter.trial">체험중</button>
+          <button class="filter-chip" data-filter="churn" data-i18n="filter.churn">해지예정</button>
+        </div>
+        <div class="table-wrap">
+          <table id="customerTable">
+            <thead>
+              <tr>
+                <th data-i18n="th.company">회사명</th>
+                <th data-i18n="th.industry">업종</th>
+                <th class="num" data-i18n="th.employees">직원수</th>
+                <th data-i18n="th.plan">요금제</th>
+                <th class="num" data-i18n="th.monthlyFee">월청구액</th>
+                <th data-i18n="th.status">상태</th>
+                <th data-i18n="th.joinDate">가입일</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="data-row" data-key="karya" data-status="active">
+                <td>PT Karya Metal Presisi</td><td>제조업(금속가공)</td><td class="num">412명</td><td>Pro</td>
+                <td class="num">Rp 28,509,000</td><td><span class="status-tag status-active" data-i18n="status.active">활성</span></td><td class="num">2025-03-12</td>
+              </tr>
+              <tr class="data-row" data-key="sinar" data-status="active">
+                <td>PT Sinar Tekstil Abadi</td><td>제조업(섬유)</td><td class="num">280명</td><td>Standard</td>
+                <td class="num">Rp 17,800,000</td><td><span class="status-tag status-active" data-i18n="status.active">활성</span></td>
+                <td class="num">2026-08-05<span class="badge-new" data-i18n="badge.new">신규</span></td>
+              </tr>
+              <tr class="data-row" data-key="logam" data-status="trial">
+                <td>PT Logam Jaya</td><td>제조업(금속)</td><td class="num">150명</td><td>Basic</td>
+                <td class="num">Rp 14,500,000</td><td><span class="status-tag status-trial" data-i18n="status.trial">체험중</span></td><td class="num">2026-08-01</td>
+              </tr>
+              <tr class="data-row" data-key="cipta" data-status="churn">
+                <td>PT Cipta Boga</td><td>식음료제조</td><td class="num">45명</td><td>Basic</td>
+                <td class="num">Rp 5,100,000</td><td><span class="status-tag status-churn" data-i18n="status.churn">해지예정</span></td><td class="num">2023-11-02</td>
+              </tr>
+              <tr class="data-row" data-key="lintas" data-status="active">
+                <td>PT Lintas Logistik Nusantara</td><td>물류</td><td class="num">620명</td><td>Pro</td>
+                <td class="num">Rp 33,462,000</td><td><span class="status-tag status-active" data-i18n="status.active">활성</span></td><td class="num">2024-06-18</td>
+              </tr>
+              <tr class="data-row" data-key="elektro" data-status="active">
+                <td>PT Elektro Prima Sirkuit</td><td>전자조립</td><td class="num">335명</td><td>Standard</td>
+                <td class="num">Rp 20,825,000</td><td><span class="status-tag status-active" data-i18n="status.active">활성</span></td><td class="num">2024-09-24</td>
+              </tr>
+              <tr class="data-row" data-key="otomotif" data-status="active">
+                <td>PT Otomotif Komponen Indonesia</td><td>자동차부품</td><td class="num">890명</td><td>Pro</td>
+                <td class="num">Rp 42,939,000</td><td><span class="status-tag status-active" data-i18n="status.active">활성</span></td><td class="num">2023-05-02</td>
+              </tr>
+              <tr class="data-row" data-key="kimia" data-status="active">
+                <td>PT Kimia Warna Abadi</td><td>화학/도료제조</td><td class="num">96명</td><td>Basic</td>
+                <td class="num">Rp 7,900,000</td><td><span class="status-tag status-active" data-i18n="status.active">활성</span></td><td class="num">2025-01-20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== VIEW 3: BILLING ========== -->
+    <section class="view" id="view-billing">
+      <div class="header-card">
+        <div class="header-top">
+          <div>
+            <div class="header-title-row">
+              <span class="header-title" data-i18n="header.billing.title">요금제 & 빌링</span>
+              <span class="pill pill-warning" data-i18n="header.billing.status">청구 마감 D-3</span>
+            </div>
+            <div class="header-sub" data-i18n="header.billing.subtitle">플랜별 요금 정책을 관리하고 월 청구 자료를 생성합니다</div>
+          </div>
+          <div class="clock-box">
+            <div class="clock-time num" id="liveClock3">--:--:--</div>
+            <div class="clock-date" id="liveDate3">----.--.--</div>
+          </div>
+        </div>
+        <div class="kpi-strip">
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.expectedTotal">이번달 예상 청구 총액</div><div class="kpi-value num">Rp 1.84B</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.arpu">고객사 평균 ARPU</div><div class="kpi-value num">Rp 51.1M</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.annualPrepay">연간 선결제 고객사</div><div class="kpi-value num">9개</div></div>
+          <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.planMixPro">Pro 플랜 비중</div><div class="kpi-value num">41%</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" data-i18n="billing.planConfig">요금제 설정</div>
+        <div class="card-sub" data-i18n="billing.planConfigSub">플랜별 기본요금, 인당요금, 볼륨 할인 구간을 설정합니다</div>
+
+        <div class="plan-tabs">
+          <button class="plan-tab active" data-plan="basic">Basic</button>
+          <button class="plan-tab" data-plan="standard">Standard</button>
+          <button class="plan-tab" data-plan="pro">Pro</button>
+        </div>
+
+        <!-- BASIC -->
+        <div class="plan-panel active" id="panel-basic">
+          <div class="field-row">
+            <label class="field-label" for="basicBaseFee" data-i18n="billing.baseFee">정액 기본요금 (Rp)</label>
+            <input class="field-input num" id="basicBaseFee" type="text" placeholder="3,000,000">
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="basicPerEmp" data-i18n="billing.perEmployeeFee">직원 1인당 월 요금 (Rp)</label>
+            <input class="field-input num" id="basicPerEmp" type="text" placeholder="25,000">
+          </div>
+          <div class="field-row">
+            <div class="field-label" data-i18n="billing.volumeDiscount">볼륨 할인 구간</div>
+            <div>
+              <div class="tier-list" id="tierListBasic">
+                <div class="tier-row"><span data-i18n="billing.tierOver">기준 인원 초과</span><input class="tier-threshold" type="number" value="300" aria-label="Basic 플랜 1구간 인원 기준"><span data-i18n="billing.tierPeople">명 초과 시</span><input class="tier-discount" type="number" value="-5" aria-label="Basic 플랜 1구간 할인율 %"><span>%</span></div>
+                <div class="tier-row"><span data-i18n="billing.tierOver">기준 인원 초과</span><input class="tier-threshold" type="number" value="500" aria-label="Basic 플랜 2구간 인원 기준"><span data-i18n="billing.tierPeople">명 초과 시</span><input class="tier-discount" type="number" value="-10" aria-label="Basic 플랜 2구간 할인율 %"><span>%</span></div>
+              </div>
+              <button class="btn-add-tier" data-plan="basic" data-i18n="billing.addTier">+ 구간 추가</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="basicAnnual" data-i18n="billing.annualDiscount">연간 선결제 할인율 (%)</label>
+            <input class="field-input num" id="basicAnnual" type="text" placeholder="8">
+          </div>
+        </div>
+
+        <!-- STANDARD -->
+        <div class="plan-panel" id="panel-standard">
+          <div class="field-row">
+            <label class="field-label" for="standardBaseFee" data-i18n="billing.baseFee">정액 기본요금 (Rp)</label>
+            <input class="field-input num" id="standardBaseFee" type="text" placeholder="8,000,000">
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="standardPerEmp" data-i18n="billing.perEmployeeFee">직원 1인당 월 요금 (Rp)</label>
+            <input class="field-input num" id="standardPerEmp" type="text" placeholder="35,000">
+          </div>
+          <div class="field-row">
+            <div class="field-label" data-i18n="billing.volumeDiscount">볼륨 할인 구간</div>
+            <div>
+              <div class="tier-list" id="tierListStandard">
+                <div class="tier-row"><span data-i18n="billing.tierOver">기준 인원 초과</span><input class="tier-threshold" type="number" value="300" aria-label="Standard 플랜 1구간 인원 기준"><span data-i18n="billing.tierPeople">명 초과 시</span><input class="tier-discount" type="number" value="-8" aria-label="Standard 플랜 1구간 할인율 %"><span>%</span></div>
+                <div class="tier-row"><span data-i18n="billing.tierOver">기준 인원 초과</span><input class="tier-threshold" type="number" value="500" aria-label="Standard 플랜 2구간 인원 기준"><span data-i18n="billing.tierPeople">명 초과 시</span><input class="tier-discount" type="number" value="-15" aria-label="Standard 플랜 2구간 할인율 %"><span>%</span></div>
+              </div>
+              <button class="btn-add-tier" data-plan="standard" data-i18n="billing.addTier">+ 구간 추가</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="standardAnnual" data-i18n="billing.annualDiscount">연간 선결제 할인율 (%)</label>
+            <input class="field-input num" id="standardAnnual" type="text" placeholder="10">
+          </div>
+        </div>
+
+        <!-- PRO -->
+        <div class="plan-panel" id="panel-pro">
+          <div class="field-row">
+            <label class="field-label" for="proBaseFee" data-i18n="billing.baseFee">정액 기본요금 (Rp)</label>
+            <input class="field-input num" id="proBaseFee" type="text" placeholder="15,000,000">
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="proPerEmp" data-i18n="billing.perEmployeeFee">직원 1인당 월 요금 (Rp)</label>
+            <input class="field-input num" id="proPerEmp" type="text" placeholder="45,000">
+          </div>
+          <div class="field-row">
+            <div class="field-label" data-i18n="billing.volumeDiscount">볼륨 할인 구간</div>
+            <div>
+              <div class="tier-list" id="tierListPro">
+                <div class="tier-row"><span data-i18n="billing.tierOver">기준 인원 초과</span><input class="tier-threshold" type="number" value="300" aria-label="Pro 플랜 1구간 인원 기준"><span data-i18n="billing.tierPeople">명 초과 시</span><input class="tier-discount" type="number" value="-15" aria-label="Pro 플랜 1구간 할인율 %"><span>%</span></div>
+                <div class="tier-row"><span data-i18n="billing.tierOver">기준 인원 초과</span><input class="tier-threshold" type="number" value="600" aria-label="Pro 플랜 2구간 인원 기준"><span data-i18n="billing.tierPeople">명 초과 시</span><input class="tier-discount" type="number" value="-22" aria-label="Pro 플랜 2구간 할인율 %"><span>%</span></div>
+              </div>
+              <button class="btn-add-tier" data-plan="pro" data-i18n="billing.addTier">+ 구간 추가</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="proAnnual" data-i18n="billing.annualDiscount">연간 선결제 할인율 (%)</label>
+            <input class="field-input num" id="proAnnual" type="text" placeholder="12">
+          </div>
+        </div>
+
+        <div style="margin-top:6px;">
+          <button class="btn btn-primary" id="savePlanBtn" data-i18n="btn.save">저장</button>
+          <span class="save-toast" id="saveToast" data-i18n="billing.saved">✓ 저장되었습니다</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="billing-controls">
+          <div class="billing-controls-left">
+            <div>
+              <label class="field-label" style="margin-bottom:6px;" for="billingMonth" data-i18n="billing.billingMonth">청구월 선택</label>
+              <select class="select-input" id="billingMonth" style="width:160px;">
+                <option value="2026-08" selected>2026-08</option>
+                <option value="2026-07">2026-07</option>
+                <option value="2026-06">2026-06</option>
+              </select>
+              <div class="field-hint" data-i18n="billing.monthNote">현재 요금제 설정 기준 실시간 계산 — 과거 월 데이터 조회는 추후 지원 예정</div>
+            </div>
+            <button class="btn btn-primary" id="generateBillingBtn" data-i18n="billing.generateBtn">빌링 생성</button>
+          </div>
+          <div class="export-row">
+            <button class="btn btn-ghost" data-i18n="btn.exportPdf">인보이스 내보내기 (PDF)</button>
+            <button class="btn btn-ghost" data-i18n="btn.exportExcel">Excel로 내보내기</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="billingTable">
+            <thead>
+              <tr>
+                <th data-i18n="billing.th.company">고객사</th>
+                <th class="num" data-i18n="billing.th.employees">직원수</th>
+                <th class="num" data-i18n="billing.th.baseFee">기본요금</th>
+                <th class="num" data-i18n="billing.th.employeeFee">직원수요금</th>
+                <th class="num" data-i18n="billing.th.discount">할인</th>
+                <th class="num" data-i18n="billing.th.total">합계</th>
+              </tr>
+            </thead>
+            <tbody id="billingTableBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:22px;" data-i18n="billing.emptyState">청구월을 선택하고 "빌링 생성" 버튼을 눌러주세요</td></tr>
+            </tbody>
+            <tfoot id="billingTableFoot"></tfoot>
+          </table>
+        </div>
+        <div class="field-hint" data-i18n="billing.previewNote">※ 위 요금제 설정값을 기준으로 실시간 계산되는 미리보기이며, 실제 청구서 발행 전 검토가 필요합니다.</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= SLIDEOVER (customer detail) ================= -->
+<div class="overlay" id="overlay"></div>
+<aside class="slideover" id="slideover">
+  <div class="slideover-head">
+    <div>
+      <div class="slideover-title" id="detailName">-</div>
+      <div class="slideover-industry" id="detailIndustry">-</div>
+    </div>
+    <button class="close-btn" id="closeDetail" aria-label="close">✕</button>
+  </div>
+
+  <div class="detail-section">
+    <div class="detail-section-title" data-i18n="detail.contractInfo">계약 정보</div>
+    <div class="detail-grid">
+      <div><div class="detail-field-label" data-i18n="detail.contractStart">계약 시작일</div><div class="detail-field-value" id="detailStart">-</div></div>
+      <div><div class="detail-field-label" data-i18n="detail.renewalDate">갱신일</div><div class="detail-field-value" id="detailRenewal">-</div></div>
+      <div><div class="detail-field-label" data-i18n="detail.csManager">담당 CS</div><div class="detail-field-value" id="detailCs">-</div></div>
+      <div><div class="detail-field-label" data-i18n="detail.loanLinkage">대출 연동 사용</div><div class="detail-field-value" id="detailLoan">-</div></div>
+    </div>
+  </div>
+
+  <div class="detail-section">
+    <div class="detail-section-title" data-i18n="detail.recentInquiries">최근 문의 이력</div>
+    <div id="detailInquiries"></div>
+  </div>
+
+  <div class="detail-section">
+    <div class="detail-section-title" data-i18n="detail.usage">사용 현황 (최근 6개월 직원수 추이)</div>
+    <div class="spark-row">
+      <svg id="detailSpark" width="160" height="40" viewBox="0 0 160 40"></svg>
+      <div>
+        <div class="detail-field-label" data-i18n="detail.employeeTrend">최근 직원수</div>
+        <div class="detail-field-value" id="detailLatest">-</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+/* ===================== NAV SWITCH ===================== */
+document.querySelectorAll('.nav-item').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    document.getElementById(btn.getAttribute('data-view')).classList.add('active');
+  });
+});
+
+/* ===================== CLOCK ===================== */
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+function tickClock(){
+  var d = new Date();
+  var t = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  var ds = d.getFullYear()+'.'+pad(d.getMonth()+1)+'.'+pad(d.getDate());
+  ['1','2','3'].forEach(function(i){
+    var tEl = document.getElementById('liveClock'+i);
+    var dEl = document.getElementById('liveDate'+i);
+    if(tEl) tEl.textContent = t;
+    if(dEl) dEl.textContent = ds;
+  });
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+/* ===================== THEME TOGGLE ===================== */
+var themeToggle = document.getElementById('themeToggle');
+function currentTheme(){
+  var attr = document.documentElement.getAttribute('data-theme');
+  if(attr) return attr;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function applyThemeLabel(){
+  var t = currentTheme();
+  var key = t === 'dark' ? 'sidebar.themeLight' : 'sidebar.themeDark';
+  var entry = I18N[key];
+  var lang = document.getElementById('langSelect').value;
+  themeToggle.textContent = (entry && entry[lang]) ? entry[lang] : (t === 'dark' ? '라이트 모드' : '다크 모드');
+  themeToggle.setAttribute('data-i18n', key);
+}
+themeToggle.addEventListener('click', function(){
+  var next = currentTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  applyThemeLabel();
+});
+
+/* ===================== CUSTOMER FILTER ===================== */
+document.querySelectorAll('.filter-chip').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+    chip.classList.add('active');
+    var f = chip.getAttribute('data-filter');
+    document.querySelectorAll('#customerTable tbody tr').forEach(function(row){
+      row.style.display = (f === 'all' || row.getAttribute('data-status') === f) ? '' : 'none';
+    });
+  });
+});
+
+/* ===================== CUSTOMER DETAIL SLIDEOVER ===================== */
+var CUSTOMER_DETAILS = {
+  karya:   { name:'PT Karya Metal Presisi', industry:'제조업(금속가공) · Pro 플랜', start:'2025-03-12', renewal:'2026-03-12', cs:'Dewi Anggraini', loan:true,
+    inquiries:['2026-07-22 급여명세서 PDF 일괄 다운로드 오류 문의 (해결완료)','2026-06-03 신규 지점(수라바야) 추가 등록 요청'],
+    trend:[388,395,401,405,409,412] },
+  sinar:   { name:'PT Sinar Tekstil Abadi', industry:'제조업(섬유) · Standard 플랜', start:'2026-08-05', renewal:'2027-08-05', cs:'Rian Pratama', loan:false,
+    inquiries:['2026-08-06 온보딩 데이터 마이그레이션 진행상황 문의'],
+    trend:[260,265,270,272,276,280] },
+  logam:   { name:'PT Logam Jaya', industry:'제조업(금속) · Basic 플랜(체험)', start:'2026-08-01', renewal:'2026-09-01', cs:'Siti Rahayu', loan:false,
+    inquiries:['2026-08-03 무료체험 연장 가능 여부 문의'],
+    trend:[140,142,145,147,149,150] },
+  cipta:   { name:'PT Cipta Boga', industry:'식음료제조 · Basic 플랜', start:'2023-11-02', renewal:'2026-11-02(해지예정)', cs:'Budi Santoso', loan:false,
+    inquiries:['2026-07-28 계약 해지 절차 안내 요청','2026-07-15 자체 ERP 전환에 따른 데이터 이관 문의'],
+    trend:[58,54,50,48,46,45] },
+  lintas:  { name:'PT Lintas Logistik Nusantara', industry:'물류 · Pro 플랜', start:'2024-06-18', renewal:'2026-06-18', cs:'Dewi Anggraini', loan:true,
+    inquiries:['2026-07-30 3교대 근무자 급여 자동계산 룰 수정 요청'],
+    trend:[560,580,595,605,612,620] },
+  elektro: { name:'PT Elektro Prima Sirkuit', industry:'전자조립 · Standard 플랜', start:'2024-09-24', renewal:'2026-09-24', cs:'Rian Pratama', loan:true,
+    inquiries:['2026-07-10 초과근무수당 계산 오류 문의 (해결완료)'],
+    trend:[300,308,315,322,329,335] },
+  otomotif:{ name:'PT Otomotif Komponen Indonesia', industry:'자동차부품 · Pro 플랜(연간선결제)', start:'2023-05-02', renewal:'2027-05-02', cs:'Budi Santoso', loan:true,
+    inquiries:['2026-06-20 협력사 다수 사업장 통합 정산 문의','2026-05-02 연간 선결제 갱신 완료'],
+    trend:[845,858,865,872,881,890] },
+  kimia:   { name:'PT Kimia Warna Abadi', industry:'화학/도료제조 · Basic 플랜', start:'2025-01-20', renewal:'2027-01-20', cs:'Siti Rahayu', loan:false,
+    inquiries:['2026-06-11 위험수당 항목 추가 설정 문의'],
+    trend:[88,90,91,93,94,96] }
+};
+
+var overlay = document.getElementById('overlay');
+var slideover = document.getElementById('slideover');
+
+function buildSparkline(values){
+  var w = 160, h = 40, pad = 4;
+  var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+  var range = (max - min) || 1;
+  var step = (w - pad*2) / (values.length - 1);
+  var pts = values.map(function(v, i){
+    var x = pad + i*step;
+    var y = h - pad - ((v - min) / range) * (h - pad*2);
+    return x.toFixed(1)+','+y.toFixed(1);
+  }).join(' ');
+  var lastX = pad + (values.length-1)*step;
+  var lastY = h - pad - ((values[values.length-1]-min)/range)*(h-pad*2);
+  return '<polyline points="'+pts+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+         '<circle cx="'+lastX.toFixed(1)+'" cy="'+lastY.toFixed(1)+'" r="3" fill="var(--accent)"/>';
+}
+
+function showDetail(key){
+  var d = CUSTOMER_DETAILS[key];
+  if(!d) return;
+  document.getElementById('detailName').textContent = d.name;
+  document.getElementById('detailIndustry').textContent = d.industry;
+  document.getElementById('detailStart').textContent = d.start;
+  document.getElementById('detailRenewal').textContent = d.renewal;
+  document.getElementById('detailCs').textContent = d.cs;
+  var lang = document.getElementById('langSelect').value;
+  var yesEntry = I18N['detail.yes'], noEntry = I18N['detail.no'];
+  var loanLabel = d.loan ? (yesEntry[lang] || '사용') : (noEntry[lang] || '미사용');
+  document.getElementById('detailLoan').innerHTML = '<span class="loan-tag '+(d.loan?'loan-yes':'loan-no')+'">'+loanLabel+'</span>';
+  document.getElementById('detailInquiries').innerHTML = d.inquiries.map(function(t){ return '<div class="inquiry-item">'+t+'</div>'; }).join('');
+  document.getElementById('detailSpark').innerHTML = buildSparkline(d.trend);
+  document.getElementById('detailLatest').textContent = d.trend[d.trend.length-1].toLocaleString('en-US') + '명';
+
+  document.querySelectorAll('#customerTable tbody tr').forEach(function(r){ r.classList.remove('row-selected'); });
+  var row = document.querySelector('#customerTable tbody tr[data-key="'+key+'"]');
+  if(row) row.classList.add('row-selected');
+
+  overlay.classList.add('open');
+  slideover.classList.add('open');
+}
+function closeDetail(){
+  overlay.classList.remove('open');
+  slideover.classList.remove('open');
+  document.querySelectorAll('#customerTable tbody tr').forEach(function(r){ r.classList.remove('row-selected'); });
+}
+document.querySelectorAll('#customerTable tbody tr.data-row').forEach(function(row){
+  row.addEventListener('click', function(){ showDetail(row.getAttribute('data-key')); });
+});
+document.getElementById('closeDetail').addEventListener('click', closeDetail);
+overlay.addEventListener('click', closeDetail);
+
+/* ===================== BILLING: PLAN TABS ===================== */
+document.querySelectorAll('.plan-tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.plan-tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelectorAll('.plan-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('panel-'+tab.getAttribute('data-plan')).classList.add('active');
+  });
+});
+
+/* ===================== BILLING: ADD TIER ===================== */
+document.querySelectorAll('.btn-add-tier').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var plan = btn.getAttribute('data-plan');
+    var cap = plan.charAt(0).toUpperCase()+plan.slice(1);
+    var list = document.getElementById('tierList'+cap);
+    var row = document.createElement('div');
+    row.className = 'tier-row';
+    var overText = (I18N['billing.tierOver'][document.getElementById('langSelect').value]) || '기준 인원 초과';
+    var peopleText = (I18N['billing.tierPeople'][document.getElementById('langSelect').value]) || '명 초과 시';
+    row.innerHTML = '<span>'+overText+'</span><input class="tier-threshold" type="number" value="0">' +
+                     '<span>'+peopleText+'</span><input class="tier-discount" type="number" value="0"><span>%</span>';
+    list.appendChild(row);
+  });
+});
+
+/* ===================== BILLING: SAVE PLAN ===================== */
+document.getElementById('savePlanBtn').addEventListener('click', function(){
+  var toast = document.getElementById('saveToast');
+  toast.classList.add('show');
+  setTimeout(function(){ toast.classList.remove('show'); }, 1800);
+});
+
+/* ===================== BILLING: GENERATE ===================== */
+function parseNum(str){
+  if(!str) return 0;
+  return parseFloat(String(str).replace(/,/g,'')) || 0;
+}
+function fieldValue(id){
+  var el = document.getElementById(id);
+  return el.value ? el.value : el.getAttribute('placeholder');
+}
+function getConfigFor(plan){
+  var idMap = { basic:['basicBaseFee','basicPerEmp'], standard:['standardBaseFee','standardPerEmp'], pro:['proBaseFee','proPerEmp'] };
+  var ids = idMap[plan];
+  var base = parseNum(fieldValue(ids[0]));
+  var perEmp = parseNum(fieldValue(ids[1]));
+  var capMap = { basic:'Basic', standard:'Standard', pro:'Pro' };
+  var tierRows = document.querySelectorAll('#tierList'+capMap[plan]+' .tier-row');
+  var tiers = [];
+  tierRows.forEach(function(row){
+    var th = parseNum(row.querySelector('.tier-threshold').value);
+    var disc = parseNum(row.querySelector('.tier-discount').value);
+    tiers.push({ threshold: th, discount: disc });
+  });
+  tiers.sort(function(a,b){ return a.threshold - b.threshold; });
+  return { base: base, perEmp: perEmp, tiers: tiers };
+}
+function resolveDiscountPct(tiers, employees){
+  // pick the tier with the largest threshold that employee count exceeds
+  var applicable = tiers.filter(function(t){ return employees > t.threshold; });
+  if(applicable.length === 0) return 0;
+  applicable.sort(function(a,b){ return b.threshold - a.threshold; });
+  return applicable[0].discount;
+}
+function fmt(n){ return n.toLocaleString('en-US'); }
+
+var BILLING_CUSTOMERS = [
+  { name:'PT Karya Metal Presisi', plan:'pro', employees:412 },
+  { name:'PT Lintas Logistik Nusantara', plan:'pro', employees:620 },
+  { name:'PT Sinar Tekstil Abadi', plan:'standard', employees:280 },
+  { name:'PT Otomotif Komponen Indonesia', plan:'pro', employees:890 }
+];
+
+document.getElementById('generateBillingBtn').addEventListener('click', function(){
+  var cfgBasic = getConfigFor('basic');
+  var cfgStandard = getConfigFor('standard');
+  var cfgPro = getConfigFor('pro');
+  var cfgMap = { basic:cfgBasic, standard:cfgStandard, pro:cfgPro };
+
+  var tbody = document.getElementById('billingTableBody');
+  var tfoot = document.getElementById('billingTableFoot');
+  var rowsHtml = '';
+  var grandTotal = 0;
+
+  BILLING_CUSTOMERS.forEach(function(c){
+    var cfg = cfgMap[c.plan];
+    var empFee = c.employees * cfg.perEmp;
+    var subtotal = cfg.base + empFee;
+    var discountPct = resolveDiscountPct(cfg.tiers, c.employees);
+    var total = subtotal * (1 + discountPct/100);
+    grandTotal += total;
+    var discountLabel = discountPct !== 0 ? (discountPct+'%') : '—';
+    rowsHtml += '<tr>' +
+      '<td>'+c.name+'</td>' +
+      '<td class="num">'+c.employees.toLocaleString('en-US')+'명</td>' +
+      '<td class="num">Rp '+fmt(cfg.base)+'</td>' +
+      '<td class="num">Rp '+fmt(empFee)+'</td>' +
+      '<td class="num">'+discountLabel+'</td>' +
+      '<td class="num">Rp '+fmt(Math.round(total))+'</td>' +
+    '</tr>';
+  });
+  tbody.innerHTML = rowsHtml;
+
+  var totalLabelEntry = I18N['billing.totalLabel'];
+  var lang = document.getElementById('langSelect').value;
+  var totalLabel = (totalLabelEntry && totalLabelEntry[lang]) ? totalLabelEntry[lang] : '이번달 청구 총액 (미리보기 대상 4개사)';
+  tfoot.innerHTML = '<tr class="total-row"><td colspan="5">'+totalLabel+'</td><td class="num">Rp '+fmt(Math.round(grandTotal))+'</td></tr>';
+});
+
+/* ===================== I18N ===================== */
+var I18N = {
+  "nav.group": {ko:"운영 관리", en:"Operations", id:"Operasional", zh:"运营管理", ja:"運用管理"},
+  "nav.dashboard": {ko:"운영 대시보드", en:"Operations Dashboard", id:"Dasbor Operasional", zh:"运营仪表盘", ja:"運用ダッシュボード"},
+  "nav.customers": {ko:"고객사 관리", en:"Customer Accounts", id:"Manajemen Klien", zh:"客户公司管理", ja:"顧客企業管理"},
+  "nav.billing": {ko:"요금제 & 빌링", en:"Plans & Billing", id:"Paket & Tagihan", zh:"套餐与账单", ja:"料金プラン＆請求"},
+
+  "sidebar.subtitle": {ko:"운영 마스터 어드민 · Internal Only", en:"Ops Master Admin · Internal Only", id:"Admin Operasional · Internal Only", zh:"运营主控后台 · Internal Only", ja:"運用マスター管理画面 · Internal Only"},
+  "sidebar.team": {ko:"운영팀", en:"Operations Team", id:"Tim Operasional", zh:"运营团队", ja:"運用チーム"},
+  "sidebar.themeDark": {ko:"다크 모드", en:"Dark Mode", id:"Mode Gelap", zh:"深色模式", ja:"ダークモード"},
+  "sidebar.themeLight": {ko:"라이트 모드", en:"Light Mode", id:"Mode Terang", zh:"浅色模式", ja:"ライトモード"},
+
+  "header.dashboard.title": {ko:"운영 대시보드", en:"Operations Dashboard", id:"Dasbor Operasional", zh:"运营仪表盘", ja:"運用ダッシュボード"},
+  "header.dashboard.status": {ko:"정상 운영중", en:"Systems Normal", id:"Operasional Normal", zh:"运行正常", ja:"正常稼働中"},
+  "header.dashboard.subtitle": {ko:"전체 고객사 배치 처리 현황을 실시간으로 모니터링합니다", en:"Real-time monitoring of payroll batch status across all client companies", id:"Pemantauan real-time status batch penggajian seluruh klien", zh:"实时监控所有客户企业的批量处理情况", ja:"全顧客企業のバッチ処理状況をリアルタイムで監視します"},
+
+  "header.customers.title": {ko:"고객사 관리", en:"Customer Accounts", id:"Manajemen Klien", zh:"客户公司管理", ja:"顧客企業管理"},
+  "header.customers.status": {ko:"데이터 최신", en:"Data Up to Date", id:"Data Terkini", zh:"数据最新", ja:"データ最新"},
+  "header.customers.subtitle": {ko:"계약 상태, 요금제, 사용 현황을 한눈에 확인합니다", en:"View contract status, plans, and usage at a glance", id:"Lihat status kontrak, paket, dan penggunaan sekilas", zh:"一览合同状态、套餐与使用情况", ja:"契約状況・プラン・利用状況を一目で確認します"},
+
+  "header.billing.title": {ko:"요금제 & 빌링", en:"Plans & Billing", id:"Paket & Tagihan", zh:"套餐与账单", ja:"料金プラン＆請求"},
+  "header.billing.status": {ko:"청구 마감 D-3", en:"Billing Due in 3 Days", id:"Tagihan Jatuh Tempo 3 Hari Lagi", zh:"距离账单截止还有3天", ja:"請求締切まであと3日"},
+  "header.billing.subtitle": {ko:"플랜별 요금 정책을 관리하고 월 청구 자료를 생성합니다", en:"Manage per-plan pricing policy and generate monthly billing data", id:"Kelola kebijakan harga per paket dan hasilkan data tagihan bulanan", zh:"管理各套餐定价策略并生成月度账单数据", ja:"プラン別料金ポリシーを管理し月次請求データを生成します"},
+
+  "kpi.activeCustomers": {ko:"활성 고객사", en:"Active Customers", id:"Klien Aktif", zh:"活跃客户公司", ja:"稼働中の顧客企業"},
+  "kpi.totalEmployees": {ko:"전체 관리 직원 수", en:"Total Employees Managed", id:"Total Karyawan Dikelola", zh:"管理员工总数", ja:"管理対象従業員総数"},
+  "kpi.expectedBilling": {ko:"이번달 청구 예정 총액", en:"Expected Billing This Month", id:"Total Tagihan Bulan Ini", zh:"本月预计账单总额", ja:"今月請求予定総額"},
+  "kpi.mrrGrowth": {ko:"MRR 성장률", en:"MRR Growth", id:"Pertumbuhan MRR", zh:"MRR增长率", ja:"MRR成長率"},
+  "kpi.newCustomers": {ko:"이번달 신규 고객사", en:"New Customers This Month", id:"Klien Baru Bulan Ini", zh:"本月新增客户", ja:"今月の新規顧客企業"},
+  "kpi.churn": {ko:"이탈(해지 예정)", en:"Churn (Pending Cancellation)", id:"Churn (Akan Berhenti)", zh:"流失（即将解约）", ja:"解約予定"},
+  "kpi.totalCustomers": {ko:"전체 고객사", en:"Total Customers", id:"Total Klien", zh:"客户公司总数", ja:"全顧客企業数"},
+  "kpi.activeCustomersOnly": {ko:"활성", en:"Active", id:"Aktif", zh:"活跃", ja:"稼働中"},
+  "kpi.trialCount": {ko:"체험중", en:"On Trial", id:"Masa Percobaan", zh:"试用中", ja:"トライアル中"},
+  "kpi.churnCount": {ko:"해지예정", en:"Pending Cancellation", id:"Akan Berhenti", zh:"即将解约", ja:"解約予定"},
+  "kpi.expectedTotal": {ko:"이번달 예상 청구 총액", en:"Expected Total Billing", id:"Estimasi Total Tagihan", zh:"本月预计账单总额", ja:"今月請求予定総額"},
+  "kpi.arpu": {ko:"고객사 평균 ARPU", en:"Average ARPU per Customer", id:"Rata-rata ARPU per Klien", zh:"客户平均ARPU", ja:"顧客あたり平均ARPU"},
+  "kpi.annualPrepay": {ko:"연간 선결제 고객사", en:"Annual Prepay Customers", id:"Klien Prabayar Tahunan", zh:"年付客户数", ja:"年間前払い顧客数"},
+  "kpi.planMixPro": {ko:"Pro 플랜 비중", en:"Pro Plan Share", id:"Porsi Paket Pro", zh:"Pro套餐占比", ja:"Proプラン比率"},
+
+  "section.systemHealth": {ko:"시스템 헬스", en:"System Health", id:"Kesehatan Sistem", zh:"系统健康度", ja:"システムヘルス"},
+  "section.systemHealthSub": {ko:"이번 차수 급여 배치 처리 현황", en:"This cycle's payroll batch processing status", id:"Status proses batch penggajian siklus ini", zh:"本轮薪资批量处理情况", ja:"今回サイクルの給与バッチ処理状況"},
+  "health.batchSuccess": {ko:"배치 성공률", en:"Batch Success Rate", id:"Tingkat Keberhasilan Batch", zh:"批处理成功率", ja:"バッチ成功率"},
+  "health.avgPayoutTime": {ko:"평균 급여 지급 처리 시간", en:"Avg. Payout Processing Time", id:"Rata-rata Waktu Proses Pembayaran", zh:"平均发薪处理时长", ja:"平均給与支給処理時間"},
+  "health.avgPayoutTimeValue": {ko:"차수 오픈 후 6.2일", en:"6.2 days after cycle open", id:"6,2 hari setelah siklus dibuka", zh:"周期开启后6.2天", ja:"サイクル開始後6.2日"},
+  "health.openTickets": {ko:"지원 티켓 미해결", en:"Open Support Tickets", id:"Tiket Dukungan Terbuka", zh:"未解决支持工单", ja:"未解決サポートチケット"},
+
+  "section.recentActivity": {ko:"최근 가입 / 이탈 현황", en:"Recent Signups / Churn", id:"Aktivitas Bergabung / Berhenti Terbaru", zh:"近期新增/流失情况", ja:"最近の加入・解約状況"},
+  "section.recentActivitySub": {ko:"최근 4주간 고객사 변동 타임라인", en:"Customer changes over the past 4 weeks", id:"Lini masa perubahan klien 4 minggu terakhir", zh:"近4周客户变动时间线", ja:"直近4週間の顧客企業変動タイムライン"},
+  "tl.new": {ko:"신규가입", en:"New signup", id:"Bergabung baru", zh:"新签约", ja:"新規加入"},
+  "tl.renew": {ko:"연간 갱신", en:"Annual renewal", id:"Perpanjangan tahunan", zh:"年度续约", ja:"年間更新"},
+  "tl.churn": {ko:"해지예정", en:"Pending cancellation", id:"Akan berhenti", zh:"即将解约", ja:"解約予定"},
+  "tl.churnReason": {ko:"사유: 내부 시스템 전환", en:"Reason: internal system migration", id:"Alasan: migrasi sistem internal", zh:"原因：内部系统切换", ja:"理由：社内システム移行"},
+
+  "section.revenueBreakdown": {ko:"이번달 매출 구성", en:"This Month's Revenue Mix", id:"Komposisi Pendapatan Bulan Ini", zh:"本月营收构成", ja:"今月の売上構成"},
+  "section.revenueBreakdownSub": {ko:"Rp 1,840,000,000 기준", en:"Based on Rp 1,840,000,000", id:"Berdasarkan Rp 1.840.000.000", zh:"以 Rp 1,840,000,000 为基准", ja:"Rp 1,840,000,000 基準"},
+  "chart.totalLabel": {ko:"이번달 총매출", en:"Total Revenue", id:"Total Pendapatan", zh:"本月总营收", ja:"今月総売上"},
+  "revenue.baseFee": {ko:"정액 기본요금", en:"Flat Base Fee", id:"Biaya Dasar Tetap", zh:"固定基础费", ja:"定額基本料金"},
+  "revenue.perEmployeeFee": {ko:"직원수 연동요금", en:"Per-Employee Fee", id:"Biaya per Karyawan", zh:"按人数计费", ja:"従業員数連動料金"},
+  "revenue.addOnFee": {ko:"부가서비스", en:"Add-on Services", id:"Layanan Tambahan", zh:"增值服务", ja:"付加サービス"},
+
+  "filter.all": {ko:"전체", en:"All", id:"Semua", zh:"全部", ja:"すべて"},
+  "filter.active": {ko:"활성", en:"Active", id:"Aktif", zh:"活跃", ja:"稼働中"},
+  "filter.trial": {ko:"체험중", en:"Trial", id:"Percobaan", zh:"试用中", ja:"トライアル中"},
+  "filter.churn": {ko:"해지예정", en:"Pending Cancellation", id:"Akan Berhenti", zh:"即将解约", ja:"解約予定"},
+
+  "th.company": {ko:"회사명", en:"Company", id:"Perusahaan", zh:"公司名称", ja:"会社名"},
+  "th.industry": {ko:"업종", en:"Industry", id:"Industri", zh:"行业", ja:"業種"},
+  "th.employees": {ko:"직원수", en:"Employees", id:"Karyawan", zh:"员工人数", ja:"従業員数"},
+  "th.plan": {ko:"요금제", en:"Plan", id:"Paket", zh:"套餐", ja:"プラン"},
+  "th.monthlyFee": {ko:"월청구액", en:"Monthly Fee", id:"Tagihan Bulanan", zh:"月账单额", ja:"月額請求額"},
+  "th.status": {ko:"상태", en:"Status", id:"Status", zh:"状态", ja:"ステータス"},
+  "th.joinDate": {ko:"가입일", en:"Join Date", id:"Tanggal Bergabung", zh:"加入日期", ja:"加入日"},
+
+  "status.active": {ko:"활성", en:"Active", id:"Aktif", zh:"活跃", ja:"稼働中"},
+  "status.trial": {ko:"체험중", en:"Trial", id:"Percobaan", zh:"试用中", ja:"トライアル中"},
+  "status.churn": {ko:"해지예정", en:"Pending Cancellation", id:"Akan Berhenti", zh:"即将解约", ja:"解約予定"},
+  "badge.new": {ko:"신규", en:"New", id:"Baru", zh:"新", ja:"新規"},
+
+  "detail.contractInfo": {ko:"계약 정보", en:"Contract Information", id:"Informasi Kontrak", zh:"合同信息", ja:"契約情報"},
+  "detail.contractStart": {ko:"계약 시작일", en:"Contract Start", id:"Mulai Kontrak", zh:"合同开始日", ja:"契約開始日"},
+  "detail.renewalDate": {ko:"갱신일", en:"Renewal Date", id:"Tanggal Perpanjangan", zh:"续约日期", ja:"更新日"},
+  "detail.csManager": {ko:"담당 CS", en:"Account Manager", id:"Manajer Akun", zh:"负责客服", ja:"担当CS"},
+  "detail.loanLinkage": {ko:"대출 연동 사용", en:"Loan Integration Usage", id:"Penggunaan Integrasi Pinjaman", zh:"贷款联动使用情况", ja:"融資連携利用状況"},
+  "detail.recentInquiries": {ko:"최근 문의 이력", en:"Recent Inquiries", id:"Riwayat Pertanyaan Terbaru", zh:"最近咨询记录", ja:"最近の問い合わせ履歴"},
+  "detail.usage": {ko:"사용 현황 (최근 6개월 직원수 추이)", en:"Usage (Employee Trend, Last 6 Months)", id:"Penggunaan (Tren Karyawan, 6 Bulan Terakhir)", zh:"使用情况（近6个月员工数趋势）", ja:"利用状況（過去6か月の従業員数推移）"},
+  "detail.employeeTrend": {ko:"최근 직원수", en:"Latest Employee Count", id:"Jumlah Karyawan Terkini", zh:"最新员工数", ja:"直近従業員数"},
+  "detail.yes": {ko:"사용", en:"Yes", id:"Ya", zh:"使用中", ja:"利用あり"},
+  "detail.no": {ko:"미사용", en:"No", id:"Tidak", zh:"未使用", ja:"利用なし"},
+
+  "billing.planConfig": {ko:"요금제 설정", en:"Plan Configuration", id:"Konfigurasi Paket", zh:"套餐设置", ja:"料金プラン設定"},
+  "billing.planConfigSub": {ko:"플랜별 기본요금, 인당요금, 볼륨 할인 구간을 설정합니다", en:"Configure base fee, per-employee fee, and volume discount tiers per plan", id:"Atur biaya dasar, biaya per karyawan, dan tingkat diskon volume per paket", zh:"设置各套餐的基础费、人均费用及批量折扣区间", ja:"プランごとの基本料金・従業員単価・ボリューム割引区分を設定します"},
+  "billing.baseFee": {ko:"정액 기본요금 (Rp)", en:"Flat Base Fee (Rp)", id:"Biaya Dasar Tetap (Rp)", zh:"固定基础费（Rp）", ja:"定額基本料金（Rp）"},
+  "billing.perEmployeeFee": {ko:"직원 1인당 월 요금 (Rp)", en:"Monthly Fee per Employee (Rp)", id:"Biaya Bulanan per Karyawan (Rp)", zh:"每名员工月费（Rp）", ja:"従業員1人あたり月額料金（Rp）"},
+  "billing.volumeDiscount": {ko:"볼륨 할인 구간", en:"Volume Discount Tiers", id:"Tingkat Diskon Volume", zh:"批量折扣区间", ja:"ボリューム割引区分"},
+  "billing.tierOver": {ko:"기준 인원 초과", en:"Threshold exceeds", id:"Melebihi ambang", zh:"超过基准人数", ja:"基準人数超過"},
+  "billing.tierPeople": {ko:"명 초과 시", en:"employees", id:"karyawan", zh:"人时", ja:"人超過時"},
+  "billing.addTier": {ko:"+ 구간 추가", en:"+ Add Tier", id:"+ Tambah Tingkat", zh:"+ 添加区间", ja:"+ 区分を追加"},
+  "billing.annualDiscount": {ko:"연간 선결제 할인율 (%)", en:"Annual Prepay Discount (%)", id:"Diskon Prabayar Tahunan (%)", zh:"年付预付折扣率（%）", ja:"年間前払い割引率（%）"},
+  "billing.saved": {ko:"✓ 저장되었습니다", en:"✓ Saved", id:"✓ Tersimpan", zh:"✓ 已保存", ja:"✓ 保存されました"},
+  "billing.billingMonth": {ko:"청구월 선택", en:"Select Billing Month", id:"Pilih Bulan Tagihan", zh:"选择账单月份", ja:"請求月選択"},
+  "billing.monthNote": {ko:"현재 요금제 설정 기준 실시간 계산 — 과거 월 데이터 조회는 추후 지원 예정", en:"Calculated live from the current plan settings — historical month lookups are not yet supported", id:"Dihitung secara langsung berdasarkan pengaturan paket saat ini — pencarian data bulan lampau belum didukung", zh:"基于当前套餐设置实时计算 — 历史月份数据查询暂不支持", ja:"現在のプラン設定に基づきリアルタイムで計算されます — 過去月データの参照は今後対応予定です"},
+  "billing.generateBtn": {ko:"빌링 생성", en:"Generate Billing", id:"Buat Tagihan", zh:"生成账单", ja:"請求データ生成"},
+  "billing.th.company": {ko:"고객사", en:"Customer", id:"Klien", zh:"客户公司", ja:"顧客企業"},
+  "billing.th.employees": {ko:"직원수", en:"Employees", id:"Karyawan", zh:"员工人数", ja:"従業員数"},
+  "billing.th.baseFee": {ko:"기본요금", en:"Base Fee", id:"Biaya Dasar", zh:"基础费", ja:"基本料金"},
+  "billing.th.employeeFee": {ko:"직원수요금", en:"Employee Fee", id:"Biaya Karyawan", zh:"人数费用", ja:"従業員数料金"},
+  "billing.th.discount": {ko:"할인", en:"Discount", id:"Diskon", zh:"折扣", ja:"割引"},
+  "billing.th.total": {ko:"합계", en:"Total", id:"Total", zh:"合计", ja:"合計"},
+  "billing.emptyState": {ko:"청구월을 선택하고 \"빌링 생성\" 버튼을 눌러주세요", en:"Select a billing month and click \"Generate Billing\"", id:"Pilih bulan tagihan lalu klik \"Buat Tagihan\"", zh:"请选择账单月份并点击“生成账单”", ja:"請求月を選択し「請求データ生成」を押してください"},
+  "billing.totalLabel": {ko:"이번달 청구 총액 (미리보기 대상 4개사)", en:"Total Billing This Month (4 preview accounts)", id:"Total Tagihan Bulan Ini (4 klien pratinjau)", zh:"本月账单总额（预览4家客户）", ja:"今月請求総額（プレビュー対象4社）"},
+  "billing.previewNote": {ko:"※ 위 요금제 설정값을 기준으로 실시간 계산되는 미리보기이며, 실제 청구서 발행 전 검토가 필요합니다.", en:"※ This preview is calculated live from the plan settings above and requires review before actual invoicing.", id:"※ Pratinjau ini dihitung secara langsung berdasarkan pengaturan paket di atas dan perlu ditinjau sebelum penagihan aktual.", zh:"※ 此预览基于上方套餐设置实时计算，正式开票前需人工复核。", ja:"※ 本プレビューは上記プラン設定に基づきリアルタイムで計算されており、実際の請求発行前にレビューが必要です。"},
+
+  "btn.save": {ko:"저장", en:"Save", id:"Simpan", zh:"保存", ja:"保存"},
+  "btn.exportPdf": {ko:"인보이스 내보내기 (PDF)", en:"Export Invoice (PDF)", id:"Ekspor Invoice (PDF)", zh:"导出发票（PDF）", ja:"請求書をエクスポート（PDF）"},
+  "btn.exportExcel": {ko:"Excel로 내보내기", en:"Export to Excel", id:"Ekspor ke Excel", zh:"导出为Excel", ja:"Excelへエクスポート"}
+};
+
+function applyLang(lang){
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var e = I18N[el.getAttribute('data-i18n')];
+    if(e && e[lang]) el.textContent = e[lang];
+  });
+  document.documentElement.lang = lang;
+  applyThemeLabel();
+}
+document.getElementById('langSelect').addEventListener('change', function(ev){ applyLang(ev.target.value); });
+applyLang('ko');
+applyThemeLabel();
+</script>

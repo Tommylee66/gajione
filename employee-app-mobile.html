@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GajiOne 직원 앱 — iOS / Android</title>
+<style>
+:root{
+  --bg:#e7ecf4; --surface:#ffffff; --surface-alt:#f6f8fc; --border:#e2e8f3; --border-soft:#edf1f7;
+  --text:#16294d; --text-muted:#5b6b85; --text-faint:#8a97ad;
+  --accent:#2f6fed; --accent-soft:#eef3fb; --accent-dim:#c9d7f5; --navy:#16294d;
+  --success:#17a34a; --success-soft:#f3fbf6; --warning:#e08a00; --warning-text:#b45309; --warning-soft:#fdf8ef;
+  --danger:#d92d20; --danger-soft:#fdebe9; --purple:#7c3aed; --purple-soft:#f7f3fe;
+  --on-accent:#fff; --on-danger:#fff;
+  --radius-lg:18px; --radius-md:13px; --radius-sm:9px;
+  --shadow-card:0 1px 2px rgba(22,41,77,.04),0 8px 24px -12px rgba(22,41,77,.10);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0c1526; --surface:#121d33; --surface-alt:#182842; --border:#26375a; --border-soft:#1e2f4d;
+    --text:#e9edf8; --text-muted:#a0accb; --text-faint:#71809f;
+    --accent:#6c98ff; --accent-soft:#1c2c50; --accent-dim:#2c3f68; --navy:#0c1526;
+    --success:#3fc482; --success-soft:#123526; --warning:#f0ac4a; --warning-text:#f0ac4a; --warning-soft:#3a2b12;
+    --danger:#f27164; --danger-soft:#3a1c19; --purple:#a880f5; --purple-soft:#2a2050;
+    --on-accent:#0c1526; --on-danger:#1a0705;
+    --shadow-card:0 1px 2px rgba(0,0,0,.3),0 12px 32px -14px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="light"]{
+  --bg:#e7ecf4; --surface:#ffffff; --surface-alt:#f6f8fc; --border:#e2e8f3; --border-soft:#edf1f7;
+  --text:#16294d; --text-muted:#5b6b85; --text-faint:#8a97ad;
+  --accent:#2f6fed; --accent-soft:#eef3fb; --accent-dim:#c9d7f5; --navy:#16294d;
+  --success:#17a34a; --success-soft:#f3fbf6; --warning:#e08a00; --warning-text:#b45309; --warning-soft:#fdf8ef;
+  --danger:#d92d20; --danger-soft:#fdebe9; --purple:#7c3aed; --purple-soft:#f7f3fe;
+  --on-accent:#fff; --on-danger:#fff;
+  --shadow-card:0 1px 2px rgba(22,41,77,.04),0 8px 24px -12px rgba(22,41,77,.10);
+}
+:root[data-theme="dark"]{
+  --bg:#0c1526; --surface:#121d33; --surface-alt:#182842; --border:#26375a; --border-soft:#1e2f4d;
+  --text:#e9edf8; --text-muted:#a0accb; --text-faint:#71809f;
+  --accent:#6c98ff; --accent-soft:#1c2c50; --accent-dim:#2c3f68; --navy:#0c1526;
+  --success:#3fc482; --success-soft:#123526; --warning:#f0ac4a; --warning-text:#f0ac4a; --warning-soft:#3a2b12;
+  --danger:#f27164; --danger-soft:#3a1c19; --purple:#a880f5; --purple-soft:#2a2050;
+  --on-accent:#0c1526; --on-danger:#1a0705;
+  --shadow-card:0 1px 2px rgba(0,0,0,.3),0 12px 32px -14px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI","Malgun Gothic","Noto Sans KR",sans-serif;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px;}
+
+.main{max-width:1400px;margin:0 auto;padding:22px 22px 60px 22px;}
+
+/* ---- Reused GajiOne component language ---- */
+.page-header{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);padding:18px 22px;margin-bottom:18px;
+}
+.page-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.page-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.page-title{font-size:21px;font-weight:800;margin:0;color:var(--text);}
+.clock{font-size:12.5px;color:var(--text-muted);font-weight:600;white-space:nowrap;}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:99px;}
+.pill-success{background:var(--success-soft);color:var(--success);}
+.pill-warning{background:var(--warning-soft);color:var(--warning-text);}
+.pill-danger{background:var(--danger-soft);color:var(--danger);}
+.pill-info{background:var(--accent-soft);color:var(--accent);}
+.pill-neutral{background:var(--surface-alt);color:var(--text-muted);border:1px solid var(--border);}
+
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);padding:18px 20px;
+}
+.card-title{font-size:14.5px;font-weight:800;margin:0 0 10px 0;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.card-sub{font-size:12px;color:var(--text-muted);margin-top:-6px;margin-bottom:12px;}
+
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-md);}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:640px;}
+thead th{
+  background:var(--surface-alt);color:var(--text-faint);font-size:10.5px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.03em;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody td{padding:8px 0;border-bottom:1px solid var(--border-soft);color:var(--text);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+
+.btn{
+  display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:9px 16px;border-radius:10px;
+  border:1px solid var(--border);cursor:pointer;font-family:inherit;background:var(--surface);color:var(--text);
+}
+.btn-primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);}
+.btn-danger{background:var(--danger);color:var(--on-danger);border-color:var(--danger);}
+.btn-sm{padding:5px 11px;font-size:11.5px;border-radius:8px;}
+
+.timeline{display:flex;flex-direction:column;gap:0;}
+.timeline-item{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border-soft);align-items:center;}
+.timeline-item:last-child{border-bottom:none;}
+.timeline-time{font-size:11px;font-weight:700;color:var(--text-faint);width:44px;flex:0 0 44px;}
+.timeline-text{font-size:12px;color:var(--text);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+.progress-track{width:100%;height:8px;border-radius:99px;background:var(--surface-alt);border:1px solid var(--border-soft);overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;background:var(--accent);}
+.progress-fill.success{background:var(--success);}
+.progress-fill.warning{background:var(--warning);}
+.progress-fill.danger{background:var(--danger);}
+
+.banner-warning{
+  background:var(--warning-soft);border:1px solid var(--warning);color:var(--warning-text);
+  border-radius:var(--radius-md);padding:12px 14px;font-size:12px;font-weight:600;display:flex;gap:8px;align-items:flex-start;
+}
+
+.field{display:flex;flex-direction:column;gap:6px;}
+.field-label{font-size:11px;font-weight:700;color:var(--text-muted);}
+input.input,select.input{
+  font-family:inherit;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);
+}
+.caption{font-size:11.5px;color:var(--text-faint);margin-top:8px;}
+.drawer{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
+.drawer.open{display:block;}
+
+/* ---- Page-level controls (new, not part of the shared component language) ---- */
+.top-controls{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft);}
+.control-group{display:flex;align-items:center;gap:8px;}
+.tab-group{display:flex;gap:8px;}
+
+/* ---- Device mockups (new: platform chrome unique to this artifact) ---- */
+.platform-panel{display:none;}
+.platform-panel.active{display:block;}
+.device-row{display:flex;gap:22px;flex-wrap:wrap;justify-content:flex-start;}
+.device{
+  width:300px;flex:0 0 300px;background:var(--surface);border:1px solid var(--border);
+  box-shadow:var(--shadow-card);padding:10px;position:relative;
+}
+.device-ios{border-radius:46px;}
+.device-android{border-radius:26px;}
+.device-screen{
+  background:var(--bg);overflow:hidden;min-height:600px;display:flex;flex-direction:column;position:relative;
+}
+.device-ios .device-screen{border-radius:34px;}
+.device-android .device-screen{border-radius:16px;}
+
+.statusbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px 20px;font-size:12px;font-weight:700;color:var(--text);flex:0 0 auto;}
+.statusbar-icons{display:flex;align-items:center;gap:6px;}
+.statusbar-icons svg{display:block;}
+.statusbar-pct{font-size:10.5px;font-weight:700;}
+
+.notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:108px;height:26px;background:#000;border-radius:16px;z-index:5;}
+
+.app-content{padding:12px 14px 8px 14px;display:flex;flex-direction:column;gap:12px;flex:1;overflow-y:auto;}
+.ios-large-title{font-size:23px;font-weight:800;color:var(--text);letter-spacing:-.01em;padding-top:2px;}
+
+.ios-tabbar{display:flex;justify-content:space-around;align-items:center;padding:8px 6px 2px 6px;border-top:1px solid var(--border);background:var(--surface);flex:0 0 auto;}
+.ios-tabbar-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--text-faint);}
+.ios-tabbar-item.active{color:var(--accent);}
+.ios-tabbar-item svg{width:21px;height:21px;}
+.home-indicator{width:120px;height:5px;border-radius:3px;background:var(--text);opacity:.28;margin:6px auto 8px auto;flex:0 0 auto;}
+
+.android-appbar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex:0 0 auto;}
+.android-appbar svg{width:20px;height:20px;color:var(--text);}
+.android-appbar-title{font-size:16px;font-weight:800;color:var(--text);}
+
+.android-navbar{display:flex;justify-content:space-around;align-items:center;padding:8px 6px;background:var(--surface);border-top:1px solid var(--border);flex:0 0 auto;}
+.android-navbar-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--text-faint);padding:4px 14px;border-radius:20px;}
+.android-navbar-item.active{color:var(--accent);background:var(--accent-soft);}
+.android-navbar-item svg{width:21px;height:21px;}
+
+.fab{
+  position:absolute;right:16px;bottom:86px;width:46px;height:46px;border-radius:16px;background:var(--accent);
+  color:var(--on-accent);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px -4px rgba(0,0,0,.4);z-index:6;border:none;cursor:pointer;
+}
+.fab svg{width:22px;height:22px;}
+.gesture-bar{width:100px;height:4px;border-radius:2px;background:var(--text);opacity:.35;margin:8px auto 8px auto;flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="main">
+
+  <div class="page-header">
+    <div class="page-header-top">
+      <div class="page-title-row">
+        <h1 class="page-title" data-i18n="top.title">GajiOne 직원 앱 — iOS / Android</h1>
+        <span class="pill pill-info">Budi Santoso · MF-0104</span>
+      </div>
+      <div class="clock" id="topClock">2026-08-25 09:14:02 (WIB)</div>
+    </div>
+    <div class="card-sub" style="margin-top:6px;margin-bottom:0;" data-i18n="top.subtitle">iOS·Android 네이티브 스타일 화면 미리보기</div>
+
+    <div class="top-controls">
+      <div class="control-group tab-group">
+        <button class="btn btn-primary btn-sm" id="platIos" type="button" data-i18n="tab.ios">iOS</button>
+        <button class="btn btn-sm" id="platAndroid" type="button" data-i18n="tab.android">Android</button>
+      </div>
+      <div class="control-group">
+        <span class="card-sub" style="margin:0;" data-i18n="lang.label">언어</span>
+        <select class="input" id="langSelect" aria-label="Language">
+          <option value="ko">한국어</option>
+          <option value="en">English</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <span class="card-sub" style="margin:0;" data-i18n="theme.label">테마</span>
+        <button class="btn btn-primary btn-sm" id="btnLight" type="button" data-i18n="theme.light">라이트</button>
+        <button class="btn btn-sm" id="btnDark" type="button" data-i18n="theme.dark">다크</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- iOS PANEL -->
+  <!-- ============================================================ -->
+  <section id="panel-ios" class="platform-panel active">
+    <div class="device-row">
+
+      <!-- iOS · Phone 1: Home -->
+      <div class="device device-ios">
+        <div class="notch"></div>
+        <div class="device-screen">
+          <div class="statusbar">
+            <span class="sb-clock">09:14</span>
+            <span class="statusbar-icons">
+              <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="0.8" fill="currentColor"/><rect x="5" y="6" width="3" height="6" rx="0.8" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="0.8" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.8" fill="currentColor"/></svg>
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M1 4.5C4.5 1 11.5 1 15 4.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M3.5 7.3C6 5 10 5 12.5 7.3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="8" cy="10.3" r="1.3" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/><rect x="2" y="2" width="15" height="8" rx="1.3" fill="currentColor"/><rect x="21.5" y="4" width="1.8" height="4" rx="0.8" fill="currentColor" opacity="0.5"/></svg>
+              <span class="statusbar-pct">82%</span>
+            </span>
+          </div>
+          <div class="app-content">
+            <div class="ios-large-title" data-i18n="screen.home.title">홈</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:-6px;">Selamat pagi, Budi</div>
+            <div class="card-sub" style="margin:0;" data-i18n="home.line_shift">조립1라인 · 주간A조</div>
+
+            <div class="card" style="padding:14px 16px;">
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;">
+                <input type="checkbox" class="ot-toggle" data-target="otBannerIosHome">
+                <span data-i18n="ot.preview_label">OT 상황 미리보기</span>
+              </label>
+            </div>
+            <div class="banner-warning" id="otBannerIosHome" style="display:none;">
+              <span>⏱</span>
+              <span>
+                <span data-i18n="ot.banner">OT 진행중 · 예상 추가 수당이 실시간 급여에 반영됩니다</span>
+                <div style="margin-top:6px;"><span class="pill pill-warning" data-i18n="ot.banner_pill">추가수당 반영중</span></div>
+              </span>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="home.est_net_title">이번달 예상 실수령</div>
+              <div class="live-counter" style="font-size:25px;font-weight:800;color:var(--text);margin-top:2px;">Rp 6,745,000</div>
+              <div class="card-sub" style="margin-top:8px;margin-bottom:0;"><span data-i18n="home.sync_prefix">마지막 근태 동기화</span>: <span class="sync-min-ios">2</span><span data-i18n="home.ago_unit">분 전</span> · <span data-i18n="home.sync_suffix">지문기 A-3</span></div>
+              <div class="card-sub" style="margin-top:4px;margin-bottom:0;"><span data-i18n="home.hourly_rate_label">지금 시급 적립중</span> Rp 36,700<span data-i18n="home.hourly_rate_unit">/시간</span></div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="home.workdays_title">근무일</div>
+              <div style="font-size:13px;font-weight:700;margin:-6px 0 8px 0;">18/22<span data-i18n="home.workdays_unit">일</span></div>
+              <div class="progress-track"><div class="progress-fill" style="width:82%;"></div></div>
+              <div class="card-sub" style="margin-top:8px;margin-bottom:0;" data-i18n="home.payday">지급 08-28 (D-3)</div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <table style="min-width:0;font-size:12px;">
+                <tbody>
+                  <tr><td data-i18n="home.base_acc">기본급 누적</td><td style="text-align:right;">5,188,000</td></tr>
+                  <tr><td data-i18n="home.ot_acc">초과근무 38h</td><td style="text-align:right;">1,689,400</td></tr>
+                  <tr><td data-i18n="home.allowance_acc">수당·식대 누적</td><td style="text-align:right;">1,292,700</td></tr>
+                  <tr><td data-i18n="home.deduction">공제예정</td><td style="text-align:right;color:var(--danger);">−1,425,100</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ios-tabbar">
+            <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+
+      <!-- iOS · Phone 2: Attendance / Leave -->
+      <div class="device device-ios">
+        <div class="notch"></div>
+        <div class="device-screen">
+          <div class="statusbar">
+            <span class="sb-clock">09:14</span>
+            <span class="statusbar-icons">
+              <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="0.8" fill="currentColor"/><rect x="5" y="6" width="3" height="6" rx="0.8" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="0.8" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.8" fill="currentColor"/></svg>
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M1 4.5C4.5 1 11.5 1 15 4.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M3.5 7.3C6 5 10 5 12.5 7.3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="8" cy="10.3" r="1.3" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/><rect x="2" y="2" width="15" height="8" rx="1.3" fill="currentColor"/><rect x="21.5" y="4" width="1.8" height="4" rx="0.8" fill="currentColor" opacity="0.5"/></svg>
+              <span class="statusbar-pct">82%</span>
+            </span>
+          </div>
+          <div class="app-content">
+            <div class="ios-large-title" data-i18n="screen.attn.title">근태·연차</div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="attn.today_title">오늘 근무현황</div>
+              <div style="font-size:13px;font-weight:700;margin-top:-4px;" data-i18n="attn.shift">주간A조 07:00-16:00</div>
+              <div style="margin-top:8px;"><span class="pill pill-info" data-i18n="attn.working">근무중</span></div>
+              <div class="card-sub" style="margin-top:8px;margin-bottom:0;" data-i18n="attn.checkin">출근 07:02</div>
+              <div class="card-sub" style="margin-top:2px;margin-bottom:0;" data-i18n="attn.week_acc">이번주 누적 42.5h · OT 4h</div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="attn.leave_balance_title">연차잔여</div>
+              <div style="font-size:19px;font-weight:800;margin-top:-6px;">7/12<span data-i18n="attn.leave_balance_unit">일</span></div>
+              <div class="card-sub" style="margin-top:6px;margin-bottom:0;" data-i18n="attn.leave_detail">사용 5일 · 2027-03 소멸예정 2일</div>
+              <button class="btn btn-primary btn-sm" type="button" style="margin-top:10px;width:100%;justify-content:center;" data-i18n="attn.btn_apply">연차 신청</button>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="attn.recent_title">최근신청</div>
+              <div class="timeline">
+                <div class="timeline-item"><div class="timeline-time">08-14</div><div class="timeline-text"><span data-i18n="attn.item1">연차 1일</span><span class="pill pill-success" data-i18n="attn.status_approved">승인</span></div></div>
+                <div class="timeline-item"><div class="timeline-time">07-30</div><div class="timeline-text"><span data-i18n="attn.item2">반차 0.5일</span><span class="pill pill-success" data-i18n="attn.status_approved">승인</span></div></div>
+                <div class="timeline-item"><div class="timeline-time">09-04</div><div class="timeline-text"><span data-i18n="attn.item3">연차 2일</span><span class="pill pill-warning" data-i18n="attn.status_reviewing">라인장 검토중</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="ios-tabbar">
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+            <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+
+      <!-- iOS · Phone 3: Credit / Loan -->
+      <div class="device device-ios">
+        <div class="notch"></div>
+        <div class="device-screen">
+          <div class="statusbar">
+            <span class="sb-clock">09:14</span>
+            <span class="statusbar-icons">
+              <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="0.8" fill="currentColor"/><rect x="5" y="6" width="3" height="6" rx="0.8" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="0.8" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.8" fill="currentColor"/></svg>
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M1 4.5C4.5 1 11.5 1 15 4.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M3.5 7.3C6 5 10 5 12.5 7.3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="8" cy="10.3" r="1.3" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/><rect x="2" y="2" width="15" height="8" rx="1.3" fill="currentColor"/><rect x="21.5" y="4" width="1.8" height="4" rx="0.8" fill="currentColor" opacity="0.5"/></svg>
+              <span class="statusbar-pct">82%</span>
+            </span>
+          </div>
+          <div class="app-content">
+            <div class="ios-large-title" data-i18n="screen.credit.title">신용·대출</div>
+
+            <div class="card" style="padding:14px 16px;text-align:center;">
+              <div class="card-title" style="justify-content:center;" data-i18n="credit.score_label">신용점수</div>
+              <svg viewBox="0 0 200 120" width="100%" height="96" role="img" aria-label="credit score gauge"><g id="creditGaugeIOS"></g></svg>
+              <div style="font-size:20px;font-weight:800;margin-top:-8px;">742<span style="font-size:12px;color:var(--text-muted);"> / 850</span></div>
+              <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="credit.top_pct">상위 24%</div>
+              <div style="margin-top:6px;"><span class="pill pill-success" data-i18n="credit.auto_tag">자동승인구간</span></div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-sub" style="margin:0;" data-i18n="credit.stats">출근율 99.1% · 근속 4.2년 · 연체 0회</div>
+              <button class="btn btn-sm score-toggle" type="button" data-target="drawerScoreIos" style="margin-top:10px;" data-i18n="credit.why_link">왜 이 점수인가요?</button>
+              <div class="drawer" id="drawerScoreIos">
+                <table style="min-width:0;font-size:11.5px;">
+                  <tbody>
+                    <tr><td data-i18n="credit.score.base">기본점수(Base)</td><td style="text-align:right;">300</td></tr>
+                    <tr><td data-i18n="credit.score.attendance">출근율·근태규칙성</td><td style="text-align:right;">+150</td></tr>
+                    <tr><td data-i18n="credit.score.repay">상환이력</td><td style="text-align:right;">+118</td></tr>
+                    <tr><td data-i18n="credit.score.tenure">근속·고용형태</td><td style="text-align:right;">+110</td></tr>
+                    <tr><td data-i18n="credit.score.stability">급여안정성</td><td style="text-align:right;">+64</td></tr>
+                    <tr style="border-top:2px solid var(--border);"><td style="font-weight:800;" data-i18n="credit.score.total">합계</td><td style="text-align:right;font-weight:800;">742</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="credit.limit_title">이용가능한도</div>
+              <div style="font-size:15px;font-weight:800;margin-top:-6px;">11.5M / 16.3M</div>
+              <div class="progress-track" style="margin-top:8px;"><div class="progress-fill" style="width:30%;"></div></div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="credit.loan_title">일반대출 8.0M 상환중</div>
+              <div class="card-sub" style="margin-top:0;margin-bottom:0;" data-i18n="credit.loan_round">(4/10회차)</div>
+              <div class="card-sub" style="margin-top:4px;margin-bottom:0;" data-i18n="credit.loan_detail">잔액 4.8M · 이번달 공제 800,000</div>
+              <button class="btn btn-sm" type="button" style="margin-top:10px;width:100%;justify-content:center;" data-i18n="credit.btn_apply">대출 신청</button>
+            </div>
+          </div>
+          <div class="ios-tabbar">
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- ANDROID PANEL -->
+  <!-- ============================================================ -->
+  <section id="panel-android" class="platform-panel">
+    <div class="device-row">
+
+      <!-- Android · Phone 1: Home -->
+      <div class="device device-android">
+        <div class="device-screen">
+          <div class="statusbar">
+            <span class="sb-clock">09:14</span>
+            <span class="statusbar-icons">
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M0 12 L16 12 L16 0 Z" fill="currentColor" opacity="0.35"/><path d="M0 12 L11 12 L11 3 Z" fill="currentColor" opacity="0.65"/><path d="M0 12 L6 12 L6 7 Z" fill="currentColor"/></svg>
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.6L9.6 9.5C8.7 8.8 7.3 8.8 6.4 9.5Z" fill="currentColor"/><path d="M8 6.8c-2 0-3.9.8-5.3 2.1l1.7 2.1c1-1 2.3-1.5 3.6-1.5s2.6.6 3.6 1.5l1.7-2.1C11.9 7.6 10 6.8 8 6.8Z" fill="currentColor" opacity="0.75"/><path d="M8 2.3C4.7 2.3 1.7 3.6 0 5.6l1.7 2.1C3.1 6.1 5.4 5.1 8 5.1s4.9 1 6.3 2.6L16 5.6C14.3 3.6 11.3 2.3 8 2.3Z" fill="currentColor" opacity="0.5"/></svg>
+              <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6"/><rect x="2" y="2.5" width="15" height="7" rx="1" fill="currentColor"/><rect x="21" y="4" width="2.2" height="4" rx="0.7" fill="currentColor" opacity="0.6"/></svg>
+              <span class="statusbar-pct">82%</span>
+            </span>
+          </div>
+          <div class="android-appbar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+            <span class="android-appbar-title" data-i18n="screen.home.title">홈</span>
+          </div>
+          <div class="app-content">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Selamat pagi, Budi</div>
+            <div class="card-sub" style="margin:0;" data-i18n="home.line_shift">조립1라인 · 주간A조</div>
+
+            <div class="card" style="padding:14px 16px;">
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;">
+                <input type="checkbox" class="ot-toggle" data-target="otBannerAndroidHome">
+                <span data-i18n="ot.preview_label">OT 상황 미리보기</span>
+              </label>
+            </div>
+            <div class="banner-warning" id="otBannerAndroidHome" style="display:none;">
+              <span>⏱</span>
+              <span>
+                <span data-i18n="ot.banner">OT 진행중 · 예상 추가 수당이 실시간 급여에 반영됩니다</span>
+                <div style="margin-top:6px;"><span class="pill pill-warning" data-i18n="ot.banner_pill">추가수당 반영중</span></div>
+              </span>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="home.est_net_title">이번달 예상 실수령</div>
+              <div class="live-counter" style="font-size:25px;font-weight:800;color:var(--text);margin-top:2px;">Rp 6,745,000</div>
+              <div class="card-sub" style="margin-top:8px;margin-bottom:0;"><span data-i18n="home.sync_prefix">마지막 근태 동기화</span>: <span class="sync-min-android">2</span><span data-i18n="home.ago_unit">분 전</span> · <span data-i18n="home.sync_suffix">지문기 A-3</span></div>
+              <div class="card-sub" style="margin-top:4px;margin-bottom:0;"><span data-i18n="home.hourly_rate_label">지금 시급 적립중</span> Rp 36,700<span data-i18n="home.hourly_rate_unit">/시간</span></div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="home.workdays_title">근무일</div>
+              <div style="font-size:13px;font-weight:700;margin:-6px 0 8px 0;">18/22<span data-i18n="home.workdays_unit">일</span></div>
+              <div class="progress-track"><div class="progress-fill" style="width:82%;"></div></div>
+              <div class="card-sub" style="margin-top:8px;margin-bottom:0;" data-i18n="home.payday">지급 08-28 (D-3)</div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <table style="min-width:0;font-size:12px;">
+                <tbody>
+                  <tr><td data-i18n="home.base_acc">기본급 누적</td><td style="text-align:right;">5,188,000</td></tr>
+                  <tr><td data-i18n="home.ot_acc">초과근무 38h</td><td style="text-align:right;">1,689,400</td></tr>
+                  <tr><td data-i18n="home.allowance_acc">수당·식대 누적</td><td style="text-align:right;">1,292,700</td></tr>
+                  <tr><td data-i18n="home.deduction">공제예정</td><td style="text-align:right;color:var(--danger);">−1,425,100</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="android-navbar">
+            <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+          </div>
+          <button class="fab" type="button" aria-label="quick action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </button>
+          <div class="gesture-bar"></div>
+        </div>
+      </div>
+
+      <!-- Android · Phone 2: Attendance / Leave -->
+      <div class="device device-android">
+        <div class="device-screen">
+          <div class="statusbar">
+            <span class="sb-clock">09:14</span>
+            <span class="statusbar-icons">
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M0 12 L16 12 L16 0 Z" fill="currentColor" opacity="0.35"/><path d="M0 12 L11 12 L11 3 Z" fill="currentColor" opacity="0.65"/><path d="M0 12 L6 12 L6 7 Z" fill="currentColor"/></svg>
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.6L9.6 9.5C8.7 8.8 7.3 8.8 6.4 9.5Z" fill="currentColor"/><path d="M8 6.8c-2 0-3.9.8-5.3 2.1l1.7 2.1c1-1 2.3-1.5 3.6-1.5s2.6.6 3.6 1.5l1.7-2.1C11.9 7.6 10 6.8 8 6.8Z" fill="currentColor" opacity="0.75"/><path d="M8 2.3C4.7 2.3 1.7 3.6 0 5.6l1.7 2.1C3.1 6.1 5.4 5.1 8 5.1s4.9 1 6.3 2.6L16 5.6C14.3 3.6 11.3 2.3 8 2.3Z" fill="currentColor" opacity="0.5"/></svg>
+              <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6"/><rect x="2" y="2.5" width="15" height="7" rx="1" fill="currentColor"/><rect x="21" y="4" width="2.2" height="4" rx="0.7" fill="currentColor" opacity="0.6"/></svg>
+              <span class="statusbar-pct">82%</span>
+            </span>
+          </div>
+          <div class="android-appbar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+            <span class="android-appbar-title" data-i18n="screen.attn.title">근태·연차</span>
+          </div>
+          <div class="app-content">
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="attn.today_title">오늘 근무현황</div>
+              <div style="font-size:13px;font-weight:700;margin-top:-4px;" data-i18n="attn.shift">주간A조 07:00-16:00</div>
+              <div style="margin-top:8px;"><span class="pill pill-info" data-i18n="attn.working">근무중</span></div>
+              <div class="card-sub" style="margin-top:8px;margin-bottom:0;" data-i18n="attn.checkin">출근 07:02</div>
+              <div class="card-sub" style="margin-top:2px;margin-bottom:0;" data-i18n="attn.week_acc">이번주 누적 42.5h · OT 4h</div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="attn.leave_balance_title">연차잔여</div>
+              <div style="font-size:19px;font-weight:800;margin-top:-6px;">7/12<span data-i18n="attn.leave_balance_unit">일</span></div>
+              <div class="card-sub" style="margin-top:6px;margin-bottom:0;" data-i18n="attn.leave_detail">사용 5일 · 2027-03 소멸예정 2일</div>
+              <button class="btn btn-primary btn-sm" type="button" style="margin-top:10px;width:100%;justify-content:center;" data-i18n="attn.btn_apply">연차 신청</button>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="attn.recent_title">최근신청</div>
+              <div class="timeline">
+                <div class="timeline-item"><div class="timeline-time">08-14</div><div class="timeline-text"><span data-i18n="attn.item1">연차 1일</span><span class="pill pill-success" data-i18n="attn.status_approved">승인</span></div></div>
+                <div class="timeline-item"><div class="timeline-time">07-30</div><div class="timeline-text"><span data-i18n="attn.item2">반차 0.5일</span><span class="pill pill-success" data-i18n="attn.status_approved">승인</span></div></div>
+                <div class="timeline-item"><div class="timeline-time">09-04</div><div class="timeline-text"><span data-i18n="attn.item3">연차 2일</span><span class="pill pill-warning" data-i18n="attn.status_reviewing">라인장 검토중</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="android-navbar">
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+            <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+          </div>
+          <button class="fab" type="button" aria-label="quick action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </button>
+          <div class="gesture-bar"></div>
+        </div>
+      </div>
+
+      <!-- Android · Phone 3: Credit / Loan -->
+      <div class="device device-android">
+        <div class="device-screen">
+          <div class="statusbar">
+            <span class="sb-clock">09:14</span>
+            <span class="statusbar-icons">
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M0 12 L16 12 L16 0 Z" fill="currentColor" opacity="0.35"/><path d="M0 12 L11 12 L11 3 Z" fill="currentColor" opacity="0.65"/><path d="M0 12 L6 12 L6 7 Z" fill="currentColor"/></svg>
+              <svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.6L9.6 9.5C8.7 8.8 7.3 8.8 6.4 9.5Z" fill="currentColor"/><path d="M8 6.8c-2 0-3.9.8-5.3 2.1l1.7 2.1c1-1 2.3-1.5 3.6-1.5s2.6.6 3.6 1.5l1.7-2.1C11.9 7.6 10 6.8 8 6.8Z" fill="currentColor" opacity="0.75"/><path d="M8 2.3C4.7 2.3 1.7 3.6 0 5.6l1.7 2.1C3.1 6.1 5.4 5.1 8 5.1s4.9 1 6.3 2.6L16 5.6C14.3 3.6 11.3 2.3 8 2.3Z" fill="currentColor" opacity="0.5"/></svg>
+              <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6"/><rect x="2" y="2.5" width="15" height="7" rx="1" fill="currentColor"/><rect x="21" y="4" width="2.2" height="4" rx="0.7" fill="currentColor" opacity="0.6"/></svg>
+              <span class="statusbar-pct">82%</span>
+            </span>
+          </div>
+          <div class="android-appbar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+            <span class="android-appbar-title" data-i18n="screen.credit.title">신용·대출</span>
+          </div>
+          <div class="app-content">
+            <div class="card" style="padding:14px 16px;text-align:center;">
+              <div class="card-title" style="justify-content:center;" data-i18n="credit.score_label">신용점수</div>
+              <svg viewBox="0 0 200 120" width="100%" height="96" role="img" aria-label="credit score gauge"><g id="creditGaugeAndroid"></g></svg>
+              <div style="font-size:20px;font-weight:800;margin-top:-8px;">742<span style="font-size:12px;color:var(--text-muted);"> / 850</span></div>
+              <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="credit.top_pct">상위 24%</div>
+              <div style="margin-top:6px;"><span class="pill pill-success" data-i18n="credit.auto_tag">자동승인구간</span></div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-sub" style="margin:0;" data-i18n="credit.stats">출근율 99.1% · 근속 4.2년 · 연체 0회</div>
+              <button class="btn btn-sm score-toggle" type="button" data-target="drawerScoreAndroid" style="margin-top:10px;" data-i18n="credit.why_link">왜 이 점수인가요?</button>
+              <div class="drawer" id="drawerScoreAndroid">
+                <table style="min-width:0;font-size:11.5px;">
+                  <tbody>
+                    <tr><td data-i18n="credit.score.base">기본점수(Base)</td><td style="text-align:right;">300</td></tr>
+                    <tr><td data-i18n="credit.score.attendance">출근율·근태규칙성</td><td style="text-align:right;">+150</td></tr>
+                    <tr><td data-i18n="credit.score.repay">상환이력</td><td style="text-align:right;">+118</td></tr>
+                    <tr><td data-i18n="credit.score.tenure">근속·고용형태</td><td style="text-align:right;">+110</td></tr>
+                    <tr><td data-i18n="credit.score.stability">급여안정성</td><td style="text-align:right;">+64</td></tr>
+                    <tr style="border-top:2px solid var(--border);"><td style="font-weight:800;" data-i18n="credit.score.total">합계</td><td style="text-align:right;font-weight:800;">742</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="credit.limit_title">이용가능한도</div>
+              <div style="font-size:15px;font-weight:800;margin-top:-6px;">11.5M / 16.3M</div>
+              <div class="progress-track" style="margin-top:8px;"><div class="progress-fill" style="width:30%;"></div></div>
+            </div>
+
+            <div class="card" style="padding:14px 16px;">
+              <div class="card-title" data-i18n="credit.loan_title">일반대출 8.0M 상환중</div>
+              <div class="card-sub" style="margin-top:0;margin-bottom:0;" data-i18n="credit.loan_round">(4/10회차)</div>
+              <div class="card-sub" style="margin-top:4px;margin-bottom:0;" data-i18n="credit.loan_detail">잔액 4.8M · 이번달 공제 800,000</div>
+              <button class="btn btn-sm" type="button" style="margin-top:10px;width:100%;justify-content:center;" data-i18n="credit.btn_apply">대출 신청</button>
+            </div>
+          </div>
+          <div class="android-navbar">
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+          </div>
+          <button class="fab" type="button" aria-label="quick action">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </button>
+          <div class="gesture-bar"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ---------- i18n ---------- */
+var I18N = {
+"top.title":{ko:"GajiOne 직원 앱 — iOS / Android",en:"GajiOne Employee App — iOS / Android",id:"Aplikasi Karyawan GajiOne — iOS / Android",zh:"GajiOne 员工应用 — iOS / Android",ja:"GajiOne 従業員アプリ — iOS / Android"},
+"top.subtitle":{ko:"iOS·Android 네이티브 스타일 화면 미리보기",en:"Native-style screen preview for iOS and Android",id:"Pratinjau layar bergaya native untuk iOS dan Android",zh:"iOS·Android 原生风格界面预览",ja:"iOS・Android ネイティブスタイル画面プレビュー"},
+"tab.ios":{ko:"iOS",en:"iOS",id:"iOS",zh:"iOS",ja:"iOS"},
+"tab.android":{ko:"Android",en:"Android",id:"Android",zh:"Android",ja:"Android"},
+"theme.label":{ko:"테마",en:"Theme",id:"Tema",zh:"主题",ja:"テーマ"},
+"theme.light":{ko:"라이트",en:"Light",id:"Terang",zh:"浅色",ja:"ライト"},
+"theme.dark":{ko:"다크",en:"Dark",id:"Gelap",zh:"深色",ja:"ダーク"},
+"lang.label":{ko:"언어",en:"Language",id:"Bahasa",zh:"语言",ja:"言語"},
+"ot.preview_label":{ko:"OT 상황 미리보기",en:"Preview OT status",id:"Pratinjau status lembur",zh:"预览加班状态",ja:"OT状況プレビュー"},
+"ot.banner":{ko:"OT 진행중 · 예상 추가 수당이 실시간 급여에 반영됩니다",en:"OT in progress · Estimated extra pay is reflected in real-time earnings",id:"Lembur berlangsung · Perkiraan tambahan upah tercermin di penghasilan real-time",zh:"加班进行中·预计加班费已计入实时工资",ja:"OT進行中・見込み追加手当がリアルタイム給与に反映されます"},
+"ot.banner_pill":{ko:"추가수당 반영중",en:"Extra pay applying",id:"Tambahan upah diterapkan",zh:"加班费计入中",ja:"追加手当反映中"},
+"screen.home.title":{ko:"홈",en:"Home",id:"Beranda",zh:"首页",ja:"ホーム"},
+"screen.attn.title":{ko:"근태·연차",en:"Attendance & Leave",id:"Kehadiran & Cuti",zh:"考勤·年假",ja:"勤怠・休暇"},
+"screen.credit.title":{ko:"신용·대출",en:"Credit & Loans",id:"Kredit & Pinjaman",zh:"信用·贷款",ja:"信用・融資"},
+"home.line_shift":{ko:"조립1라인 · 주간A조",en:"Assembly Line 1 · Day Shift A",id:"Lini Perakitan 1 · Shift Siang A",zh:"组装1线·白班A组",ja:"組立1ライン・昼勤A班"},
+"home.est_net_title":{ko:"이번달 예상 실수령",en:"This Month's Estimated Net Pay",id:"Estimasi Gaji Bersih Bulan Ini",zh:"本月预计实发工资",ja:"今月の見込み手取り額"},
+"home.sync_prefix":{ko:"마지막 근태 동기화",en:"Last attendance sync",id:"Sinkronisasi kehadiran terakhir",zh:"最近考勤同步",ja:"最終勤怠同期"},
+"home.sync_suffix":{ko:"지문기 A-3",en:"Fingerprint scanner A-3",id:"Mesin sidik jari A-3",zh:"指纹机 A-3",ja:"指紋認証機 A-3"},
+"home.ago_unit":{ko:"분 전",en:" min ago",id:" menit lalu",zh:"分钟前",ja:"分前"},
+"home.hourly_rate_label":{ko:"지금 시급 적립중",en:"Accruing hourly rate now",id:"Tarif per jam sedang terakumulasi",zh:"当前时薪累计中",ja:"現在時給を積立中"},
+"home.hourly_rate_unit":{ko:"/시간",en:"/hour",id:"/jam",zh:"/小时",ja:"/時間"},
+"home.workdays_title":{ko:"근무일",en:"Workdays",id:"Hari Kerja",zh:"工作日",ja:"勤務日"},
+"home.workdays_unit":{ko:"일",en:" days",id:" hari",zh:"天",ja:"日"},
+"home.payday":{ko:"지급 08-28 (D-3)",en:"Payday 08-28 (D-3)",id:"Gajian 08-28 (H-3)",zh:"发薪日08-28(D-3)",ja:"支給日08-28(D-3)"},
+"home.base_acc":{ko:"기본급 누적",en:"Cumulative base pay",id:"Akumulasi gaji pokok",zh:"基本工资累计",ja:"基本給累計"},
+"home.ot_acc":{ko:"초과근무 38h",en:"Overtime 38h",id:"Lembur 38 jam",zh:"加班38小时",ja:"残業38時間"},
+"home.allowance_acc":{ko:"수당·식대 누적",en:"Cumulative allowances & meals",id:"Akumulasi tunjangan & uang makan",zh:"津贴·餐补累计",ja:"手当・食費累計"},
+"home.deduction":{ko:"공제예정",en:"Expected deductions",id:"Perkiraan potongan",zh:"预计扣款",ja:"控除予定"},
+"attn.today_title":{ko:"오늘 근무현황",en:"Today's Work Status",id:"Status Kerja Hari Ini",zh:"今日出勤状况",ja:"本日の勤務状況"},
+"attn.shift":{ko:"주간A조 07:00-16:00",en:"Day Shift A 07:00-16:00",id:"Shift Siang A 07:00-16:00",zh:"白班A组 07:00-16:00",ja:"昼勤A班 07:00-16:00"},
+"attn.working":{ko:"근무중",en:"Working",id:"Sedang Bekerja",zh:"工作中",ja:"勤務中"},
+"attn.checkin":{ko:"출근 07:02",en:"Checked in 07:02",id:"Masuk 07:02",zh:"签到07:02",ja:"出勤07:02"},
+"attn.week_acc":{ko:"이번주 누적 42.5h · OT 4h",en:"This week 42.5h · OT 4h",id:"Minggu ini 42.5 jam · Lembur 4 jam",zh:"本周累计42.5小时·加班4小时",ja:"今週累計42.5時間・OT4時間"},
+"attn.leave_balance_title":{ko:"연차잔여",en:"Leave Balance",id:"Sisa Cuti",zh:"年假余额",ja:"有給残日数"},
+"attn.leave_balance_unit":{ko:"일",en:" days",id:" hari",zh:"天",ja:"日"},
+"attn.leave_detail":{ko:"사용 5일 · 2027-03 소멸예정 2일",en:"Used 5 days · 2 days expiring 2027-03",id:"Terpakai 5 hari · 2 hari kedaluwarsa 2027-03",zh:"已用5天·2027-03到期2天",ja:"使用5日・2027-03失効予定2日"},
+"attn.btn_apply":{ko:"연차 신청",en:"Apply for Leave",id:"Ajukan Cuti",zh:"申请年假",ja:"休暇申請"},
+"attn.recent_title":{ko:"최근신청",en:"Recent Requests",id:"Pengajuan Terbaru",zh:"最近申请",ja:"最近の申請"},
+"attn.item1":{ko:"연차 1일",en:"1-day leave",id:"Cuti 1 hari",zh:"年假1天",ja:"有給1日"},
+"attn.item2":{ko:"반차 0.5일",en:"Half-day 0.5",id:"Setengah hari 0.5",zh:"半天假0.5天",ja:"半休0.5日"},
+"attn.item3":{ko:"연차 2일",en:"2-day leave",id:"Cuti 2 hari",zh:"年假2天",ja:"有給2日"},
+"attn.status_approved":{ko:"승인",en:"Approved",id:"Disetujui",zh:"已批准",ja:"承認"},
+"attn.status_reviewing":{ko:"라인장 검토중",en:"Line lead reviewing",id:"Ditinjau pemimpin lini",zh:"组长审核中",ja:"ラインリーダー確認中"},
+"credit.score_label":{ko:"신용점수",en:"Credit Score",id:"Skor Kredit",zh:"信用分数",ja:"信用スコア"},
+"credit.top_pct":{ko:"상위 24%",en:"Top 24%",id:"24% Teratas",zh:"前24%",ja:"上位24%"},
+"credit.auto_tag":{ko:"자동승인구간",en:"Auto-approval range",id:"Rentang Setuju Otomatis",zh:"自动批准区间",ja:"自動承認区間"},
+"credit.why_link":{ko:"왜 이 점수인가요?",en:"Why this score?",id:"Mengapa skor ini?",zh:"为什么是这个分数？",ja:"なぜこのスコア？"},
+"credit.score.base":{ko:"기본점수(Base)",en:"Base score",id:"Skor dasar",zh:"基础分",ja:"基本スコア"},
+"credit.score.attendance":{ko:"출근율·근태규칙성",en:"Attendance rate & regularity",id:"Tingkat kehadiran & keteraturan",zh:"出勤率·考勤规律性",ja:"出勤率・勤怠規則性"},
+"credit.score.repay":{ko:"상환이력",en:"Repayment history",id:"Riwayat pembayaran",zh:"还款记录",ja:"返済履歴"},
+"credit.score.tenure":{ko:"근속·고용형태",en:"Tenure & employment type",id:"Masa kerja & jenis pekerjaan",zh:"工龄·雇佣形式",ja:"勤続・雇用形態"},
+"credit.score.stability":{ko:"급여안정성",en:"Pay stability",id:"Stabilitas gaji",zh:"薪资稳定性",ja:"給与安定性"},
+"credit.score.total":{ko:"합계",en:"Total",id:"Total",zh:"合计",ja:"合計"},
+"credit.stats":{ko:"출근율 99.1% · 근속 4.2년 · 연체 0회",en:"Attendance 99.1% · Tenure 4.2y · Delinquencies 0",id:"Kehadiran 99.1% · Masa kerja 4.2th · Tunggakan 0",zh:"出勤率99.1%·工龄4.2年·逾期0次",ja:"出勤率99.1%・勤続4.2年・延滞0回"},
+"credit.limit_title":{ko:"이용가능한도",en:"Available Limit",id:"Limit Tersedia",zh:"可用额度",ja:"利用可能枠"},
+"credit.loan_title":{ko:"일반대출 8.0M 상환중",en:"General loan 8.0M in repayment",id:"Pinjaman umum 8.0M sedang dilunasi",zh:"普通贷款8.0M还款中",ja:"一般融資8.0M返済中"},
+"credit.loan_round":{ko:"(4/10회차)",en:"(4/10 installments)",id:"(4/10 cicilan)",zh:"(4/10期)",ja:"(4/10回)"},
+"credit.loan_detail":{ko:"잔액 4.8M · 이번달 공제 800,000",en:"Balance 4.8M · This month's deduction 800,000",id:"Saldo 4.8M · Potongan bulan ini 800.000",zh:"余额4.8M·本月扣款800,000",ja:"残高4.8M・今月控除800,000"},
+"credit.btn_apply":{ko:"대출 신청",en:"Apply for Loan",id:"Ajukan Pinjaman",zh:"申请贷款",ja:"融資申請"},
+"tabbar.home":{ko:"홈",en:"Home",id:"Beranda",zh:"首页",ja:"ホーム"},
+"tabbar.attendance":{ko:"근태",en:"Attendance",id:"Kehadiran",zh:"考勤",ja:"勤怠"},
+"tabbar.credit":{ko:"신용",en:"Credit",id:"Kredit",zh:"信用",ja:"信用"}
+};
+var currentLang = "ko";
+function applyLang(lang){
+  currentLang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(function(el){
+    var entry = I18N[el.getAttribute("data-i18n")];
+    if(entry && entry[lang]) el.textContent = entry[lang];
+  });
+}
+document.getElementById("langSelect").addEventListener("change", function(ev){ applyLang(ev.target.value); });
+
+/* ---------- Theme toggle ---------- */
+var btnLight = document.getElementById("btnLight");
+var btnDark = document.getElementById("btnDark");
+function notifyThemeChange(){ window.dispatchEvent(new Event("gj-theme-change")); }
+function setTheme(mode){
+  document.documentElement.setAttribute("data-theme", mode);
+  if(mode === "dark"){
+    btnDark.classList.add("btn-primary"); btnLight.classList.remove("btn-primary");
+  } else {
+    btnLight.classList.add("btn-primary"); btnDark.classList.remove("btn-primary");
+  }
+  notifyThemeChange();
+}
+btnLight.addEventListener("click", function(){ setTheme("light"); });
+btnDark.addEventListener("click", function(){ setTheme("dark"); });
+
+/* ---------- Platform tab switch ---------- */
+var platIos = document.getElementById("platIos");
+var platAndroid = document.getElementById("platAndroid");
+var panelIos = document.getElementById("panel-ios");
+var panelAndroid = document.getElementById("panel-android");
+function showPlatform(p){
+  if(p === "android"){
+    panelAndroid.classList.add("active"); panelIos.classList.remove("active");
+    platAndroid.classList.add("btn-primary"); platIos.classList.remove("btn-primary");
+  } else {
+    panelIos.classList.add("active"); panelAndroid.classList.remove("active");
+    platIos.classList.add("btn-primary"); platAndroid.classList.remove("btn-primary");
+  }
+}
+platIos.addEventListener("click", function(){ showPlatform("ios"); });
+platAndroid.addEventListener("click", function(){ showPlatform("android"); });
+
+/* ---------- Clock (page header + phone status bars) ---------- */
+function pad(n){ return n < 10 ? "0"+n : ""+n; }
+var _clockStart = Date.now();
+var _clockBase = new Date(2026,7,25,9,14,2);
+function tickClocks(){
+  var now = new Date();
+  var offsetMs = now.getTime() - _clockStart;
+  var t = new Date(_clockBase.getTime() + offsetMs);
+  var full = t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate())+" "+pad(t.getHours())+":"+pad(t.getMinutes())+":"+pad(t.getSeconds())+" (WIB)";
+  var hm = pad(t.getHours())+":"+pad(t.getMinutes());
+  document.querySelectorAll(".clock").forEach(function(c){ c.textContent = full; });
+  document.querySelectorAll(".sb-clock").forEach(function(c){ c.textContent = hm; });
+}
+tickClocks();
+setInterval(tickClocks, 1000);
+
+/* ---------- Live earnings counter (both platforms share one running value) ---------- */
+(function(){
+  var value = 6745000;
+  var els = document.querySelectorAll(".live-counter");
+  if(!els.length) return;
+  setInterval(function(){
+    value += 13.7;
+    var text = "Rp " + Math.floor(value).toLocaleString("en-US");
+    els.forEach(function(el){ el.textContent = text; });
+  }, 1000);
+})();
+
+/* ---------- Last attendance sync: minutes-ago ticker ---------- */
+(function(){
+  var mIos = 2, mAndroid = 2;
+  var iosEls = document.querySelectorAll(".sync-min-ios");
+  var androidEls = document.querySelectorAll(".sync-min-android");
+  setInterval(function(){
+    mIos += 1; mAndroid += 1;
+    iosEls.forEach(function(el){ el.textContent = mIos; });
+    androidEls.forEach(function(el){ el.textContent = mAndroid; });
+  }, 20000);
+})();
+
+/* ---------- OT preview toggle -> banner ---------- */
+document.querySelectorAll(".ot-toggle").forEach(function(cb){
+  cb.addEventListener("change", function(){
+    var id = cb.getAttribute("data-target");
+    var banner = document.getElementById(id);
+    if(banner) banner.style.display = cb.checked ? "flex" : "none";
+  });
+});
+
+/* ---------- Credit score breakdown drawer ---------- */
+document.querySelectorAll(".score-toggle").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var id = btn.getAttribute("data-target");
+    var el = document.getElementById(id);
+    if(el) el.classList.toggle("open");
+  });
+});
+
+/* ---------- Credit score gauge (semi-circle SVG) ---------- */
+function svgNS(tag){ return document.createElementNS("http://www.w3.org/2000/svg", tag); }
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function renderGauge(id, value, max){
+  var g = document.getElementById(id);
+  if(!g) return;
+  function polarToCartesian(cx,cy,r,angleDeg){
+    var a = (angleDeg-180) * Math.PI/180.0;
+    return { x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+  }
+  function arcPath(cx,cy,r,startAngle,endAngle){
+    var start = polarToCartesian(cx,cy,r,endAngle);
+    var end = polarToCartesian(cx,cy,r,startAngle);
+    var largeArc = endAngle-startAngle <= 180 ? "0" : "1";
+    return ["M", start.x, start.y, "A", r, r, 0, largeArc, 0, end.x, end.y].join(" ");
+  }
+  function render(){
+    g.innerHTML = "";
+    var track = cssVar("--border") || "#e2e8f3";
+    var accent = cssVar("--accent") || "#2f6fed";
+    var bg = svgNS("path");
+    bg.setAttribute("d", arcPath(100,100,80,0,180));
+    bg.setAttribute("stroke", track); bg.setAttribute("stroke-width","14"); bg.setAttribute("fill","none");
+    bg.setAttribute("stroke-linecap","round");
+    g.appendChild(bg);
+    var pct = value/max;
+    var fg = svgNS("path");
+    fg.setAttribute("d", arcPath(100,100,80,0,180*pct));
+    fg.setAttribute("stroke", accent); fg.setAttribute("stroke-width","14"); fg.setAttribute("fill","none");
+    fg.setAttribute("stroke-linecap","round");
+    g.appendChild(fg);
+  }
+  render();
+  window.addEventListener("gj-theme-change", render);
+}
+renderGauge("creditGaugeIOS", 742, 850);
+renderGauge("creditGaugeAndroid", 742, 850);
+
+/* ---------- Init ---------- */
+applyLang("ko");
+setTheme("light");
+</script>
+</body>
+</html>
