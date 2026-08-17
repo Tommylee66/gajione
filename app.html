@@ -372,6 +372,50 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
     </div>
   </div>
 
+  <div class="section-title" data-i18n="home.paymentSchedule.title">이번 달 지급 일정</div>
+  <div class="banner-info">
+    <span>ⓘ</span>
+    <span data-i18n="home.paymentSchedule.banner">정기급여와 반기 상여금은 서로 다른 배치(차수)로 각자 게이트를 통과하며, 지급파일도 별도로 생성됩니다 — 두 금액은 합산되지 않습니다.</span>
+  </div>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-title">
+        <span data-i18n="home.paymentSchedule.regular.title">정기급여</span>
+        <span class="pill pill-info" data-i18n="status.inprogress">진행중</span>
+      </div>
+      <div class="card-sub" data-i18n="home.paymentSchedule.regular.sub">2026-08 차수 · 전 직원 대상 · 근태 기반 계산</div>
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label" data-i18n="home.paymentSchedule.payDate">지급일</div>
+          <div style="font-size:15px;font-weight:800;">08-28</div>
+        </div>
+        <div class="field">
+          <div class="field-label" data-i18n="kpi.net_payout">실지급 예정</div>
+          <div style="font-size:15px;font-weight:800;">Rp 3.47B</div>
+        </div>
+      </div>
+      <div class="caption" data-i18n="home.paymentSchedule.regular.note">↓ 아래 4-게이트 파이프라인 참고</div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span data-i18n="home.paymentSchedule.bonus.title">반기 상여금</span>
+        <span class="pill pill-warning" data-i18n="home.paymentSchedule.bonus.statusPill">계산완료 · 승인대기</span>
+      </div>
+      <div class="card-sub" data-i18n="home.paymentSchedule.bonus.sub">별도 배치·별도 지급파일 · 회사 내규 기준 재량 상여(THR과 달리 법정 의무 아님)</div>
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label" data-i18n="home.paymentSchedule.payDate">지급일</div>
+          <div style="font-size:15px;font-weight:800;">08-30</div>
+        </div>
+        <div class="field">
+          <div class="field-label" data-i18n="home.paymentSchedule.bonus.amountLabel">지급 예정액</div>
+          <div style="font-size:15px;font-weight:800;">Rp 850M</div>
+        </div>
+      </div>
+      <div class="caption" data-i18n="home.paymentSchedule.bonus.note">근태(G1) 미의존 · 계산(G2) 독립 완료 → 법인장 승인(G4) 대기</div>
+    </div>
+  </div>
+
   <div class="section-title" data-i18n="home.decision_queue">오늘 결정 큐</div>
   <div class="grid grid-3">
     <div class="decision-card" id="homeDecisionG3" data-goto="view-g3">
@@ -1543,6 +1587,89 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
 
   <div class="two-col">
     <div>
+      <div class="card">
+        <div class="card-title" data-i18n="policy.paymentTypes.title">지급 유형 및 스케줄</div>
+        <div class="card-sub" data-i18n="policy.paymentTypes.sub">정기급여 외에 THR·상여금·퇴직정산을 독립된 지급 유형으로 관리하고, 유형별 실행 방식(통합/별도 배치)과 스케줄 규칙을 설정합니다.</div>
+
+        <div class="banner-info" style="margin-top:12px;">
+          <span>ⓘ</span>
+          <span data-i18n="policy.paymentTypes.bannerInfo">정기급여와 THR·상여금·퇴직정산은 서로 다른 지급 파일로 생성되며, 한 달에 2건 이상의 지급이 발생할 수 있습니다. 각 유형은 G1~G4 게이트 중 필요한 단계만 거쳐 독립적으로 진행됩니다.</span>
+        </div>
+
+        <div class="table-wrap" style="margin-top:14px;">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="policy.paymentTypes.thType">지급 유형</th>
+                <th data-i18n="policy.paymentTypes.thExecution">실행 방식</th>
+                <th data-i18n="policy.paymentTypes.thFrequency">주기</th>
+                <th data-i18n="policy.paymentTypes.thRule">스케줄 규칙</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-highlight">
+                <td>
+                  <strong data-i18n="policy.paymentTypes.regularName">정기급여</strong>
+                  <div class="caption" style="margin-top:2px;" data-i18n="policy.paymentTypes.regularSub">Regular Monthly Payroll · 기준값</div>
+                </td>
+                <td><span class="pill pill-neutral" data-i18n="policy.paymentTypes.regularExecTag">기준 (통합 실행)</span></td>
+                <td data-i18n="policy.paymentTypes.regularFreq">매월</td>
+                <td data-i18n="policy.paymentTypes.regularRule">컷오프 07-26~08-25 · 지급일 08-28 (현재 차수 기준)</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong data-i18n="policy.paymentTypes.thrName">THR</strong>
+                  <div class="caption" style="margin-top:2px;" data-i18n="policy.paymentTypes.thrSub">Tunjangan Hari Raya</div>
+                </td>
+                <td>
+                  <select class="input" id="payScheduleThrExec" style="width:190px;">
+                    <option value="separate" selected data-i18n="policy.paymentTypes.execSeparate">별도 배치로 지급</option>
+                    <option value="bundled" data-i18n="policy.paymentTypes.execBundled">정기급여와 통합 지급</option>
+                  </select>
+                </td>
+                <td data-i18n="policy.paymentTypes.thrFreq">연 1회</td>
+                <td data-i18n="policy.paymentTypes.thrRule">직원 종교별 공휴일(이둘 피트리·크리스마스·녑이·와이삭·음력설) 기준 H-7(7일 전)까지 지급 · Permenaker No.6/2016</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong data-i18n="policy.paymentTypes.bonusName">상여금(보너스)</strong>
+                </td>
+                <td>
+                  <select class="input" id="payScheduleBonusExec" style="width:190px;">
+                    <option value="separate" selected data-i18n="policy.paymentTypes.execSeparate">별도 배치로 지급</option>
+                    <option value="bundled" data-i18n="policy.paymentTypes.execBundled">정기급여와 통합 지급</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="input" id="payScheduleBonusFreq" style="width:140px;">
+                    <option value="irregular" selected data-i18n="policy.paymentTypes.freqIrregular">비정기</option>
+                    <option value="semiannual" data-i18n="policy.paymentTypes.freqSemiannual">반기 1회</option>
+                    <option value="annual" data-i18n="policy.paymentTypes.freqAnnual">연 1회</option>
+                  </select>
+                </td>
+                <td data-i18n="policy.paymentTypes.bonusRule">지급일은 사규/PKB(단체협약)에 따라 회사가 자율 지정 (법정 기한 없음)</td>
+              </tr>
+              <tr>
+                <td><strong data-i18n="policy.paymentTypes.resignName">퇴직정산</strong></td>
+                <td>
+                  <select class="input" id="payScheduleResignExec" style="width:190px;">
+                    <option value="separate" selected data-i18n="policy.paymentTypes.execSeparate">별도 배치로 지급</option>
+                    <option value="bundled" data-i18n="policy.paymentTypes.execBundled">정기급여와 통합 지급</option>
+                  </select>
+                </td>
+                <td data-i18n="policy.paymentTypes.resignFreq">수시 (퇴사 확정 시)</td>
+                <td data-i18n="policy.paymentTypes.resignRule">퇴사(PHK)/사직 확정일 기준 오프사이클 정산 · 월 정기 배치에 미포함</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+          <button class="btn btn-primary btn-sm" type="button" id="payScheduleSaveBtn" data-i18n="policy.paymentTypes.saveBtn">저장</button>
+          <span id="payScheduleSaveNote" class="caption" style="margin-top:0;"></span>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-title" data-i18n="policy.otCard.title">초과근무(OT) 배율</div>
         <div class="field-row" style="margin-bottom:4px;">
@@ -3189,6 +3316,49 @@ btnDark.addEventListener('click', notifyThemeChange);
   });
 })();
 
+/* ---------- Policy & Rates: payment types & schedule (THR/Bonus/Resign) ---------- */
+(function(){
+  var STORAGE_KEY = 'gajionePolicyPaymentTypes';
+  var els = {
+    thrExec: document.getElementById('payScheduleThrExec'),
+    bonusExec: document.getElementById('payScheduleBonusExec'),
+    bonusFreq: document.getElementById('payScheduleBonusFreq'),
+    resignExec: document.getElementById('payScheduleResignExec')
+  };
+  var saveBtn = document.getElementById('payScheduleSaveBtn');
+  var saveNote = document.getElementById('payScheduleSaveNote');
+  if (!saveBtn || !els.thrExec) return; // policy view not present in this build
+
+  function readInputs(){
+    return {
+      thrExec: els.thrExec.value,
+      bonusExec: els.bonusExec.value,
+      bonusFreq: els.bonusFreq.value,
+      resignExec: els.resignExec.value
+    };
+  }
+
+  function applyToInputs(cfg){
+    if (cfg.thrExec) els.thrExec.value = cfg.thrExec;
+    if (cfg.bonusExec) els.bonusExec.value = cfg.bonusExec;
+    if (cfg.bonusFreq) els.bonusFreq.value = cfg.bonusFreq;
+    if (cfg.resignExec) els.resignExec.value = cfg.resignExec;
+  }
+
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch(e) { saved = null; }
+  if (saved) applyToInputs(saved);
+
+  saveBtn.addEventListener('click', function(){
+    var cfg = readInputs();
+    cfg.savedAt = new Date().toISOString();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg)); } catch(e) {}
+    saveNote.textContent = '저장됨 · 다음 차수부터 적용, 소급 없음';
+    saveNote.style.color = 'var(--success)';
+    setTimeout(function(){ saveNote.textContent = ''; }, 4000);
+  });
+})();
+
 /* ---------- Policy & Rates: allowance (fixed/variable) management ---------- */
 (function(){
   var body = document.getElementById('allowanceBody');
@@ -4156,7 +4326,45 @@ const I18N = {
 "policy.proration.sub":{ko:"입사·퇴사·휴직 등으로 인한 일할 계산 시, 근무일 기준과 달력일 기준 중 하나를 선택합니다. 부서별로 회사 기본값과 다르게 설정할 수 있습니다.",en:"For prorated pay due to hires, exits, or leave, choose either working-day or calendar-day basis. Departments can be set differently from the company default.",id:"Untuk perhitungan proporsional akibat masuk/keluar/cuti, pilih dasar hari kerja atau hari kalender. Departemen dapat diatur berbeda dari default perusahaan.",zh:"因入职、离职、休假等产生的按比例计算，可选择按工作日或按日历天数。各部门可与公司默认值不同设置。",ja:"入社・退社・休職等による日割り計算では、稼働日基準か暦日基準のいずれかを選択します。部署ごとに会社デフォルトと異なる設定が可能です。"},
 "policy.proration.thStandard":{ko:"기준",en:"Standard",id:"Standar",zh:"标准",ja:"基準"},
 "policy.proration.title":{ko:"비례배분(Proration) 기준",en:"Proration Standard",id:"Standar Proporsional (Proration)",zh:"比例分摊（Proration）标准",ja:"比例配分（Proration）基準"},
-"policy.proration.workingDays":{ko:"근무일 기준",en:"Working Days",id:"Hari Kerja",zh:"按工作日",ja:"稼働日基準"}
+"policy.proration.workingDays":{ko:"근무일 기준",en:"Working Days",id:"Hari Kerja",zh:"按工作日",ja:"稼働日基準"},
+"policy.paymentTypes.title":{ko:"지급 유형 및 스케줄",en:"Payment Types & Schedule",id:"Jenis & Jadwal Pembayaran",zh:"支付类型与排程",ja:"支給種別とスケジュール"},
+"policy.paymentTypes.sub":{ko:"정기급여 외에 THR·상여금·퇴직정산을 독립된 지급 유형으로 관리하고, 유형별 실행 방식(통합/별도 배치)과 스케줄 규칙을 설정합니다.",en:"Manage THR, bonus, and resign compensation as independent payment types alongside regular payroll, and configure each type's execution mode (bundled vs. separate batch) and schedule rule.",id:"Kelola THR, bonus, dan kompensasi resign sebagai jenis pembayaran independen di luar payroll reguler, serta atur mode eksekusi (digabung/batch terpisah) dan aturan jadwal masing-masing jenis.",zh:"将THR、奖金、离职结算作为独立于常规工资的支付类型进行管理，并为每种类型设置执行方式（合并/独立批次）与排程规则。",ja:"定期給与とは別に、THR・賞与・退職精算を独立した支給種別として管理し、種別ごとの実行方式（統合/別バッチ）とスケジュールルールを設定します。"},
+"policy.paymentTypes.bannerInfo":{ko:"정기급여와 THR·상여금·퇴직정산은 서로 다른 지급 파일로 생성되며, 한 달에 2건 이상의 지급이 발생할 수 있습니다. 각 유형은 G1~G4 게이트 중 필요한 단계만 거쳐 독립적으로 진행됩니다.",en:"Regular payroll and THR/bonus/resign compensation are generated as separate payment files, so a single month can have two or more payment runs. Each type passes only the G1-G4 gates that apply to it and progresses independently.",id:"Payroll reguler dan THR/bonus/kompensasi resign dibuat sebagai file pembayaran yang terpisah, sehingga dalam satu bulan bisa terjadi dua pembayaran atau lebih. Setiap jenis hanya melewati gate G1-G4 yang relevan dan berjalan secara independen.",zh:"常规工资与THR/奖金/离职结算将生成为不同的支付文件，因此同一个月可能出现两笔以上的支付。每种类型只经过与其相关的G1-G4关卡，并独立推进。",ja:"定期給与とTHR・賞与・退職精算は別々の支給ファイルとして生成されるため、1か月に2件以上の支給が発生する場合があります。各種別はG1〜G4のうち該当するゲートのみを通過し、独立して進行します。"},
+"policy.paymentTypes.thType":{ko:"지급 유형",en:"Payment Type",id:"Jenis Pembayaran",zh:"支付类型",ja:"支給種別"},
+"policy.paymentTypes.thExecution":{ko:"실행 방식",en:"Execution Mode",id:"Mode Eksekusi",zh:"执行方式",ja:"実行方式"},
+"policy.paymentTypes.thFrequency":{ko:"주기",en:"Frequency",id:"Frekuensi",zh:"周期",ja:"頻度"},
+"policy.paymentTypes.thRule":{ko:"스케줄 규칙",en:"Schedule Rule",id:"Aturan Jadwal",zh:"排程规则",ja:"スケジュールルール"},
+"policy.paymentTypes.regularName":{ko:"정기급여",en:"Regular Payroll",id:"Payroll Reguler",zh:"常规工资",ja:"定期給与"},
+"policy.paymentTypes.regularSub":{ko:"Regular Monthly Payroll · 기준값",en:"Regular Monthly Payroll · Baseline",id:"Regular Monthly Payroll · Nilai Dasar",zh:"Regular Monthly Payroll · 基准值",ja:"Regular Monthly Payroll・基準値"},
+"policy.paymentTypes.regularExecTag":{ko:"기준 (통합 실행)",en:"Baseline (Bundled Run)",id:"Dasar (Eksekusi Digabung)",zh:"基准（合并执行）",ja:"基準（統合実行）"},
+"policy.paymentTypes.regularFreq":{ko:"매월",en:"Monthly",id:"Bulanan",zh:"每月",ja:"毎月"},
+"policy.paymentTypes.regularRule":{ko:"컷오프 07-26~08-25 · 지급일 08-28 (현재 차수 기준)",en:"Cutoff 07-26 to 08-25 · pay date 08-28 (for the current cycle)",id:"Cutoff 07-26~08-25 · tanggal bayar 08-28 (siklus saat ini)",zh:"截止日 07-26~08-25 · 发放日 08-28（本次周期）",ja:"締切07-26〜08-25・支給日08-28（今回サイクル）"},
+"policy.paymentTypes.thrName":{ko:"THR",en:"THR",id:"THR",zh:"THR",ja:"THR"},
+"policy.paymentTypes.thrSub":{ko:"Tunjangan Hari Raya",en:"Tunjangan Hari Raya (Religious Holiday Allowance)",id:"Tunjangan Hari Raya",zh:"Tunjangan Hari Raya（宗教节日津贴）",ja:"Tunjangan Hari Raya（宗教祝日手当）"},
+"policy.paymentTypes.execSeparate":{ko:"별도 배치로 지급",en:"Paid as Separate Batch",id:"Dibayar sebagai Batch Terpisah",zh:"作为独立批次发放",ja:"別バッチで支給"},
+"policy.paymentTypes.execBundled":{ko:"정기급여와 통합 지급",en:"Bundled with Regular Payroll",id:"Digabung dengan Payroll Reguler",zh:"与常规工资合并发放",ja:"定期給与と統合支給"},
+"policy.paymentTypes.thrFreq":{ko:"연 1회",en:"Once a Year",id:"1x per Tahun",zh:"每年1次",ja:"年1回"},
+"policy.paymentTypes.thrRule":{ko:"직원 종교별 공휴일(이둘 피트리·크리스마스·녑이·와이삭·음력설) 기준 H-7(7일 전)까지 지급 · Permenaker No.6/2016",en:"Paid by H-7 (7 days before) each employee's own religious holiday (Idul Fitri, Christmas, Nyepi, Waisak, or Chinese New Year) · Permenaker No. 6/2016",id:"Dibayar paling lambat H-7 (7 hari) sebelum Hari Raya Keagamaan masing-masing karyawan (Idul Fitri, Natal, Nyepi, Waisak, atau Imlek) · Permenaker No. 6/2016",zh:"根据员工各自宗教节日（开斋节·圣诞节·涅槃日·卫塞节·农历新年）于H-7（提前7天）前发放 · Permenaker No.6/2016",ja:"各従業員の宗教別祝日（イドゥルフィトリ・クリスマス・ニュピ・ワイサック・旧正月）基準でH-7（7日前）までに支給・Permenaker No.6/2016"},
+"policy.paymentTypes.bonusName":{ko:"상여금(보너스)",en:"Bonus",id:"Bonus",zh:"奖金",ja:"賞与（ボーナス）"},
+"policy.paymentTypes.freqIrregular":{ko:"비정기",en:"Irregular",id:"Tidak Rutin",zh:"不定期",ja:"不定期"},
+"policy.paymentTypes.freqSemiannual":{ko:"반기 1회",en:"Semi-Annual",id:"1x per Semester",zh:"每半年1次",ja:"半期1回"},
+"policy.paymentTypes.freqAnnual":{ko:"연 1회",en:"Annual",id:"1x per Tahun",zh:"每年1次",ja:"年1回"},
+"policy.paymentTypes.bonusRule":{ko:"지급일은 사규/PKB(단체협약)에 따라 회사가 자율 지정 (법정 기한 없음)",en:"Pay date is set at the company's discretion per internal policy/PKB (collective agreement) — no statutory deadline",id:"Tanggal pembayaran ditentukan sendiri oleh perusahaan sesuai peraturan perusahaan/PKB — tidak ada batas waktu menurut undang-undang",zh:"发放日期由公司根据内部规定/集体劳动协议（PKB）自行决定——无法定期限",ja:"支給日は社内規定・PKB（労働協約）に基づき会社が任意に設定（法定期限なし）"},
+"policy.paymentTypes.resignName":{ko:"퇴직정산",en:"Resign/Severance Compensation",id:"Kompensasi Resign/Pesangon",zh:"离职结算",ja:"退職精算"},
+"policy.paymentTypes.resignFreq":{ko:"수시 (퇴사 확정 시)",en:"As Needed (Upon Termination)",id:"Insidental (Saat Resign Dikonfirmasi)",zh:"不定时（离职确认时）",ja:"随時（退職確定時）"},
+"policy.paymentTypes.resignRule":{ko:"퇴사(PHK)/사직 확정일 기준 오프사이클 정산 · 월 정기 배치에 미포함",en:"Off-cycle settlement based on the termination (PHK)/resignation effective date · not included in the monthly regular batch",id:"Penyelesaian off-cycle berdasarkan tanggal efektif PHK/pengunduran diri · tidak termasuk dalam batch bulanan reguler",zh:"以解雇(PHK)/离职生效日为准进行周期外结算 · 不计入月度常规批次",ja:"解雇(PHK)・退職の確定日を基準にオフサイクルで精算・月次定期バッチには含まない"},
+"policy.paymentTypes.saveBtn":{ko:"저장",en:"Save",id:"Simpan",zh:"保存",ja:"保存"},
+"home.paymentSchedule.title":{ko:"이번 달 지급 일정",en:"This Month's Payment Schedule",id:"Jadwal Pembayaran Bulan Ini",zh:"本月支付日程",ja:"今月の支給スケジュール"},
+"home.paymentSchedule.banner":{ko:"정기급여와 반기 상여금은 서로 다른 배치(차수)로 각자 게이트를 통과하며, 지급파일도 별도로 생성됩니다 — 두 금액은 합산되지 않습니다.",en:"Regular payroll and the semi-annual bonus pass through the gates as separate batches, each generating its own payment file — the two amounts are never combined.",id:"Payroll reguler dan bonus semester berjalan sebagai batch terpisah melalui masing-masing gerbang, dan masing-masing menghasilkan file pembayaran sendiri — kedua nominal ini tidak pernah digabung.",zh:"定期工资与半年奖金作为各自独立的批次分别通过各关卡，并各自生成独立的支付文件——两笔金额不会合并。",ja:"定期給与と半期賞与はそれぞれ独立したバッチとしてゲートを通過し、支給ファイルも別々に生成されます — 2つの金額が合算されることはありません。"},
+"home.paymentSchedule.regular.title":{ko:"정기급여",en:"Regular Monthly Payroll",id:"Payroll Bulanan Reguler",zh:"定期工资",ja:"定期給与"},
+"home.paymentSchedule.regular.sub":{ko:"2026-08 차수 · 전 직원 대상 · 근태 기반 계산",en:"Aug 2026 batch · applies to all employees · attendance-based calculation",id:"Batch Agu 2026 · berlaku untuk semua karyawan · perhitungan berbasis kehadiran",zh:"2026年8月批次 · 面向全体员工 · 基于考勤计算",ja:"2026年8月バッチ・全従業員対象・勤怠に基づく計算"},
+"home.paymentSchedule.payDate":{ko:"지급일",en:"Pay Date",id:"Tanggal Pembayaran",zh:"支付日",ja:"支給日"},
+"home.paymentSchedule.regular.note":{ko:"↓ 아래 4-게이트 파이프라인 참고",en:"↓ See the 4-gate pipeline below",id:"↓ Lihat pipeline 4-gerbang di bawah",zh:"↓ 请参见下方的4关卡流水线",ja:"↓ 下記の4ゲートパイプラインを参照"},
+"home.paymentSchedule.bonus.title":{ko:"반기 상여금",en:"Semi-Annual Bonus",id:"Bonus Semester",zh:"半年奖金",ja:"半期賞与"},
+"home.paymentSchedule.bonus.statusPill":{ko:"계산완료 · 승인대기",en:"Calc. Complete · Pending Approval",id:"Perhitungan Selesai · Menunggu Persetujuan",zh:"计算完成 · 待审批",ja:"計算完了・承認待ち"},
+"home.paymentSchedule.bonus.sub":{ko:"별도 배치·별도 지급파일 · 회사 내규 기준 재량 상여(THR과 달리 법정 의무 아님)",en:"Separate batch, separate payment file · discretionary bonus per company policy (unlike THR, not a statutory obligation)",id:"Batch terpisah, file pembayaran terpisah · bonus diskresioner sesuai kebijakan perusahaan (berbeda dari THR, bukan kewajiban hukum)",zh:"独立批次、独立支付文件 · 依据公司内规的酌情奖金（与THR不同，非法定义务）",ja:"別バッチ・別支給ファイル・社内規定に基づく裁量賞与（THRと異なり法的義務ではない）"},
+"home.paymentSchedule.bonus.amountLabel":{ko:"지급 예정액",en:"Scheduled Amount",id:"Jumlah Terjadwal",zh:"预定支付金额",ja:"支給予定額"},
+"home.paymentSchedule.bonus.note":{ko:"근태(G1) 미의존 · 계산(G2) 독립 완료 → 법인장 승인(G4) 대기",en:"Not dependent on attendance (G1) · calculation (G2) completed independently → awaiting director approval (G4)",id:"Tidak bergantung pada kehadiran (G1) · perhitungan (G2) selesai secara independen → menunggu persetujuan direktur (G4)",zh:"不依赖考勤(G1) · 计算(G2)已独立完成 → 等待法人代表审批(G4)",ja:"勤怠(G1)に非依存・計算(G2)は独立して完了 → 法人代表の承認(G4)待ち"}
 };
 
 function applyLang(lang){
