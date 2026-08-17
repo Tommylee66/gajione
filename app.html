@@ -1545,47 +1545,295 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
     <div>
       <div class="card">
         <div class="card-title" data-i18n="policy.otCard.title">초과근무(OT) 배율</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th data-i18n="policy.otCard.thBracket">구간</th>
-                <th data-i18n="policy.otCard.thMultiplier">배율</th>
-                <th data-i18n="policy.otCard.thLegal">법적 근거</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td data-i18n="policy.otCard.row1">평일 첫 1시간</td>
-                <td><input type="number" class="input" id="otTier1" value="1.5" step="0.1" style="width:80px">×</td>
-                <td>Kepmenakertrans 102/2004</td>
-              </tr>
-              <tr>
-                <td data-i18n="policy.otCard.row2">평일 2시간째부터</td>
-                <td><input type="number" class="input" id="otTier2" value="2.0" step="0.1" style="width:80px">×</td>
-                <td>Kepmenakertrans 102/2004</td>
-              </tr>
-              <tr>
-                <td data-i18n="policy.otCard.row3">휴일 8시간 이내</td>
-                <td><input type="number" class="input" id="otTier3Min" value="2.0" step="0.1" style="width:80px">× ~ <input type="number" class="input" id="otTier3Max" value="3.0" step="0.1" style="width:80px">×</td>
-                <td>Kepmenakertrans 102/2004</td>
-              </tr>
-              <tr>
-                <td data-i18n="policy.otCard.row4">휴일 9시간째부터</td>
-                <td><input type="number" class="input" id="otTier4" value="4.0" step="0.1" style="width:80px">×</td>
-                <td>Kepmenakertrans 102/2004</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="field-row" style="margin-bottom:4px;">
+          <div class="field">
+            <div class="field-label" data-i18n="policy.otCard.methodLabel">계산 방식</div>
+            <select class="input" id="otMethod" style="width:200px;">
+              <option value="multiplier" data-i18n="policy.otCard.methodMultiplier">법정 배율 적용</option>
+              <option value="fixed" data-i18n="policy.otCard.methodFixed">고정 요율 적용</option>
+            </select>
+          </div>
         </div>
-        <div class="field">
-          <div class="field-label" data-i18n="policy.otCard.divisorLabel">시급 산식 분모</div>
-          <input type="number" class="input" id="otDivisor" value="173" style="width:120px">
-          <div class="caption" data-i18n="policy.otCard.divisorCaption">시급 = 월급여 ÷ 이 값</div>
+        <div class="caption" style="margin-top:0;margin-bottom:12px;" data-i18n="policy.otCard.methodNote">모든 회사가 배율 방식을 쓰는 것은 아닙니다. 일부 회사는 시간당 고정 요율을 사용하므로, 회사 정책에 맞는 방식을 선택하세요.</div>
+        <div id="otMultiplierBlock">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="policy.otCard.thBracket">구간</th>
+                  <th data-i18n="policy.otCard.thMultiplier">배율</th>
+                  <th data-i18n="policy.otCard.thLegal">법적 근거</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td data-i18n="policy.otCard.row1">평일 첫 1시간</td>
+                  <td><input type="number" class="input" id="otTier1" value="1.5" step="0.1" style="width:80px">×</td>
+                  <td>Kepmenakertrans 102/2004</td>
+                </tr>
+                <tr>
+                  <td data-i18n="policy.otCard.row2">평일 2시간째부터</td>
+                  <td><input type="number" class="input" id="otTier2" value="2.0" step="0.1" style="width:80px">×</td>
+                  <td>Kepmenakertrans 102/2004</td>
+                </tr>
+                <tr>
+                  <td data-i18n="policy.otCard.row3">휴일 8시간 이내</td>
+                  <td><input type="number" class="input" id="otTier3Min" value="2.0" step="0.1" style="width:80px">× ~ <input type="number" class="input" id="otTier3Max" value="3.0" step="0.1" style="width:80px">×</td>
+                  <td>Kepmenakertrans 102/2004</td>
+                </tr>
+                <tr>
+                  <td data-i18n="policy.otCard.row4">휴일 9시간째부터</td>
+                  <td><input type="number" class="input" id="otTier4" value="4.0" step="0.1" style="width:80px">×</td>
+                  <td>Kepmenakertrans 102/2004</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="field">
+            <div class="field-label" data-i18n="policy.otCard.divisorLabel">시급 산식 분모</div>
+            <input type="number" class="input" id="otDivisor" value="173" style="width:120px">
+            <div class="caption" data-i18n="policy.otCard.divisorCaption">시급 = 월급여 ÷ 이 값</div>
+          </div>
+        </div>
+        <div id="otFixedBlock" style="display:none;">
+          <div class="field">
+            <div class="field-label" data-i18n="policy.otCard.fixedRateLabel">시간당 고정 요율 (Rp)</div>
+            <input type="number" class="input" id="otFixedRate" value="45000" step="1000" style="width:140px">
+          </div>
+          <div class="caption" data-i18n="policy.otCard.fixedRateCaption">배율 대신 초과근무 1시간당 이 금액을 정액으로 지급합니다.</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
           <button class="btn btn-primary btn-sm" type="button" id="otSaveBtn" data-i18n="policy.otCard.saveBtn">저장</button>
           <span id="otSaveNote" class="caption" style="margin-top:0;"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" data-i18n="policy.otEligibility.title">직급별 초과근무 대상</div>
+        <div class="card-sub" data-i18n="policy.otEligibility.sub">직급에 따라 초과근무 수당 지급 대상 여부가 다를 수 있습니다. 관리직은 일반적으로 고정급으로 제외됩니다.</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="master.th.rank">직급</th>
+                <th data-i18n="policy.otEligibility.thEligible">OT 대상</th>
+                <th data-i18n="policy.otEligibility.thNote">비고</th>
+              </tr>
+            </thead>
+            <tbody id="otEligibilityBody">
+              <tr data-rank="staff">
+                <td data-i18n="master.rank.staff">사원</td>
+                <td><input type="checkbox" class="ot-eligible-check" checked></td>
+                <td data-i18n="policy.otEligibility.noteProd">생산직</td>
+              </tr>
+              <tr data-rank="foreman">
+                <td data-i18n="master.rank.foreman">반장</td>
+                <td><input type="checkbox" class="ot-eligible-check" checked></td>
+                <td data-i18n="policy.otEligibility.noteProd">생산직</td>
+              </tr>
+              <tr data-rank="supervisor">
+                <td data-i18n="master.rank.supervisor">계장</td>
+                <td><input type="checkbox" class="ot-eligible-check" checked></td>
+                <td data-i18n="policy.otEligibility.noteProd">생산직</td>
+              </tr>
+              <tr data-rank="manager">
+                <td data-i18n="master.rank.manager">과장</td>
+                <td><input type="checkbox" class="ot-eligible-check"></td>
+                <td data-i18n="policy.otEligibility.noteMgmt">관리직 · 고정급</td>
+              </tr>
+              <tr data-rank="senior_manager">
+                <td data-i18n="master.rank.senior_manager">부장</td>
+                <td><input type="checkbox" class="ot-eligible-check"></td>
+                <td data-i18n="policy.otEligibility.noteMgmt">관리직 · 고정급</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+          <button class="btn btn-primary btn-sm" type="button" id="otEligibilitySaveBtn" data-i18n="policy.otEligibility.saveBtn">저장</button>
+          <span id="otEligibilitySaveNote" class="caption" style="margin-top:0;"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" data-i18n="policy.allowance.title">수당 항목 관리</div>
+        <div class="card-sub" data-i18n="policy.allowance.sub">급여를 구성하는 고정·비고정 수당 항목을 관리합니다. 고정수당은 매월 동일 금액, 비고정수당은 조건에 따라 변동됩니다.</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="policy.allowance.thName">수당명</th>
+                <th data-i18n="policy.allowance.thType">유형</th>
+                <th data-i18n="policy.allowance.thBasis">기준/금액</th>
+                <th data-i18n="th.status">상태</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="allowanceBody">
+              <tr data-id="transport">
+                <td class="allowance-name">교통비</td>
+                <td><span class="pill pill-neutral allowance-type-pill" data-type="fixed" data-i18n="policy.allowance.fixed">고정</span></td>
+                <td class="allowance-basis">Rp450,000/월</td>
+                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+              <tr data-id="meal">
+                <td class="allowance-name">식대</td>
+                <td><span class="pill pill-neutral allowance-type-pill" data-type="fixed" data-i18n="policy.allowance.fixed">고정</span></td>
+                <td class="allowance-basis">Rp600,000/월</td>
+                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+              <tr data-id="tenure">
+                <td class="allowance-name">근속수당</td>
+                <td><span class="pill pill-neutral allowance-type-pill" data-type="fixed" data-i18n="policy.allowance.fixed">고정</span></td>
+                <td class="allowance-basis" data-i18n="policy.allowance.tenureBasis">근속연수 × Rp50,000</td>
+                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+              <tr data-id="overtime">
+                <td class="allowance-name" data-i18n="policy.allowance.otName">초과근무수당</td>
+                <td><span class="pill pill-warning allowance-type-pill" data-type="variable" data-i18n="policy.allowance.variable">비고정</span></td>
+                <td class="allowance-basis" data-i18n="policy.allowance.otBasis">OT 배율/고정요율 정책에 따라 계산</td>
+                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+              <tr data-id="attendance">
+                <td class="allowance-name" data-i18n="policy.allowance.attendanceName">개근수당</td>
+                <td><span class="pill pill-warning allowance-type-pill" data-type="variable" data-i18n="policy.allowance.variable">비고정</span></td>
+                <td class="allowance-basis" data-i18n="policy.allowance.attendanceBasis">조건 충족 시 Rp200,000</td>
+                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn btn-primary btn-sm" type="button" id="allowanceAddBtn" data-i18n="policy.allowance.addBtn">+ 수당 추가</button>
+        </div>
+        <div class="card" id="allowanceForm" style="display:none;margin-top:12px;background:var(--surface-alt);">
+          <input type="hidden" id="allowanceFormId" value="">
+          <input type="hidden" id="allowanceFormMode" value="add">
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label" data-i18n="policy.allowance.formName">수당명</div>
+              <input type="text" class="input" id="allowanceFormName" style="width:160px;">
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="policy.allowance.formType">유형</div>
+              <select class="input" id="allowanceFormType" style="width:120px;">
+                <option value="fixed" data-i18n="policy.allowance.fixed">고정</option>
+                <option value="variable" data-i18n="policy.allowance.variable">비고정</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="policy.allowance.formBasis">기준/금액</div>
+              <input type="text" class="input" id="allowanceFormBasis" style="width:220px;" placeholder="예: Rp300,000/월">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary btn-sm" type="button" id="allowanceFormSaveBtn" data-i18n="btn.save">저장</button>
+            <button class="btn btn-sm" type="button" id="allowanceFormCancelBtn" data-i18n="btn.cancel">취소</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" data-i18n="policy.proration.title">비례배분(Proration) 기준</div>
+        <div class="card-sub" data-i18n="policy.proration.sub">입사·퇴사·휴직 등으로 인한 일할 계산 시, 근무일 기준과 달력일 기준 중 하나를 선택합니다. 부서별로 회사 기본값과 다르게 설정할 수 있습니다.</div>
+        <div class="field">
+          <div class="field-label" data-i18n="policy.proration.defaultLabel">회사 기본값</div>
+          <select class="input" id="prorationDefault" style="width:220px;">
+            <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+            <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+          </select>
+        </div>
+        <div class="table-wrap" style="margin-top:14px;">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="master.filter.dept_label">부서</th>
+                <th data-i18n="policy.proration.thStandard">기준</th>
+              </tr>
+            </thead>
+            <tbody id="prorationDeptBody">
+              <tr data-dept="assembly1"><td>조립1라인</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+              <tr data-dept="assembly2"><td>조립2라인</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+              <tr data-dept="press"><td>프레스</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+              <tr data-dept="weld"><td>용접</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+              <tr data-dept="paint"><td>도장</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+              <tr data-dept="quality"><td>품질</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+              <tr data-dept="logistics"><td>물류</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+              <tr data-dept="office"><td>사무</td><td>
+                <select class="input proration-dept-select">
+                  <option value="default" data-i18n="policy.proration.followDefault">회사 기본값 따름</option>
+                  <option value="working_days" data-i18n="policy.proration.workingDays">근무일 기준</option>
+                  <option value="calendar_days" data-i18n="policy.proration.calendarDays">달력일 기준</option>
+                </select>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+          <button class="btn btn-primary btn-sm" type="button" id="prorationSaveBtn" data-i18n="btn.save">저장</button>
+          <span id="prorationSaveNote" class="caption" style="margin-top:0;"></span>
         </div>
       </div>
 
@@ -2811,12 +3059,18 @@ btnDark.addEventListener('click', notifyThemeChange);
   var ids = { tier1:'otTier1', tier2:'otTier2', tier3Min:'otTier3Min', tier3Max:'otTier3Max', tier4:'otTier4', divisor:'otDivisor' };
   var els = {};
   for (var k in ids) { els[k] = document.getElementById(ids[k]); }
+  var methodSelect = document.getElementById('otMethod');
+  var fixedRateInput = document.getElementById('otFixedRate');
+  var multiplierBlock = document.getElementById('otMultiplierBlock');
+  var fixedBlock = document.getElementById('otFixedBlock');
   var saveBtn = document.getElementById('otSaveBtn');
   var saveNote = document.getElementById('otSaveNote');
   if (!els.tier1 || !saveBtn) return; // policy view not present in this build
 
   function readInputs(){
     return {
+      method: methodSelect ? methodSelect.value : 'multiplier',
+      fixedRate: parseFloat(fixedRateInput && fixedRateInput.value) || 0,
       tier1: parseFloat(els.tier1.value) || 0,
       tier2: parseFloat(els.tier2.value) || 0,
       tier3Min: parseFloat(els.tier3Min.value) || 0,
@@ -2833,11 +3087,26 @@ btnDark.addEventListener('click', notifyThemeChange);
     els.tier3Max.value = policy.tier3Max;
     els.tier4.value = policy.tier4;
     els.divisor.value = policy.divisor;
+    if (methodSelect && policy.method) methodSelect.value = policy.method;
+    if (fixedRateInput && policy.fixedRate) fixedRateInput.value = policy.fixedRate;
   }
+
+  function updateMethodVisibility(){
+    var isFixed = methodSelect && methodSelect.value === 'fixed';
+    if (multiplierBlock) multiplierBlock.style.display = isFixed ? 'none' : '';
+    if (fixedBlock) fixedBlock.style.display = isFixed ? '' : 'none';
+  }
+
+  if (methodSelect) methodSelect.addEventListener('change', updateMethodVisibility);
+  updateMethodVisibility();
 
   function fmtMult(n){
     var s = Number(n).toFixed(1);
     return s + '×';
+  }
+
+  function fmtRupiah(n){
+    return 'Rp' + Number(n).toLocaleString('en-US');
   }
 
   function applyToG2(policy){
@@ -2847,18 +3116,27 @@ btnDark.addEventListener('click', notifyThemeChange);
     var m4 = document.getElementById('g2OtMult4');
     var basis = document.getElementById('g2OtBasis');
     var note = document.getElementById('g2OtPolicyNote');
-    if (m1) m1.textContent = fmtMult(policy.tier1);
-    if (m2) m2.textContent = fmtMult(policy.tier2);
-    if (m3) m3.textContent = fmtMult(policy.tier3Min) + '~' + fmtMult(policy.tier3Max);
-    if (m4) m4.textContent = fmtMult(policy.tier4);
-    if (basis) basis.textContent = '시급 = 월급여 × 1/' + policy.divisor + ', Kepmenakertrans 102/2004 근거';
-    if (note) note.textContent = '이번 차수(2026-08)는 이미 확정된 수치입니다. 정책·요율에서 수정한 배율은 다음 차수부터 적용되며, 위 배율 표시는 현재 정책 값을 실시간 반영한 것입니다. 정책·요율으로 이동 →';
+    if (policy.method === 'fixed') {
+      if (m1) m1.textContent = fmtRupiah(policy.fixedRate);
+      if (m2) m2.textContent = fmtRupiah(policy.fixedRate);
+      if (m3) m3.textContent = fmtRupiah(policy.fixedRate);
+      if (m4) m4.textContent = fmtRupiah(policy.fixedRate);
+      if (basis) basis.textContent = '시간당 고정 요율 ' + fmtRupiah(policy.fixedRate) + ' 적용 (배율 미사용)';
+    } else {
+      if (m1) m1.textContent = fmtMult(policy.tier1);
+      if (m2) m2.textContent = fmtMult(policy.tier2);
+      if (m3) m3.textContent = fmtMult(policy.tier3Min) + '~' + fmtMult(policy.tier3Max);
+      if (m4) m4.textContent = fmtMult(policy.tier4);
+      if (basis) basis.textContent = '시급 = 월급여 × 1/' + policy.divisor + ', Kepmenakertrans 102/2004 근거';
+    }
+    if (note) note.textContent = '이번 차수(2026-08)는 이미 확정된 수치입니다. 정책·요율에서 수정한 값은 다음 차수부터 적용되며, 위 표시는 현재 정책 값을 실시간 반영한 것입니다. 정책·요율으로 이동 →';
   }
 
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch(e) { saved = null; }
   var current = saved || readInputs();
   if (saved) applyToInputs(saved);
+  updateMethodVisibility();
   applyToG2(current);
 
   saveBtn.addEventListener('click', function(){
@@ -2866,6 +3144,203 @@ btnDark.addEventListener('click', notifyThemeChange);
     policy.savedAt = new Date().toISOString();
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(policy)); } catch(e) {}
     applyToG2(policy);
+    saveNote.textContent = '저장됨 · 다음 차수부터 적용, 소급 없음';
+    saveNote.style.color = 'var(--success)';
+    setTimeout(function(){ saveNote.textContent = ''; }, 4000);
+  });
+})();
+
+/* ---------- Policy & Rates: rank-based OT eligibility ---------- */
+(function(){
+  var STORAGE_KEY = 'gajionePolicyOtEligibility';
+  var body = document.getElementById('otEligibilityBody');
+  var saveBtn = document.getElementById('otEligibilitySaveBtn');
+  var saveNote = document.getElementById('otEligibilitySaveNote');
+  if (!body || !saveBtn) return;
+
+  var checks = Array.prototype.slice.call(body.querySelectorAll('.ot-eligible-check'));
+
+  function readState(){
+    var state = {};
+    checks.forEach(function(chk){
+      var rank = chk.closest('tr').getAttribute('data-rank');
+      state[rank] = chk.checked;
+    });
+    return state;
+  }
+
+  function applyState(state){
+    checks.forEach(function(chk){
+      var rank = chk.closest('tr').getAttribute('data-rank');
+      if (Object.prototype.hasOwnProperty.call(state, rank)) chk.checked = !!state[rank];
+    });
+  }
+
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch(e) { saved = null; }
+  if (saved) applyState(saved);
+
+  saveBtn.addEventListener('click', function(){
+    var state = readState();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+    saveNote.textContent = '저장됨 · 다음 차수부터 적용, 소급 없음';
+    saveNote.style.color = 'var(--success)';
+    setTimeout(function(){ saveNote.textContent = ''; }, 4000);
+  });
+})();
+
+/* ---------- Policy & Rates: allowance (fixed/variable) management ---------- */
+(function(){
+  var body = document.getElementById('allowanceBody');
+  var addBtn = document.getElementById('allowanceAddBtn');
+  var form = document.getElementById('allowanceForm');
+  var formId = document.getElementById('allowanceFormId');
+  var formMode = document.getElementById('allowanceFormMode');
+  var formName = document.getElementById('allowanceFormName');
+  var formType = document.getElementById('allowanceFormType');
+  var formBasis = document.getElementById('allowanceFormBasis');
+  var formSaveBtn = document.getElementById('allowanceFormSaveBtn');
+  var formCancelBtn = document.getElementById('allowanceFormCancelBtn');
+  if (!body || !addBtn || !form) return;
+
+  var TYPE_LABEL = {
+    fixed: { ko:'고정', en:'Fixed', id:'Tetap', zh:'固定', ja:'固定' },
+    variable: { ko:'비고정', en:'Variable', id:'Tidak Tetap', zh:'非固定', ja:'非固定' }
+  };
+  var ACTIVE_LABEL = { ko:'사용중', en:'Active', id:'Aktif', zh:'使用中', ja:'使用中' };
+
+  function typeText(type){
+    var l = (document.documentElement.getAttribute('lang')) || 'ko';
+    var entry = TYPE_LABEL[type] || TYPE_LABEL.fixed;
+    return entry[l] || entry.ko;
+  }
+  function activeText(){
+    var l = (document.documentElement.getAttribute('lang')) || 'ko';
+    return ACTIVE_LABEL[l] || ACTIVE_LABEL.ko;
+  }
+
+  function openForm(mode, row){
+    formMode.value = mode;
+    if (mode === 'edit' && row) {
+      formId.value = row.getAttribute('data-id') || '';
+      formName.value = row.querySelector('.allowance-name').textContent.trim();
+      formType.value = row.querySelector('.allowance-type-pill').getAttribute('data-type') || 'fixed';
+      formBasis.value = row.querySelector('.allowance-basis').textContent.trim();
+    } else {
+      formId.value = '';
+      formName.value = '';
+      formType.value = 'fixed';
+      formBasis.value = '';
+    }
+    form.style.display = '';
+    formName.focus();
+  }
+
+  function closeForm(){
+    form.style.display = 'none';
+  }
+
+  function buildRow(id, name, type, basis){
+    var tr = document.createElement('tr');
+    tr.setAttribute('data-id', id);
+    tr.innerHTML =
+      '<td class="allowance-name"></td>' +
+      '<td><span class="pill pill-' + (type === 'fixed' ? 'neutral' : 'warning') + ' allowance-type-pill" data-type="' + type + '"></span></td>' +
+      '<td class="allowance-basis"></td>' +
+      '<td><span class="pill pill-success"></span></td>' +
+      '<td style="white-space:nowrap;">' +
+        '<button class="btn btn-sm allowance-edit" type="button">' + (I18N_TEXT('btn.edit')) + '</button> ' +
+        '<button class="btn btn-sm allowance-delete" type="button">' + (I18N_TEXT('btn.delete')) + '</button>' +
+      '</td>';
+    tr.querySelector('.allowance-name').textContent = name;
+    tr.querySelector('.allowance-type-pill').textContent = typeText(type);
+    tr.querySelector('.allowance-basis').textContent = basis;
+    tr.querySelector('.pill-success').textContent = activeText();
+    return tr;
+  }
+
+  function I18N_TEXT(key){
+    try {
+      var l = (document.documentElement.getAttribute('lang')) || 'ko';
+      var dict = (typeof I18N !== 'undefined') && I18N[key];
+      if (dict) return dict[l] || dict.ko;
+    } catch(e) {}
+    return key === 'btn.edit' ? '수정' : (key === 'btn.delete' ? '삭제' : key);
+  }
+
+  addBtn.addEventListener('click', function(){ openForm('add', null); });
+  formCancelBtn.addEventListener('click', closeForm);
+
+  body.addEventListener('click', function(ev){
+    var editBtn = ev.target.closest('.allowance-edit');
+    var delBtn = ev.target.closest('.allowance-delete');
+    if (editBtn) {
+      openForm('edit', editBtn.closest('tr'));
+    } else if (delBtn) {
+      var row = delBtn.closest('tr');
+      if (window.confirm('이 수당 항목을 삭제하시겠습니까?')) row.remove();
+    }
+  });
+
+  formSaveBtn.addEventListener('click', function(){
+    var name = formName.value.trim();
+    var type = formType.value;
+    var basis = formBasis.value.trim();
+    if (!name || !basis) { formName.focus(); return; }
+
+    if (formMode.value === 'edit' && formId.value) {
+      var row = body.querySelector('tr[data-id="' + formId.value + '"]');
+      if (row) {
+        row.querySelector('.allowance-name').textContent = name;
+        var pill = row.querySelector('.allowance-type-pill');
+        pill.setAttribute('data-type', type);
+        pill.className = 'pill allowance-type-pill ' + (type === 'fixed' ? 'pill-neutral' : 'pill-warning');
+        pill.textContent = typeText(type);
+        row.querySelector('.allowance-basis').textContent = basis;
+      }
+    } else {
+      var newId = 'custom-' + Date.now();
+      body.appendChild(buildRow(newId, name, type, basis));
+    }
+    closeForm();
+  });
+})();
+
+/* ---------- Policy & Rates: proration (working days vs calendar days) ---------- */
+(function(){
+  var STORAGE_KEY = 'gajionePolicyProration';
+  var defaultSelect = document.getElementById('prorationDefault');
+  var body = document.getElementById('prorationDeptBody');
+  var saveBtn = document.getElementById('prorationSaveBtn');
+  var saveNote = document.getElementById('prorationSaveNote');
+  if (!defaultSelect || !body || !saveBtn) return;
+
+  var deptSelects = Array.prototype.slice.call(body.querySelectorAll('.proration-dept-select'));
+
+  function readState(){
+    var state = { companyDefault: defaultSelect.value, depts: {} };
+    deptSelects.forEach(function(sel){
+      var dept = sel.closest('tr').getAttribute('data-dept');
+      state.depts[dept] = sel.value;
+    });
+    return state;
+  }
+
+  function applyState(state){
+    if (state.companyDefault) defaultSelect.value = state.companyDefault;
+    deptSelects.forEach(function(sel){
+      var dept = sel.closest('tr').getAttribute('data-dept');
+      if (state.depts && Object.prototype.hasOwnProperty.call(state.depts, dept)) sel.value = state.depts[dept];
+    });
+  }
+
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch(e) { saved = null; }
+  if (saved) applyState(saved);
+
+  saveBtn.addEventListener('click', function(){
+    var state = readState();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
     saveNote.textContent = '저장됨 · 다음 차수부터 적용, 소급 없음';
     saveNote.style.color = 'var(--success)';
     setTimeout(function(){ saveNote.textContent = ''; }, 4000);
@@ -3637,7 +4112,51 @@ const I18N = {
 "g2.register.deduct":{ko:"공제",en:"Deductions",id:"Potongan",zh:"扣除",ja:"控除"},
 "app.mobile_link_title":{ko:"iOS · Android 네이티브 화면으로 보기",en:"View native iOS · Android screens",id:"Lihat layar native iOS · Android",zh:"查看 iOS · Android 原生界面",ja:"iOS・Androidネイティブ画面で見る"},
 "app.mobile_link_desc":{ko:"위 미리보기는 화면 구성을 확인하기 위한 단순화된 버전입니다. 실제 iOS(다이나믹 아일랜드·탭바)와 Android(Material 3·FAB) 네이티브 스타일은 별도 화면에서 확인할 수 있습니다.",en:"The preview above is a simplified version for reviewing layout. The actual iOS (Dynamic Island · tab bar) and Android (Material 3 · FAB) native styling can be seen on a separate screen.",id:"Pratinjau di atas adalah versi sederhana untuk meninjau tata letak. Gaya native iOS (Dynamic Island · tab bar) dan Android (Material 3 · FAB) yang sebenarnya dapat dilihat di layar terpisah.",zh:"上方预览是用于查看布局的简化版本。实际的 iOS（灵动岛·标签栏）和 Android（Material 3·悬浮按钮）原生样式可在单独的界面中查看。",ja:"上のプレビューはレイアウト確認用の簡易版です。実際のiOS（Dynamic Island・タブバー）とAndroid（Material 3・FAB）のネイティブスタイルは別画面でご確認いただけます。"},
-"app.mobile_link_btn":{ko:"iOS·Android 버전 열기 →",en:"Open iOS · Android version →",id:"Buka versi iOS · Android →",zh:"打开 iOS · Android 版本 →",ja:"iOS・Android版を開く →"}
+"app.mobile_link_btn":{ko:"iOS·Android 버전 열기 →",en:"Open iOS · Android version →",id:"Buka versi iOS · Android →",zh:"打开 iOS · Android 版本 →",ja:"iOS・Android版を開く →"},
+"btn.cancel":{ko:"취소",en:"Cancel",id:"Batal",zh:"取消",ja:"キャンセル"},
+"btn.delete":{ko:"삭제",en:"Delete",id:"Hapus",zh:"删除",ja:"削除"},
+"btn.edit":{ko:"수정",en:"Edit",id:"Ubah",zh:"编辑",ja:"編集"},
+"btn.save":{ko:"저장",en:"Save",id:"Simpan",zh:"保存",ja:"保存"},
+"master.rank.manager":{ko:"과장",en:"Manager",id:"Manajer",zh:"科长",ja:"課長"},
+"master.rank.senior_manager":{ko:"부장",en:"Senior Manager",id:"Manajer Senior",zh:"部长",ja:"部長"},
+"master.rank.supervisor":{ko:"계장",en:"Supervisor",id:"Supervisor",zh:"股长",ja:"係長"},
+"policy.allowance.active":{ko:"사용중",en:"Active",id:"Aktif",zh:"使用中",ja:"使用中"},
+"policy.allowance.addBtn":{ko:"+ 수당 추가",en:"+ Add Allowance",id:"+ Tambah Tunjangan",zh:"+ 添加津贴",ja:"+ 手当を追加"},
+"policy.allowance.attendanceBasis":{ko:"조건 충족 시 Rp200,000",en:"Rp200,000 if conditions are met",id:"Rp200.000 jika syarat terpenuhi",zh:"满足条件时Rp200,000",ja:"条件を満たす場合Rp200,000"},
+"policy.allowance.attendanceName":{ko:"개근수당",en:"Perfect Attendance Allowance",id:"Tunjangan Kehadiran Sempurna",zh:"全勤津贴",ja:"皆勤手当"},
+"policy.allowance.fixed":{ko:"고정",en:"Fixed",id:"Tetap",zh:"固定",ja:"固定"},
+"policy.allowance.formBasis":{ko:"기준/금액",en:"Basis / Amount",id:"Dasar / Jumlah",zh:"标准/金额",ja:"基準・金額"},
+"policy.allowance.formName":{ko:"수당명",en:"Allowance Name",id:"Nama Tunjangan",zh:"津贴名称",ja:"手当名"},
+"policy.allowance.formType":{ko:"유형",en:"Type",id:"Jenis",zh:"类型",ja:"種類"},
+"policy.allowance.otBasis":{ko:"OT 배율/고정요율 정책에 따라 계산",en:"Calculated per the OT multiplier / fixed-rate policy",id:"Dihitung sesuai kebijakan pengali/tarif tetap lembur",zh:"依据加班倍率/固定费率政策计算",ja:"OT倍率・固定料金ポリシーに基づいて計算"},
+"policy.allowance.otName":{ko:"초과근무수당",en:"Overtime Allowance",id:"Tunjangan Lembur",zh:"加班津贴",ja:"残業手当"},
+"policy.allowance.sub":{ko:"급여를 구성하는 고정·비고정 수당 항목을 관리합니다. 고정수당은 매월 동일 금액, 비고정수당은 조건에 따라 변동됩니다.",en:"Manage the fixed and variable allowance items that make up pay. Fixed allowances are the same amount every month; variable allowances change based on conditions.",id:"Kelola item tunjangan tetap dan tidak tetap yang membentuk gaji. Tunjangan tetap sama setiap bulan, tunjangan tidak tetap berubah sesuai kondisi.",zh:"管理构成薪资的固定与非固定津贴项目。固定津贴每月金额相同，非固定津贴根据条件变动。",ja:"給与を構成する固定・非固定手当項目を管理します。固定手当は毎月同額、非固定手当は条件により変動します。"},
+"policy.allowance.tenureBasis":{ko:"근속연수 × Rp50,000",en:"Years of service × Rp50,000",id:"Masa kerja × Rp50.000",zh:"工龄 × Rp50,000",ja:"勤続年数 × Rp50,000"},
+"policy.allowance.thBasis":{ko:"기준/금액",en:"Basis / Amount",id:"Dasar / Jumlah",zh:"标准/金额",ja:"基準・金額"},
+"policy.allowance.thName":{ko:"수당명",en:"Allowance Name",id:"Nama Tunjangan",zh:"津贴名称",ja:"手当名"},
+"policy.allowance.thType":{ko:"유형",en:"Type",id:"Jenis",zh:"类型",ja:"種類"},
+"policy.allowance.title":{ko:"수당 항목 관리",en:"Allowance Management",id:"Manajemen Tunjangan",zh:"津贴项目管理",ja:"手当項目管理"},
+"policy.allowance.variable":{ko:"비고정",en:"Variable",id:"Tidak Tetap",zh:"非固定",ja:"非固定"},
+"policy.otCard.fixedRateCaption":{ko:"배율 대신 초과근무 1시간당 이 금액을 정액으로 지급합니다.",en:"Instead of a multiplier, this flat amount is paid per hour of overtime.",id:"Alih-alih pengali, jumlah tetap ini dibayarkan per jam lembur.",zh:"不使用倍率，每小时加班按此固定金额支付。",ja:"倍率の代わりに、残業1時間あたりこの金額を定額で支給します。"},
+"policy.otCard.fixedRateLabel":{ko:"시간당 고정 요율 (Rp)",en:"Fixed Hourly Rate (Rp)",id:"Tarif Tetap per Jam (Rp)",zh:"每小时固定费率（Rp）",ja:"時給固定料金（Rp）"},
+"policy.otCard.methodFixed":{ko:"고정 요율 적용",en:"Use Fixed Rate",id:"Gunakan Tarif Tetap",zh:"采用固定费率",ja:"固定料金を適用"},
+"policy.otCard.methodLabel":{ko:"계산 방식",en:"Calculation Method",id:"Metode Perhitungan",zh:"计算方式",ja:"計算方式"},
+"policy.otCard.methodMultiplier":{ko:"법정 배율 적용",en:"Use Statutory Multiplier",id:"Gunakan Pengali Sesuai Undang-Undang",zh:"采用法定倍率",ja:"法定倍率を適用"},
+"policy.otCard.methodNote":{ko:"모든 회사가 배율 방식을 쓰는 것은 아닙니다. 일부 회사는 시간당 고정 요율을 사용하므로, 회사 정책에 맞는 방식을 선택하세요.",en:"Not every company uses the multiplier method — some use a fixed hourly rate instead. Choose the method that matches your company's policy.",id:"Tidak semua perusahaan menggunakan metode pengali — sebagian menggunakan tarif tetap per jam. Pilih metode yang sesuai kebijakan perusahaan Anda.",zh:"并非所有公司都使用倍率方式，部分公司采用每小时固定费率。请选择符合公司政策的方式。",ja:"すべての会社が倍率方式を使うわけではありません。一部の会社は時給固定料金を使用します。自社の方針に合った方式を選択してください。"},
+"policy.otEligibility.noteMgmt":{ko:"관리직 · 고정급",en:"Management · Fixed Salary",id:"Manajemen · Gaji Tetap",zh:"管理职 · 固定薪资",ja:"管理職・固定給"},
+"policy.otEligibility.noteProd":{ko:"생산직",en:"Production Staff",id:"Staf Produksi",zh:"生产岗位",ja:"生産職"},
+"policy.otEligibility.saveBtn":{ko:"저장",en:"Save",id:"Simpan",zh:"保存",ja:"保存"},
+"policy.otEligibility.sub":{ko:"직급에 따라 초과근무 수당 지급 대상 여부가 다를 수 있습니다. 관리직은 일반적으로 고정급으로 제외됩니다.",en:"Overtime eligibility can differ by rank. Management positions are typically excluded and paid a fixed salary.",id:"Kelayakan lembur dapat berbeda menurut jabatan. Posisi manajemen umumnya dikecualikan dan menerima gaji tetap.",zh:"是否享有加班费可能因职级而异。管理职通常不适用，采用固定薪资。",ja:"職級によって残業対象かどうかが異なる場合があります。管理職は通常、固定給のため対象外です。"},
+"policy.otEligibility.thEligible":{ko:"OT 대상",en:"OT Eligible",id:"Berhak Lembur",zh:"加班对象",ja:"OT対象"},
+"policy.otEligibility.thNote":{ko:"비고",en:"Note",id:"Catatan",zh:"备注",ja:"備考"},
+"policy.otEligibility.title":{ko:"직급별 초과근무 대상",en:"Overtime Eligibility by Rank",id:"Kelayakan Lembur per Jabatan",zh:"按职级划分的加班对象",ja:"職級別残業対象"},
+"policy.proration.calendarDays":{ko:"달력일 기준",en:"Calendar Days",id:"Hari Kalender",zh:"按日历天数",ja:"暦日基準"},
+"policy.proration.defaultLabel":{ko:"회사 기본값",en:"Company Default",id:"Default Perusahaan",zh:"公司默认值",ja:"会社デフォルト"},
+"policy.proration.followDefault":{ko:"회사 기본값 따름",en:"Follow Company Default",id:"Ikuti Default Perusahaan",zh:"遵循公司默认值",ja:"会社デフォルトに従う"},
+"policy.proration.sub":{ko:"입사·퇴사·휴직 등으로 인한 일할 계산 시, 근무일 기준과 달력일 기준 중 하나를 선택합니다. 부서별로 회사 기본값과 다르게 설정할 수 있습니다.",en:"For prorated pay due to hires, exits, or leave, choose either working-day or calendar-day basis. Departments can be set differently from the company default.",id:"Untuk perhitungan proporsional akibat masuk/keluar/cuti, pilih dasar hari kerja atau hari kalender. Departemen dapat diatur berbeda dari default perusahaan.",zh:"因入职、离职、休假等产生的按比例计算，可选择按工作日或按日历天数。各部门可与公司默认值不同设置。",ja:"入社・退社・休職等による日割り計算では、稼働日基準か暦日基準のいずれかを選択します。部署ごとに会社デフォルトと異なる設定が可能です。"},
+"policy.proration.thStandard":{ko:"기준",en:"Standard",id:"Standar",zh:"标准",ja:"基準"},
+"policy.proration.title":{ko:"비례배분(Proration) 기준",en:"Proration Standard",id:"Standar Proporsional (Proration)",zh:"比例分摊（Proration）标准",ja:"比例配分（Proration）基準"},
+"policy.proration.workingDays":{ko:"근무일 기준",en:"Working Days",id:"Hari Kerja",zh:"按工作日",ja:"稼働日基準"}
 };
 
 function applyLang(lang){
