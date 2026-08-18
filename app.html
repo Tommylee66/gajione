@@ -328,6 +328,11 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
     <button class="nav-btn" data-view="view-fingerprint"><span class="dot"></span><span data-i18n="nav.fingerprint">지문인식기 연동</span></button>
   </nav>
 
+  <nav class="nav-group">
+  <div class="nav-group-label" data-i18n="nav.group.reports">리포트</div>
+  <button class="nav-btn" data-view="view-reports"><span class="dot"></span><span data-i18n="nav.reports">리포트</span></button>
+</nav>
+
   <div class="sidebar-footer">
     <select id="langSelect" aria-label="Language">
       <option value="ko">한국어</option>
@@ -1783,99 +1788,252 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       </div>
 
       <div class="card">
-        <div class="card-title" data-i18n="policy.allowance.title">수당 항목 관리</div>
-        <div class="card-sub" data-i18n="policy.allowance.sub">급여를 구성하는 고정·비고정 수당 항목을 관리합니다. 고정수당은 매월 동일 금액, 비고정수당은 조건에 따라 변동됩니다.</div>
+        <div class="card-title" data-i18n="policy.componentMaster.title">급여 항목 마스터</div>
+        <div class="card-sub" data-i18n="policy.componentMaster.sub">수당(Earning)과 공제(Deduction)를 통합 관리합니다. 항목별로 과세여부, BPJS 부과기준, 고정/비고정, 반복/1회성, 일할계산 여부, Gross-up 적용, 직원/회사 부담을 설정할 수 있습니다.</div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th data-i18n="policy.allowance.thName">수당명</th>
-                <th data-i18n="policy.allowance.thType">유형</th>
-                <th data-i18n="policy.allowance.thBasis">기준/금액</th>
+                <th data-i18n="policy.componentMaster.thName">항목명</th>
+                <th data-i18n="policy.componentMaster.thCategory">구분</th>
+                <th data-i18n="policy.componentMaster.thType">유형</th>
+                <th data-i18n="policy.componentMaster.thBasis">기준/금액</th>
+                <th data-i18n="policy.componentMaster.thTags">속성</th>
                 <th data-i18n="th.status">상태</th>
                 <th></th>
               </tr>
             </thead>
-            <tbody id="allowanceBody">
-              <tr data-id="transport">
-                <td class="allowance-name">교통비</td>
-                <td><span class="pill pill-neutral allowance-type-pill" data-type="fixed" data-i18n="policy.allowance.fixed">고정</span></td>
-                <td class="allowance-basis">Rp450,000/월</td>
-                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+            <tbody id="componentBody">
+              <tr data-id="transport" data-category="earning" data-type="fixed" data-taxable="taxable" data-bpjs-basis="included" data-recurring="recurring" data-proratable="yes" data-gross-up="notApplied" data-contribution="none">
+                <td class="component-name" data-i18n="policy.componentMaster.nameTransport">교통비</td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-category-pill" data-category="earning" data-i18n="policy.componentMaster.earning">수당</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-neutral component-type-pill" data-type="fixed" data-i18n="policy.componentMaster.fixed">고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.transportBasis">Rp450,000/월</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.taxable">과세</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsIncluded">BPJS포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableYes">일할O</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
                 <td style="white-space:nowrap;">
-                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
-                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
                 </td>
               </tr>
-              <tr data-id="meal">
-                <td class="allowance-name">식대</td>
-                <td><span class="pill pill-neutral allowance-type-pill" data-type="fixed" data-i18n="policy.allowance.fixed">고정</span></td>
-                <td class="allowance-basis">Rp600,000/월</td>
-                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+              <tr data-id="meal" data-category="earning" data-type="fixed" data-taxable="taxable" data-bpjs-basis="included" data-recurring="recurring" data-proratable="yes" data-gross-up="notApplied" data-contribution="none">
+                <td class="component-name" data-i18n="policy.componentMaster.nameMeal">식대</td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-category-pill" data-category="earning" data-i18n="policy.componentMaster.earning">수당</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-neutral component-type-pill" data-type="fixed" data-i18n="policy.componentMaster.fixed">고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.mealBasis">Rp600,000/월</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.taxable">과세</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsIncluded">BPJS포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableYes">일할O</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
                 <td style="white-space:nowrap;">
-                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
-                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
                 </td>
               </tr>
-              <tr data-id="tenure">
-                <td class="allowance-name">근속수당</td>
-                <td><span class="pill pill-neutral allowance-type-pill" data-type="fixed" data-i18n="policy.allowance.fixed">고정</span></td>
-                <td class="allowance-basis" data-i18n="policy.allowance.tenureBasis">근속연수 × Rp50,000</td>
-                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+              <tr data-id="tenure" data-category="earning" data-type="fixed" data-taxable="taxable" data-bpjs-basis="included" data-recurring="recurring" data-proratable="yes" data-gross-up="notApplied" data-contribution="none">
+                <td class="component-name" data-i18n="policy.componentMaster.nameTenure">근속수당</td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-category-pill" data-category="earning" data-i18n="policy.componentMaster.earning">수당</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-neutral component-type-pill" data-type="fixed" data-i18n="policy.componentMaster.fixed">고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.tenureBasis">근속연수 × Rp50,000</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.taxable">과세</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsIncluded">BPJS포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableYes">일할O</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
                 <td style="white-space:nowrap;">
-                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
-                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
                 </td>
               </tr>
-              <tr data-id="overtime">
-                <td class="allowance-name" data-i18n="policy.allowance.otName">초과근무수당</td>
-                <td><span class="pill pill-warning allowance-type-pill" data-type="variable" data-i18n="policy.allowance.variable">비고정</span></td>
-                <td class="allowance-basis" data-i18n="policy.allowance.otBasis">OT 배율/고정요율 정책에 따라 계산</td>
-                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+              <tr data-id="overtime" data-category="earning" data-type="variable" data-taxable="taxable" data-bpjs-basis="included" data-recurring="recurring" data-proratable="no" data-gross-up="notApplied" data-contribution="none">
+                <td class="component-name" data-i18n="policy.componentMaster.nameOvertime">초과근무수당</td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-category-pill" data-category="earning" data-i18n="policy.componentMaster.earning">수당</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-warning component-type-pill" data-type="variable" data-i18n="policy.componentMaster.variable">비고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.otBasis">OT 배율/고정요율 정책에 따라 계산</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.taxable">과세</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsIncluded">BPJS포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableNo">일할X</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
                 <td style="white-space:nowrap;">
-                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
-                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
                 </td>
               </tr>
-              <tr data-id="attendance">
-                <td class="allowance-name" data-i18n="policy.allowance.attendanceName">개근수당</td>
-                <td><span class="pill pill-warning allowance-type-pill" data-type="variable" data-i18n="policy.allowance.variable">비고정</span></td>
-                <td class="allowance-basis" data-i18n="policy.allowance.attendanceBasis">조건 충족 시 Rp200,000</td>
-                <td><span class="pill pill-success" data-i18n="policy.allowance.active">사용중</span></td>
+              <tr data-id="attendance" data-category="earning" data-type="variable" data-taxable="taxable" data-bpjs-basis="included" data-recurring="recurring" data-proratable="no" data-gross-up="notApplied" data-contribution="none">
+                <td class="component-name" data-i18n="policy.componentMaster.nameAttendance">개근수당</td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-category-pill" data-category="earning" data-i18n="policy.componentMaster.earning">수당</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-warning component-type-pill" data-type="variable" data-i18n="policy.componentMaster.variable">비고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.attendanceBasis">조건 충족 시 Rp200,000</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.taxable">과세</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsIncluded">BPJS포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableNo">일할X</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
                 <td style="white-space:nowrap;">
-                  <button class="btn btn-sm allowance-edit" type="button" data-i18n="btn.edit">수정</button>
-                  <button class="btn btn-sm allowance-delete" type="button" data-i18n="btn.delete">삭제</button>
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+              <tr data-id="bpjsKesehatanEmployee" data-category="deduction" data-type="fixed" data-taxable="nonTaxable" data-bpjs-basis="included" data-recurring="recurring" data-proratable="yes" data-gross-up="notApplied" data-contribution="employee">
+                <td class="component-name" data-i18n="policy.componentMaster.nameBpjsKesehatanEmployee">BPJS Kesehatan (직원부담)</td>
+                <td style="white-space:nowrap;"><span class="pill pill-danger component-category-pill" data-category="deduction" data-i18n="policy.componentMaster.deduction">공제</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-neutral component-type-pill" data-type="fixed" data-i18n="policy.componentMaster.fixed">고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.bpjsKesehatanBasis">급여의 1% (상한 Rp12,000,000 기준)</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.nonTaxable">비과세</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsIncluded">BPJS포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableYes">일할O</span>
+                    <span class="pill pill-info" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.contributionEmployee">직원부담</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+              <tr data-id="pph21Withholding" data-category="deduction" data-type="variable" data-taxable="na" data-bpjs-basis="excluded" data-recurring="recurring" data-proratable="no" data-gross-up="notApplied" data-contribution="none">
+                <td class="component-name" data-i18n="policy.componentMaster.namePph21">PPh 21 원천징수</td>
+                <td style="white-space:nowrap;"><span class="pill pill-danger component-category-pill" data-category="deduction" data-i18n="policy.componentMaster.deduction">공제</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-warning component-type-pill" data-type="variable" data-i18n="policy.componentMaster.variable">비고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.pph21Basis">TER 구간별 원천징수세율 적용</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.taxNA">과세N/A</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsExcluded">BPJS미포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableNo">일할X</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
+                </td>
+              </tr>
+              <tr data-id="companyLoanRepayment" data-category="deduction" data-type="variable" data-taxable="nonTaxable" data-bpjs-basis="excluded" data-recurring="recurring" data-proratable="no" data-gross-up="notApplied" data-contribution="employee">
+                <td class="component-name" data-i18n="policy.componentMaster.nameCompanyLoan">사내대출 상환</td>
+                <td style="white-space:nowrap;"><span class="pill pill-danger component-category-pill" data-category="deduction" data-i18n="policy.componentMaster.deduction">공제</span></td>
+                <td style="white-space:nowrap;"><span class="pill pill-warning component-type-pill" data-type="variable" data-i18n="policy.componentMaster.variable">비고정</span></td>
+                <td class="component-basis" data-i18n="policy.componentMaster.companyLoanBasis">대출 잔액 기준 월 분할 상환액</td>
+                <td>
+                  <div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.nonTaxable">비과세</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.bpjsExcluded">BPJS미포함</span>
+                    <span class="pill pill-neutral" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.proratableNo">일할X</span>
+                    <span class="pill pill-info" style="white-space:nowrap;" data-i18n="policy.componentMaster.tag.contributionEmployee">직원부담</span>
+                  </div>
+                </td>
+                <td style="white-space:nowrap;"><span class="pill pill-success component-status-pill" data-i18n="policy.componentMaster.active">사용중</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="btn btn-sm component-edit" type="button" data-i18n="btn.edit">수정</button>
+                  <button class="btn btn-sm component-delete" type="button" data-i18n="btn.delete">삭제</button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div style="margin-top:12px;">
-          <button class="btn btn-primary btn-sm" type="button" id="allowanceAddBtn" data-i18n="policy.allowance.addBtn">+ 수당 추가</button>
+          <button class="btn btn-primary btn-sm" type="button" id="componentAddBtn" data-i18n="policy.componentMaster.addBtn">+ 항목 추가</button>
         </div>
-        <div class="card" id="allowanceForm" style="display:none;margin-top:12px;background:var(--surface-alt);">
-          <input type="hidden" id="allowanceFormId" value="">
-          <input type="hidden" id="allowanceFormMode" value="add">
+        <div class="card" id="componentForm" style="display:none;margin-top:12px;background:var(--surface-alt);">
+          <input type="hidden" id="componentFormId" value="">
+          <input type="hidden" id="componentFormMode" value="add">
           <div class="field-row">
             <div class="field">
-              <div class="field-label" data-i18n="policy.allowance.formName">수당명</div>
-              <input type="text" class="input" id="allowanceFormName" style="width:160px;">
+              <div class="field-label" data-i18n="policy.componentMaster.formName">항목명</div>
+              <input type="text" class="input" id="componentFormName" style="width:200px;">
             </div>
             <div class="field">
-              <div class="field-label" data-i18n="policy.allowance.formType">유형</div>
-              <select class="input" id="allowanceFormType" style="width:120px;">
-                <option value="fixed" data-i18n="policy.allowance.fixed">고정</option>
-                <option value="variable" data-i18n="policy.allowance.variable">비고정</option>
+              <div class="field-label" data-i18n="policy.componentMaster.formCategory">구분</div>
+              <select class="input" id="componentFormCategory" style="width:110px;">
+                <option value="earning" data-i18n="policy.componentMaster.earning">수당</option>
+                <option value="deduction" data-i18n="policy.componentMaster.deduction">공제</option>
               </select>
             </div>
             <div class="field">
-              <div class="field-label" data-i18n="policy.allowance.formBasis">기준/금액</div>
-              <input type="text" class="input" id="allowanceFormBasis" style="width:220px;" placeholder="예: Rp300,000/월">
+              <div class="field-label" data-i18n="policy.componentMaster.formType">유형</div>
+              <select class="input" id="componentFormType" style="width:110px;">
+                <option value="fixed" data-i18n="policy.componentMaster.fixed">고정</option>
+                <option value="variable" data-i18n="policy.componentMaster.variable">비고정</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="policy.componentMaster.formBasis">기준/금액</div>
+              <input type="text" class="input" id="componentFormBasis" style="width:220px;" placeholder="예: Rp300,000/월">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label" data-i18n="policy.componentMaster.formTaxable">과세여부</div>
+              <select class="input" id="componentFormTaxable" style="width:130px;">
+                <option value="taxable" data-i18n="policy.componentMaster.optTaxableYes">과세대상</option>
+                <option value="nonTaxable" data-i18n="policy.componentMaster.optTaxableNo">비과세</option>
+                <option value="na" data-i18n="policy.componentMaster.optTaxableNA">해당없음</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="policy.componentMaster.formBpjsBasis">BPJS 부과기준</div>
+              <select class="input" id="componentFormBpjsBasis" style="width:120px;">
+                <option value="included" data-i18n="policy.componentMaster.optBpjsIncluded">포함</option>
+                <option value="excluded" data-i18n="policy.componentMaster.optBpjsExcluded">미포함</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="policy.componentMaster.formRecurring">반복 지급 여부</div>
+              <select class="input" id="componentFormRecurring" style="width:130px;">
+                <option value="recurring" data-i18n="policy.componentMaster.optRecurringYes">반복 지급</option>
+                <option value="oneTime" data-i18n="policy.componentMaster.optRecurringNo">1회성 지급</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="policy.componentMaster.formProratable">일할계산 대상</div>
+              <select class="input" id="componentFormProratable" style="width:110px;">
+                <option value="yes" data-i18n="policy.componentMaster.optProratableYes">대상</option>
+                <option value="no" data-i18n="policy.componentMaster.optProratableNo">비대상</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label" data-i18n="policy.componentMaster.formGrossUp">Gross-up 적용</div>
+              <select class="input" id="componentFormGrossUp" style="width:110px;">
+                <option value="notApplied" data-i18n="policy.componentMaster.optGrossUpNo">미적용</option>
+                <option value="applied" data-i18n="policy.componentMaster.optGrossUpYes">적용</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="policy.componentMaster.formContribution">부담 주체</div>
+              <select class="input" id="componentFormContribution" style="width:140px;">
+                <option value="none" data-i18n="policy.componentMaster.optContributionNone">없음</option>
+                <option value="employee" data-i18n="policy.componentMaster.optContributionEmployee">직원 부담</option>
+                <option value="employer" data-i18n="policy.componentMaster.optContributionEmployer">회사 부담</option>
+              </select>
             </div>
           </div>
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary btn-sm" type="button" id="allowanceFormSaveBtn" data-i18n="btn.save">저장</button>
-            <button class="btn btn-sm" type="button" id="allowanceFormCancelBtn" data-i18n="btn.cancel">취소</button>
+            <button class="btn btn-primary btn-sm" type="button" id="componentFormSaveBtn" data-i18n="btn.save">저장</button>
+            <button class="btn btn-sm" type="button" id="componentFormCancelBtn" data-i18n="btn.cancel">취소</button>
           </div>
         </div>
       </div>
@@ -2391,6 +2549,379 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
     </div>
   </div>
 </section>
+<section class="view" id="view-reports">
+  <style>
+    #view-reports .rpt-layout{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start;}
+    @media(max-width:900px){#view-reports .rpt-layout{grid-template-columns:1fr;}}
+    #view-reports .rpt-cat-card{padding:10px;}
+    #view-reports .rpt-cat-list{display:flex;flex-direction:column;gap:4px;}
+    #view-reports .rpt-cat-btn{
+      display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;
+      background:transparent;border:1px solid transparent;border-radius:10px;padding:10px 12px;
+      cursor:pointer;font-family:inherit;color:var(--text);
+    }
+    #view-reports .rpt-cat-btn:hover{background:var(--surface-alt);}
+    #view-reports .rpt-cat-btn.active{background:var(--accent-soft);border-color:var(--accent-dim);}
+    #view-reports .rpt-cat-name{font-size:13.5px;font-weight:700;}
+    #view-reports .rpt-cat-btn.active .rpt-cat-name{color:var(--accent);}
+    #view-reports .rpt-cat-desc{font-size:11px;color:var(--text-muted);}
+    #view-reports .rpt-report-group{display:none;}
+    #view-reports .rpt-report-group.active{display:block;}
+    #view-reports .rpt-group-title{font-size:14.5px;font-weight:800;color:var(--text);margin-bottom:10px;}
+    #view-reports .rpt-report-list{display:flex;flex-direction:column;gap:0;}
+    #view-reports .rpt-report-row{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+      padding:14px 2px;border-bottom:1px solid var(--border-soft);
+    }
+    #view-reports .rpt-report-row:last-child{border-bottom:none;}
+    #view-reports .rpt-report-info{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 260px;}
+    #view-reports .rpt-report-name{font-size:13.5px;font-weight:700;color:var(--text);}
+    #view-reports .rpt-report-meta{font-size:11.5px;color:var(--text-muted);}
+    #view-reports .rpt-report-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
+    #view-reports .rpt-report-note{white-space:nowrap;}
+  </style>
+
+  <div class="page-header">
+    <div class="page-header-top">
+      <div class="page-title-row">
+        <h1 class="page-title" data-i18n="reports.title">리포트</h1>
+        <span class="pill pill-neutral" data-i18n="reports.pill">8개 카테고리</span>
+      </div>
+      <span class="clock"></span>
+    </div>
+    <div class="card-sub" style="margin-top:10px;margin-bottom:0;" data-i18n="reports.sub">급여·세금·BPJS·인사·근태 등 항목별 리포트를 조회하고 다운로드합니다.</div>
+  </div>
+
+  <div class="rpt-layout">
+    <div class="card rpt-cat-card">
+      <div class="rpt-cat-list" id="rpt-cat-list">
+        <button class="rpt-cat-btn active" type="button" data-category="salary">
+          <span class="rpt-cat-name" data-i18n="reports.cat.salary">급여명세 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.salary.desc">급여명세서 데이터</span>
+        </button>
+        <button class="rpt-cat-btn" type="button" data-category="tax">
+          <span class="rpt-cat-name" data-i18n="reports.cat.tax">세금 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.tax.desc">PPh21 원천징수 · e-Bupot 연동</span>
+        </button>
+        <button class="rpt-cat-btn" type="button" data-category="bpjs">
+          <span class="rpt-cat-name" data-i18n="reports.cat.bpjs">BPJS 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.bpjs.desc">BPJS 기여금 · SIPP 연동</span>
+        </button>
+        <button class="rpt-cat-btn" type="button" data-category="hr">
+          <span class="rpt-cat-name" data-i18n="reports.cat.hr">인사 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.hr.desc">인원 현황 · 입퇴사 · 직급/부서 구성</span>
+        </button>
+        <button class="rpt-cat-btn" type="button" data-category="attendance">
+          <span class="rpt-cat-name" data-i18n="reports.cat.attendance">근태 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.attendance.desc">출퇴근 기록 · 지각·결근 이상</span>
+        </button>
+        <button class="rpt-cat-btn" type="button" data-category="reimbursement">
+          <span class="rpt-cat-name" data-i18n="reports.cat.reimbursement">실비정산 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.reimbursement.desc">실비정산 청구 내역</span>
+        </button>
+        <button class="rpt-cat-btn" type="button" data-category="overtime">
+          <span class="rpt-cat-name" data-i18n="reports.cat.overtime">초과근무 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.overtime.desc">초과근무 시간 · 수당</span>
+        </button>
+        <button class="rpt-cat-btn" type="button" data-category="loan">
+          <span class="rpt-cat-name" data-i18n="reports.cat.loan">대출 리포트</span>
+          <span class="rpt-cat-desc" data-i18n="reports.cat.loan.desc">대출·EWA 잔액 · 상환</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="rpt-report-group active" data-category-group="salary">
+        <div class="rpt-group-title" data-i18n="reports.cat.salary">급여명세 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.salary.month.name">급여명세 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.salary.month.meta">2026-08 차수 · 전 직원 412명 · 지급일 08-28</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.salary.adhoc.name">급여명세 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.salary.adhoc.meta">기간을 직접 지정해 조회하는 전체 급여명세 (전 차수 통합)</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.salary.yearly.name">급여명세 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.salary.yearly.meta">2026년 1월~8월 누적 급여명세 (THR·상여금 포함)</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-report-group" data-category-group="tax">
+        <div class="rpt-group-title" data-i18n="reports.cat.tax">세금 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.tax.month.name">세금 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.tax.month.meta">2026-08 차수 PPh21 원천징수 내역 · e-Bupot 업로드 포맷</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.tax.adhoc.name">세금 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.tax.adhoc.meta">기간 지정 조회 · 직원별/부서별 PPh21 원천징수 상세</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.tax.yearly.name">세금 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.tax.yearly.meta">2026년 연간 PPh21 누적 · SPT Tahunan 신고 대사용</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-report-group" data-category-group="bpjs">
+        <div class="rpt-group-title" data-i18n="reports.cat.bpjs">BPJS 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.bpjs.month.name">BPJS 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.bpjs.month.meta">2026-08 차수 Kesehatan·Ketenagakerjaan 기여금 · SIPP 파일 형식</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.bpjs.adhoc.name">BPJS 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.bpjs.adhoc.meta">기간 지정 조회 · 직원별 BPJS 기여금 상세 내역</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.bpjs.yearly.name">BPJS 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.bpjs.yearly.meta">2026년 연간 BPJS 기여금 누적 · 회사/직원 부담분 구분</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-report-group" data-category-group="hr">
+        <div class="rpt-group-title" data-i18n="reports.cat.hr">인사 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.hr.month.name">인사 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.hr.month.meta">재직 412명 · 입사 4명 · 퇴사 2명 · 직급/부서별 현황</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.hr.adhoc.name">인사 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.hr.adhoc.meta">기간 지정 조회 · 입퇴사·직급 변동 등 전체 인사 이력</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.hr.yearly.name">인사 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.hr.yearly.meta">2026년 연간 인력 현황 추이 · 부서별/직급별 구성 변화</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-report-group" data-category-group="attendance">
+        <div class="rpt-group-title" data-i18n="reports.cat.attendance">근태 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.attendance.month.name">근태 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.attendance.month.meta">컷오프 07-26~08-25 · 출퇴근 기록 및 지각·결근 이상 태깅</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.attendance.adhoc.name">근태 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.attendance.adhoc.meta">기간 지정 조회 · 전체 출퇴근 원본 기록 및 예외 건</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.attendance.yearly.name">근태 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.attendance.yearly.meta">2026년 연간 근태 누적 · 부서별 지각·결근율 추이</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-report-group" data-category-group="reimbursement">
+        <div class="rpt-group-title" data-i18n="reports.cat.reimbursement">실비정산 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.reimbursement.month.name">실비정산 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.reimbursement.month.meta">2026-08 차수 실비정산 청구·승인 내역 · 통근/출장/의료비</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.reimbursement.adhoc.name">실비정산 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.reimbursement.adhoc.meta">기간 지정 조회 · 전체 실비정산 청구 이력</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.reimbursement.yearly.name">실비정산 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.reimbursement.yearly.meta">2026년 연간 실비정산 누적 · 항목별 지출 추이</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-report-group" data-category-group="overtime">
+        <div class="rpt-group-title" data-i18n="reports.cat.overtime">초과근무 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.overtime.month.name">초과근무 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.overtime.month.meta">2026-08 차수 초과근무 시간·수당 상세 (배율 적용 포함)</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.overtime.adhoc.name">초과근무 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.overtime.adhoc.meta">기간 지정 조회 · 직원별/부서별 전체 초과근무 이력</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.overtime.yearly.name">초과근무 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.overtime.yearly.meta">2026년 연간 초과근무 시간·수당 누적 추이</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-report-group" data-category-group="loan">
+        <div class="rpt-group-title" data-i18n="reports.cat.loan">대출 리포트</div>
+        <div class="rpt-report-list">
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.loan.month.name">대출 2026년 8월</div>
+              <div class="rpt-report-meta" data-i18n="reports.loan.month.meta">2026-08 차수 대출·EWA 잔액 및 상환(공제) 내역</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.loan.adhoc.name">대출 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.loan.adhoc.meta">기간 지정 조회 · 전체 대출·EWA 취급 및 상환 이력</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="view" data-i18n="reports.item.view">보기</button>
+            </div>
+          </div>
+          <div class="rpt-report-row">
+            <div class="rpt-report-info">
+              <div class="rpt-report-name" data-i18n="reports.loan.yearly.name">대출 연간 리포트</div>
+              <div class="rpt-report-meta" data-i18n="reports.loan.yearly.meta">2026년 연간 대출·EWA 취급액·상환액 누적 추이</div>
+            </div>
+            <div class="rpt-report-actions">
+              <span class="rpt-report-note caption" style="margin-top:0;"></span>
+              <button class="btn btn-sm rpt-action-btn" type="button" data-note-type="download" data-i18n="reports.item.download">다운로드</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 </div>
 
@@ -3359,48 +3890,162 @@ btnDark.addEventListener('click', notifyThemeChange);
   });
 })();
 
-/* ---------- Policy & Rates: allowance (fixed/variable) management ---------- */
+/* ---------- Policy & Rates: salary component master (earnings + deductions) ---------- */
 (function(){
-  var body = document.getElementById('allowanceBody');
-  var addBtn = document.getElementById('allowanceAddBtn');
-  var form = document.getElementById('allowanceForm');
-  var formId = document.getElementById('allowanceFormId');
-  var formMode = document.getElementById('allowanceFormMode');
-  var formName = document.getElementById('allowanceFormName');
-  var formType = document.getElementById('allowanceFormType');
-  var formBasis = document.getElementById('allowanceFormBasis');
-  var formSaveBtn = document.getElementById('allowanceFormSaveBtn');
-  var formCancelBtn = document.getElementById('allowanceFormCancelBtn');
+  var body = document.getElementById('componentBody');
+  var addBtn = document.getElementById('componentAddBtn');
+  var form = document.getElementById('componentForm');
+  var formId = document.getElementById('componentFormId');
+  var formMode = document.getElementById('componentFormMode');
+  var formName = document.getElementById('componentFormName');
+  var formCategory = document.getElementById('componentFormCategory');
+  var formType = document.getElementById('componentFormType');
+  var formBasis = document.getElementById('componentFormBasis');
+  var formTaxable = document.getElementById('componentFormTaxable');
+  var formBpjsBasis = document.getElementById('componentFormBpjsBasis');
+  var formRecurring = document.getElementById('componentFormRecurring');
+  var formProratable = document.getElementById('componentFormProratable');
+  var formGrossUp = document.getElementById('componentFormGrossUp');
+  var formContribution = document.getElementById('componentFormContribution');
+  var formSaveBtn = document.getElementById('componentFormSaveBtn');
+  var formCancelBtn = document.getElementById('componentFormCancelBtn');
   if (!body || !addBtn || !form) return;
 
+  var CATEGORY_LABEL = {
+    earning: { ko:'수당', en:'Earning', id:'Tunjangan', zh:'收入项', ja:'手当' },
+    deduction: { ko:'공제', en:'Deduction', id:'Potongan', zh:'扣款项', ja:'控除' }
+  };
   var TYPE_LABEL = {
     fixed: { ko:'고정', en:'Fixed', id:'Tetap', zh:'固定', ja:'固定' },
     variable: { ko:'비고정', en:'Variable', id:'Tidak Tetap', zh:'非固定', ja:'非固定' }
   };
   var ACTIVE_LABEL = { ko:'사용중', en:'Active', id:'Aktif', zh:'使用中', ja:'使用中' };
+  var TAG_LABEL = {
+    taxable: { ko:'과세', en:'Taxable', id:'Kena Pajak', zh:'计税', ja:'課税' },
+    nonTaxable: { ko:'비과세', en:'Non-taxable', id:'Bebas Pajak', zh:'免税', ja:'非課税' },
+    taxNA: { ko:'과세N/A', en:'Tax N/A', id:'Pajak T/A', zh:'计税N/A', ja:'課税対象外(N/A)' },
+    bpjsIncluded: { ko:'BPJS포함', en:'BPJS Incl.', id:'BPJS Termasuk', zh:'含BPJS', ja:'BPJS対象' },
+    bpjsExcluded: { ko:'BPJS미포함', en:'BPJS Excl.', id:'BPJS Tidak Termasuk', zh:'不含BPJS', ja:'BPJS対象外' },
+    proratableYes: { ko:'일할O', en:'Prorated', id:'Prorata', zh:'可日算', ja:'日割対象' },
+    proratableNo: { ko:'일할X', en:'Not Prorated', id:'Non-Prorata', zh:'不可日算', ja:'日割対象外' },
+    oneTime: { ko:'1회성', en:'One-time', id:'Sekali', zh:'一次性', ja:'1回限り' },
+    grossUp: { ko:'Gross-up', en:'Gross-up', id:'Gross-up', zh:'Gross-up', ja:'Gross-up' },
+    contributionEmployee: { ko:'직원부담', en:'Employee-borne', id:'Ditanggung Karyawan', zh:'员工承担', ja:'従業員負担' },
+    contributionEmployer: { ko:'회사부담', en:'Employer-borne', id:'Ditanggung Perusahaan', zh:'公司承担', ja:'会社負担' }
+  };
 
-  function typeText(type){
-    var l = (document.documentElement.getAttribute('lang')) || 'ko';
-    var entry = TYPE_LABEL[type] || TYPE_LABEL.fixed;
-    return entry[l] || entry.ko;
+  function lang(){ return document.documentElement.getAttribute('lang') || 'ko'; }
+  function categoryText(cat){ var e = CATEGORY_LABEL[cat] || CATEGORY_LABEL.earning; return e[lang()] || e.ko; }
+  function typeText(type){ var e = TYPE_LABEL[type] || TYPE_LABEL.fixed; return e[lang()] || e.ko; }
+  function activeText(){ return ACTIVE_LABEL[lang()] || ACTIVE_LABEL.ko; }
+  function tagText(key){ var e = TAG_LABEL[key]; return e ? (e[lang()] || e.ko) : key; }
+
+  function I18N_TEXT(key){
+    try {
+      var l = lang();
+      var dict = (typeof I18N !== 'undefined') && I18N[key];
+      if (dict) return dict[l] || dict.ko;
+    } catch(e) {}
+    return key === 'btn.edit' ? '수정' : (key === 'btn.delete' ? '삭제' : key);
   }
-  function activeText(){
-    var l = (document.documentElement.getAttribute('lang')) || 'ko';
-    return ACTIVE_LABEL[l] || ACTIVE_LABEL.ko;
+
+  /* Only surface attribute chips that are worth flagging, to keep the column visually light:
+     taxable / bpjsBasis / proratable always render (they are core compliance flags with only
+     two-or-three meaningful states); recurring, grossUp and contribution only render when they
+     deviate from the common "recurring, no gross-up, no contribution split" case. */
+  function buildTags(data){
+    var tags = [];
+    if (data.taxable === 'nonTaxable') tags.push({ key:'nonTaxable', cls:'pill-neutral' });
+    else if (data.taxable === 'na') tags.push({ key:'taxNA', cls:'pill-neutral' });
+    else tags.push({ key:'taxable', cls:'pill-neutral' });
+
+    tags.push({ key: data.bpjsBasis === 'excluded' ? 'bpjsExcluded' : 'bpjsIncluded', cls:'pill-neutral' });
+    tags.push({ key: data.proratable === 'no' ? 'proratableNo' : 'proratableYes', cls:'pill-neutral' });
+
+    if (data.recurring === 'oneTime') tags.push({ key:'oneTime', cls:'pill-warning' });
+    if (data.grossUp === 'applied') tags.push({ key:'grossUp', cls:'pill-info' });
+    if (data.contribution === 'employee') tags.push({ key:'contributionEmployee', cls:'pill-info' });
+    else if (data.contribution === 'employer') tags.push({ key:'contributionEmployer', cls:'pill-info' });
+    return tags;
+  }
+
+  function renderTags(container, data){
+    container.innerHTML = '';
+    buildTags(data).forEach(function(tag){
+      var span = document.createElement('span');
+      span.className = 'pill ' + tag.cls;
+      span.style.whiteSpace = 'nowrap';
+      span.setAttribute('data-i18n', 'policy.componentMaster.tag.' + tag.key);
+      span.textContent = tagText(tag.key);
+      container.appendChild(span);
+    });
+  }
+
+  function readRowData(row){
+    return {
+      category: row.getAttribute('data-category') || 'earning',
+      type: row.getAttribute('data-type') || 'fixed',
+      taxable: row.getAttribute('data-taxable') || 'taxable',
+      bpjsBasis: row.getAttribute('data-bpjs-basis') || 'included',
+      recurring: row.getAttribute('data-recurring') || 'recurring',
+      proratable: row.getAttribute('data-proratable') || 'yes',
+      grossUp: row.getAttribute('data-gross-up') || 'notApplied',
+      contribution: row.getAttribute('data-contribution') || 'none'
+    };
+  }
+
+  function applyRowData(row, data){
+    row.setAttribute('data-category', data.category);
+    row.setAttribute('data-type', data.type);
+    row.setAttribute('data-taxable', data.taxable);
+    row.setAttribute('data-bpjs-basis', data.bpjsBasis);
+    row.setAttribute('data-recurring', data.recurring);
+    row.setAttribute('data-proratable', data.proratable);
+    row.setAttribute('data-gross-up', data.grossUp);
+    row.setAttribute('data-contribution', data.contribution);
+
+    var catPill = row.querySelector('.component-category-pill');
+    catPill.setAttribute('data-category', data.category);
+    catPill.className = 'pill component-category-pill ' + (data.category === 'deduction' ? 'pill-danger' : 'pill-success');
+    catPill.setAttribute('data-i18n', 'policy.componentMaster.' + data.category);
+    catPill.textContent = categoryText(data.category);
+
+    var typePill = row.querySelector('.component-type-pill');
+    typePill.setAttribute('data-type', data.type);
+    typePill.className = 'pill component-type-pill ' + (data.type === 'fixed' ? 'pill-neutral' : 'pill-warning');
+    typePill.setAttribute('data-i18n', 'policy.componentMaster.' + data.type);
+    typePill.textContent = typeText(data.type);
+
+    renderTags(row.querySelector('.component-tags'), data);
   }
 
   function openForm(mode, row){
     formMode.value = mode;
     if (mode === 'edit' && row) {
+      var data = readRowData(row);
       formId.value = row.getAttribute('data-id') || '';
-      formName.value = row.querySelector('.allowance-name').textContent.trim();
-      formType.value = row.querySelector('.allowance-type-pill').getAttribute('data-type') || 'fixed';
-      formBasis.value = row.querySelector('.allowance-basis').textContent.trim();
+      formName.value = row.querySelector('.component-name').textContent.trim();
+      formCategory.value = data.category;
+      formType.value = data.type;
+      formBasis.value = row.querySelector('.component-basis').textContent.trim();
+      formTaxable.value = data.taxable;
+      formBpjsBasis.value = data.bpjsBasis;
+      formRecurring.value = data.recurring;
+      formProratable.value = data.proratable;
+      formGrossUp.value = data.grossUp;
+      formContribution.value = data.contribution;
     } else {
       formId.value = '';
       formName.value = '';
+      formCategory.value = 'earning';
       formType.value = 'fixed';
       formBasis.value = '';
+      formTaxable.value = 'taxable';
+      formBpjsBasis.value = 'included';
+      formRecurring.value = 'recurring';
+      formProratable.value = 'yes';
+      formGrossUp.value = 'notApplied';
+      formContribution.value = 'none';
     }
     form.style.display = '';
     formName.focus();
@@ -3410,67 +4055,69 @@ btnDark.addEventListener('click', notifyThemeChange);
     form.style.display = 'none';
   }
 
-  function buildRow(id, name, type, basis){
+  function buildRow(id, name, basis, data){
     var tr = document.createElement('tr');
     tr.setAttribute('data-id', id);
     tr.innerHTML =
-      '<td class="allowance-name"></td>' +
-      '<td><span class="pill pill-' + (type === 'fixed' ? 'neutral' : 'warning') + ' allowance-type-pill" data-type="' + type + '"></span></td>' +
-      '<td class="allowance-basis"></td>' +
-      '<td><span class="pill pill-success"></span></td>' +
+      '<td class="component-name"></td>' +
+      '<td style="white-space:nowrap;"><span class="pill component-category-pill"></span></td>' +
+      '<td style="white-space:nowrap;"><span class="pill component-type-pill"></span></td>' +
+      '<td class="component-basis"></td>' +
+      '<td><div class="component-tags" style="display:flex;flex-wrap:wrap;gap:4px;"></div></td>' +
+      '<td style="white-space:nowrap;"><span class="pill pill-success component-status-pill"></span></td>' +
       '<td style="white-space:nowrap;">' +
-        '<button class="btn btn-sm allowance-edit" type="button">' + (I18N_TEXT('btn.edit')) + '</button> ' +
-        '<button class="btn btn-sm allowance-delete" type="button">' + (I18N_TEXT('btn.delete')) + '</button>' +
+        '<button class="btn btn-sm component-edit" type="button">' + I18N_TEXT('btn.edit') + '</button> ' +
+        '<button class="btn btn-sm component-delete" type="button">' + I18N_TEXT('btn.delete') + '</button>' +
       '</td>';
-    tr.querySelector('.allowance-name').textContent = name;
-    tr.querySelector('.allowance-type-pill').textContent = typeText(type);
-    tr.querySelector('.allowance-basis').textContent = basis;
-    tr.querySelector('.pill-success').textContent = activeText();
+    tr.querySelector('.component-name').textContent = name;
+    tr.querySelector('.component-basis').textContent = basis;
+    var statusPill = tr.querySelector('.component-status-pill');
+    statusPill.setAttribute('data-i18n', 'policy.componentMaster.active');
+    statusPill.textContent = activeText();
+    applyRowData(tr, data);
     return tr;
-  }
-
-  function I18N_TEXT(key){
-    try {
-      var l = (document.documentElement.getAttribute('lang')) || 'ko';
-      var dict = (typeof I18N !== 'undefined') && I18N[key];
-      if (dict) return dict[l] || dict.ko;
-    } catch(e) {}
-    return key === 'btn.edit' ? '수정' : (key === 'btn.delete' ? '삭제' : key);
   }
 
   addBtn.addEventListener('click', function(){ openForm('add', null); });
   formCancelBtn.addEventListener('click', closeForm);
 
   body.addEventListener('click', function(ev){
-    var editBtn = ev.target.closest('.allowance-edit');
-    var delBtn = ev.target.closest('.allowance-delete');
+    var editBtn = ev.target.closest('.component-edit');
+    var delBtn = ev.target.closest('.component-delete');
     if (editBtn) {
       openForm('edit', editBtn.closest('tr'));
     } else if (delBtn) {
       var row = delBtn.closest('tr');
-      if (window.confirm('이 수당 항목을 삭제하시겠습니까?')) row.remove();
+      if (window.confirm('이 급여 항목을 삭제하시겠습니까?')) row.remove();
     }
   });
 
   formSaveBtn.addEventListener('click', function(){
     var name = formName.value.trim();
-    var type = formType.value;
     var basis = formBasis.value.trim();
     if (!name || !basis) { formName.focus(); return; }
+
+    var data = {
+      category: formCategory.value,
+      type: formType.value,
+      taxable: formTaxable.value,
+      bpjsBasis: formBpjsBasis.value,
+      recurring: formRecurring.value,
+      proratable: formProratable.value,
+      grossUp: formGrossUp.value,
+      contribution: formContribution.value
+    };
 
     if (formMode.value === 'edit' && formId.value) {
       var row = body.querySelector('tr[data-id="' + formId.value + '"]');
       if (row) {
-        row.querySelector('.allowance-name').textContent = name;
-        var pill = row.querySelector('.allowance-type-pill');
-        pill.setAttribute('data-type', type);
-        pill.className = 'pill allowance-type-pill ' + (type === 'fixed' ? 'pill-neutral' : 'pill-warning');
-        pill.textContent = typeText(type);
-        row.querySelector('.allowance-basis').textContent = basis;
+        row.querySelector('.component-name').textContent = name;
+        row.querySelector('.component-basis').textContent = basis;
+        applyRowData(row, data);
       }
     } else {
       var newId = 'custom-' + Date.now();
-      body.appendChild(buildRow(newId, name, type, basis));
+      body.appendChild(buildRow(newId, name, basis, data));
     }
     closeForm();
   });
@@ -4364,7 +5011,142 @@ const I18N = {
 "home.paymentSchedule.bonus.statusPill":{ko:"계산완료 · 승인대기",en:"Calc. Complete · Pending Approval",id:"Perhitungan Selesai · Menunggu Persetujuan",zh:"计算完成 · 待审批",ja:"計算完了・承認待ち"},
 "home.paymentSchedule.bonus.sub":{ko:"별도 배치·별도 지급파일 · 회사 내규 기준 재량 상여(THR과 달리 법정 의무 아님)",en:"Separate batch, separate payment file · discretionary bonus per company policy (unlike THR, not a statutory obligation)",id:"Batch terpisah, file pembayaran terpisah · bonus diskresioner sesuai kebijakan perusahaan (berbeda dari THR, bukan kewajiban hukum)",zh:"独立批次、独立支付文件 · 依据公司内规的酌情奖金（与THR不同，非法定义务）",ja:"別バッチ・別支給ファイル・社内規定に基づく裁量賞与（THRと異なり法的義務ではない）"},
 "home.paymentSchedule.bonus.amountLabel":{ko:"지급 예정액",en:"Scheduled Amount",id:"Jumlah Terjadwal",zh:"预定支付金额",ja:"支給予定額"},
-"home.paymentSchedule.bonus.note":{ko:"근태(G1) 미의존 · 계산(G2) 독립 완료 → 법인장 승인(G4) 대기",en:"Not dependent on attendance (G1) · calculation (G2) completed independently → awaiting director approval (G4)",id:"Tidak bergantung pada kehadiran (G1) · perhitungan (G2) selesai secara independen → menunggu persetujuan direktur (G4)",zh:"不依赖考勤(G1) · 计算(G2)已独立完成 → 等待法人代表审批(G4)",ja:"勤怠(G1)に非依存・計算(G2)は独立して完了 → 法人代表の承認(G4)待ち"}
+"home.paymentSchedule.bonus.note":{ko:"근태(G1) 미의존 · 계산(G2) 독립 완료 → 법인장 승인(G4) 대기",en:"Not dependent on attendance (G1) · calculation (G2) completed independently → awaiting director approval (G4)",id:"Tidak bergantung pada kehadiran (G1) · perhitungan (G2) selesai secara independen → menunggu persetujuan direktur (G4)",zh:"不依赖考勤(G1) · 计算(G2)已独立完成 → 等待法人代表审批(G4)",ja:"勤怠(G1)に非依存・計算(G2)は独立して完了 → 法人代表の承認(G4)待ち"},
+"policy.componentMaster.title":{ko:"급여 항목 마스터",en:"Salary Component Master",id:"Master Komponen Gaji",zh:"薪资项目主数据",ja:"給与項目マスタ"},
+"policy.componentMaster.sub":{ko:"수당(Earning)과 공제(Deduction)를 통합 관리합니다. 항목별로 과세여부, BPJS 부과기준, 고정/비고정, 반복/1회성, 일할계산 여부, Gross-up 적용, 직원/회사 부담을 설정할 수 있습니다.",en:"Manage both earnings and deductions in one place. For each item you can configure taxable status, BPJS contribution basis, fixed/variable, recurring/one-time, proration, gross-up treatment, and employee/employer contribution.",id:"Kelola tunjangan (earning) dan potongan (deduction) dalam satu tempat. Untuk setiap item Anda dapat mengatur status kena pajak, dasar iuran BPJS, tetap/tidak tetap, berulang/sekali, prorata, penerapan gross-up, dan kontribusi karyawan/perusahaan.",zh:"统一管理收入项(Earning)与扣款项(Deduction)。可为每个项目设置是否计税、是否计入BPJS缴费基数、固定/非固定、周期性/一次性、是否日算（比例计算）、是否适用Gross-up，以及员工/公司承担方。",ja:"手当(Earning)と控除(Deduction)を統合管理します。項目ごとに課税区分、BPJS賦課基準、固定・非固定、反復・1回限り、日割計算の対象可否、Gross-up適用、従業員・会社負担を設定できます。"},
+"policy.componentMaster.thName":{ko:"항목명",en:"Item Name",id:"Nama Item",zh:"项目名称",ja:"項目名"},
+"policy.componentMaster.thCategory":{ko:"구분",en:"Category",id:"Kategori",zh:"类别",ja:"区分"},
+"policy.componentMaster.thType":{ko:"유형",en:"Type",id:"Jenis",zh:"类型",ja:"種類"},
+"policy.componentMaster.thBasis":{ko:"기준/금액",en:"Basis / Amount",id:"Dasar / Jumlah",zh:"标准/金额",ja:"基準・金額"},
+"policy.componentMaster.thTags":{ko:"속성",en:"Attributes",id:"Atribut",zh:"属性",ja:"属性"},
+"policy.componentMaster.earning":{ko:"수당",en:"Earning",id:"Tunjangan",zh:"收入项",ja:"手当"},
+"policy.componentMaster.deduction":{ko:"공제",en:"Deduction",id:"Potongan",zh:"扣款项",ja:"控除"},
+"policy.componentMaster.fixed":{ko:"고정",en:"Fixed",id:"Tetap",zh:"固定",ja:"固定"},
+"policy.componentMaster.variable":{ko:"비고정",en:"Variable",id:"Tidak Tetap",zh:"非固定",ja:"非固定"},
+"policy.componentMaster.active":{ko:"사용중",en:"Active",id:"Aktif",zh:"使用中",ja:"使用中"},
+"policy.componentMaster.addBtn":{ko:"+ 항목 추가",en:"+ Add Item",id:"+ Tambah Item",zh:"+ 添加项目",ja:"+ 項目を追加"},
+"policy.componentMaster.nameTransport":{ko:"교통비",en:"Transport Allowance",id:"Tunjangan Transportasi",zh:"交通费",ja:"交通費"},
+"policy.componentMaster.nameMeal":{ko:"식대",en:"Meal Allowance",id:"Tunjangan Makan",zh:"餐费",ja:"食事手当"},
+"policy.componentMaster.nameTenure":{ko:"근속수당",en:"Tenure Allowance",id:"Tunjangan Masa Kerja",zh:"工龄津贴",ja:"勤続手当"},
+"policy.componentMaster.nameOvertime":{ko:"초과근무수당",en:"Overtime Allowance",id:"Tunjangan Lembur",zh:"加班津贴",ja:"残業手当"},
+"policy.componentMaster.nameAttendance":{ko:"개근수당",en:"Perfect Attendance Allowance",id:"Tunjangan Kehadiran Sempurna",zh:"全勤津贴",ja:"皆勤手当"},
+"policy.componentMaster.nameBpjsKesehatanEmployee":{ko:"BPJS Kesehatan (직원부담)",en:"BPJS Kesehatan (Employee Portion)",id:"BPJS Kesehatan (Porsi Karyawan)",zh:"BPJS Kesehatan（员工承担部分）",ja:"BPJS Kesehatan（従業員負担分）"},
+"policy.componentMaster.namePph21":{ko:"PPh 21 원천징수",en:"PPh 21 Withholding",id:"Pemotongan PPh 21",zh:"PPh 21 预扣税",ja:"PPh21源泉徴収"},
+"policy.componentMaster.nameCompanyLoan":{ko:"사내대출 상환",en:"Company Loan Repayment",id:"Pembayaran Pinjaman Karyawan",zh:"公司借款偿还",ja:"社内貸付返済"},
+"policy.componentMaster.transportBasis":{ko:"Rp450,000/월",en:"Rp450,000/month",id:"Rp450.000/bulan",zh:"Rp450,000/月",ja:"Rp450,000/月"},
+"policy.componentMaster.mealBasis":{ko:"Rp600,000/월",en:"Rp600,000/month",id:"Rp600.000/bulan",zh:"Rp600,000/月",ja:"Rp600,000/月"},
+"policy.componentMaster.tenureBasis":{ko:"근속연수 × Rp50,000",en:"Years of service × Rp50,000",id:"Masa kerja × Rp50.000",zh:"工龄 × Rp50,000",ja:"勤続年数 × Rp50,000"},
+"policy.componentMaster.otBasis":{ko:"OT 배율/고정요율 정책에 따라 계산",en:"Calculated per the OT multiplier / fixed-rate policy",id:"Dihitung sesuai kebijakan pengali/tarif tetap lembur",zh:"依据加班倍率/固定费率政策计算",ja:"OT倍率・固定料金ポリシーに基づいて計算"},
+"policy.componentMaster.attendanceBasis":{ko:"조건 충족 시 Rp200,000",en:"Rp200,000 if conditions are met",id:"Rp200.000 jika syarat terpenuhi",zh:"满足条件时Rp200,000",ja:"条件を満たす場合Rp200,000"},
+"policy.componentMaster.bpjsKesehatanBasis":{ko:"급여의 1% (상한 Rp12,000,000 기준)",en:"1% of salary (capped at a basis of Rp12,000,000)",id:"1% dari gaji (dibatasi pada dasar Rp12.000.000)",zh:"工资的1%（以Rp12,000,000为缴费基数上限）",ja:"給与の1%（賦課基準上限Rp12,000,000）"},
+"policy.componentMaster.pph21Basis":{ko:"TER 구간별 원천징수세율 적용",en:"Withheld per the TER bracket rate",id:"Dipotong sesuai tarif TER per lapisan",zh:"按TER税率级距预扣",ja:"TER区分ごとの源泉徴収税率を適用"},
+"policy.componentMaster.companyLoanBasis":{ko:"대출 잔액 기준 월 분할 상환액",en:"Monthly installment based on outstanding loan balance",id:"Cicilan bulanan berdasarkan sisa saldo pinjaman",zh:"按贷款余额计算的月分期还款额",ja:"貸付残高に基づく月次分割返済額"},
+"policy.componentMaster.tag.taxable":{ko:"과세",en:"Taxable",id:"Kena Pajak",zh:"计税",ja:"課税"},
+"policy.componentMaster.tag.nonTaxable":{ko:"비과세",en:"Non-taxable",id:"Bebas Pajak",zh:"免税",ja:"非課税"},
+"policy.componentMaster.tag.taxNA":{ko:"과세N/A",en:"Tax N/A",id:"Pajak T/A",zh:"计税N/A",ja:"課税対象外(N/A)"},
+"policy.componentMaster.tag.bpjsIncluded":{ko:"BPJS포함",en:"BPJS Incl.",id:"BPJS Termasuk",zh:"含BPJS",ja:"BPJS対象"},
+"policy.componentMaster.tag.bpjsExcluded":{ko:"BPJS미포함",en:"BPJS Excl.",id:"BPJS Tidak Termasuk",zh:"不含BPJS",ja:"BPJS対象外"},
+"policy.componentMaster.tag.proratableYes":{ko:"일할O",en:"Prorated",id:"Prorata",zh:"可日算",ja:"日割対象"},
+"policy.componentMaster.tag.proratableNo":{ko:"일할X",en:"Not Prorated",id:"Non-Prorata",zh:"不可日算",ja:"日割対象外"},
+"policy.componentMaster.tag.oneTime":{ko:"1회성",en:"One-time",id:"Sekali",zh:"一次性",ja:"1回限り"},
+"policy.componentMaster.tag.grossUp":{ko:"Gross-up",en:"Gross-up",id:"Gross-up",zh:"Gross-up",ja:"Gross-up"},
+"policy.componentMaster.tag.contributionEmployee":{ko:"직원부담",en:"Employee-borne",id:"Ditanggung Karyawan",zh:"员工承担",ja:"従業員負担"},
+"policy.componentMaster.tag.contributionEmployer":{ko:"회사부담",en:"Employer-borne",id:"Ditanggung Perusahaan",zh:"公司承担",ja:"会社負担"},
+"policy.componentMaster.formName":{ko:"항목명",en:"Item Name",id:"Nama Item",zh:"项目名称",ja:"項目名"},
+"policy.componentMaster.formCategory":{ko:"구분",en:"Category",id:"Kategori",zh:"类别",ja:"区分"},
+"policy.componentMaster.formType":{ko:"유형",en:"Type",id:"Jenis",zh:"类型",ja:"種類"},
+"policy.componentMaster.formBasis":{ko:"기준/금액",en:"Basis / Amount",id:"Dasar / Jumlah",zh:"标准/金额",ja:"基準・金額"},
+"policy.componentMaster.formTaxable":{ko:"과세여부",en:"Taxable Status",id:"Status Pajak",zh:"计税与否",ja:"課税区分"},
+"policy.componentMaster.formBpjsBasis":{ko:"BPJS 부과기준",en:"BPJS Contribution Basis",id:"Dasar Iuran BPJS",zh:"BPJS缴费基数",ja:"BPJS賦課基準"},
+"policy.componentMaster.formRecurring":{ko:"반복 지급 여부",en:"Payment Frequency",id:"Frekuensi Pembayaran",zh:"支付频率",ja:"支給頻度"},
+"policy.componentMaster.formProratable":{ko:"일할계산 대상",en:"Proration",id:"Prorata",zh:"日算对象",ja:"日割計算対象"},
+"policy.componentMaster.formGrossUp":{ko:"Gross-up 적용",en:"Gross-up Treatment",id:"Perlakuan Gross-up",zh:"Gross-up适用",ja:"Gross-up適用"},
+"policy.componentMaster.formContribution":{ko:"부담 주체",en:"Cost Borne By",id:"Pihak Penanggung",zh:"承担方",ja:"負担主体"},
+"policy.componentMaster.optTaxableYes":{ko:"과세대상",en:"Taxable",id:"Kena Pajak",zh:"计税对象",ja:"課税対象"},
+"policy.componentMaster.optTaxableNo":{ko:"비과세",en:"Non-taxable",id:"Bebas Pajak",zh:"免税",ja:"非課税"},
+"policy.componentMaster.optTaxableNA":{ko:"해당없음",en:"Not Applicable",id:"Tidak Berlaku",zh:"不适用",ja:"該当なし"},
+"policy.componentMaster.optBpjsIncluded":{ko:"포함",en:"Included",id:"Termasuk",zh:"含",ja:"対象"},
+"policy.componentMaster.optBpjsExcluded":{ko:"미포함",en:"Excluded",id:"Tidak Termasuk",zh:"不含",ja:"対象外"},
+"policy.componentMaster.optRecurringYes":{ko:"반복 지급",en:"Recurring",id:"Berulang",zh:"周期性支付",ja:"反復支給"},
+"policy.componentMaster.optRecurringNo":{ko:"1회성 지급",en:"One-time",id:"Sekali Bayar",zh:"一次性支付",ja:"1回限り支給"},
+"policy.componentMaster.optProratableYes":{ko:"대상",en:"Applicable",id:"Berlaku",zh:"适用",ja:"対象"},
+"policy.componentMaster.optProratableNo":{ko:"비대상",en:"Not Applicable",id:"Tidak Berlaku",zh:"不适用",ja:"対象外"},
+"policy.componentMaster.optGrossUpYes":{ko:"적용",en:"Applied",id:"Diterapkan",zh:"适用",ja:"適用"},
+"policy.componentMaster.optGrossUpNo":{ko:"미적용",en:"Not Applied",id:"Tidak Diterapkan",zh:"不适用",ja:"未適用"},
+"policy.componentMaster.optContributionNone":{ko:"없음",en:"None",id:"Tidak Ada",zh:"无",ja:"なし"},
+"policy.componentMaster.optContributionEmployee":{ko:"직원 부담",en:"Employee",id:"Karyawan",zh:"员工承担",ja:"従業員負担"},
+"policy.componentMaster.optContributionEmployer":{ko:"회사 부담",en:"Employer",id:"Perusahaan",zh:"公司承担",ja:"会社負担"},
+"nav.group.reports":{ko:"리포트",en:"Reports",id:"Laporan",zh:"报表",ja:"レポート"},
+"nav.reports":{ko:"리포트",en:"Reports",id:"Laporan",zh:"报表",ja:"レポート"},
+"reports.title":{ko:"리포트",en:"Reports",id:"Laporan",zh:"报表",ja:"レポート"},
+"reports.pill":{ko:"8개 카테고리",en:"8 Categories",id:"8 Kategori",zh:"8个类别",ja:"8カテゴリー"},
+"reports.sub":{ko:"급여·세금·BPJS·인사·근태 등 항목별 리포트를 조회하고 다운로드합니다.",en:"Browse and download reports by category — payroll, tax, BPJS, HR, attendance, and more.",id:"Telusuri dan unduh laporan berdasarkan kategori — payroll, pajak, BPJS, SDM, kehadiran, dan lainnya.",zh:"按类别浏览并下载报表——工资、税务、BPJS、人事、考勤等。",ja:"給与・税金・BPJS・人事・勤怠などカテゴリー別にレポートを閲覧・ダウンロードします。"},
+"reports.item.download":{ko:"다운로드",en:"Download",id:"Unduh",zh:"下载",ja:"ダウンロード"},
+"reports.item.view":{ko:"보기",en:"View",id:"Lihat",zh:"查看",ja:"表示"},
+"reports.cat.salary":{ko:"급여명세 리포트",en:"Salary Report",id:"Laporan Gaji",zh:"薪资报表",ja:"給与明細レポート"},
+"reports.cat.salary.desc":{ko:"급여명세서 데이터",en:"Payslip data",id:"Data slip gaji",zh:"工资单数据",ja:"給与明細データ"},
+"reports.cat.tax":{ko:"세금 리포트",en:"Tax Report",id:"Laporan Pajak",zh:"税务报表",ja:"税金レポート"},
+"reports.cat.tax.desc":{ko:"PPh21 원천징수 · e-Bupot 연동",en:"PPh21 withholding · linked to e-Bupot",id:"Pemotongan PPh21 · terhubung ke e-Bupot",zh:"PPh21代扣代缴 · 对接e-Bupot",ja:"PPh21源泉徴収・e-Bupot連携"},
+"reports.cat.bpjs":{ko:"BPJS 리포트",en:"BPJS Report",id:"Laporan BPJS",zh:"BPJS报表",ja:"BPJSレポート"},
+"reports.cat.bpjs.desc":{ko:"BPJS 기여금 · SIPP 연동",en:"BPJS contributions · linked to SIPP",id:"Iuran BPJS · terhubung ke SIPP",zh:"BPJS缴费 · 对接SIPP",ja:"BPJS拠出金・SIPP連携"},
+"reports.cat.hr":{ko:"인사 리포트",en:"Human Resources Report",id:"Laporan SDM",zh:"人事报表",ja:"人事レポート"},
+"reports.cat.hr.desc":{ko:"인원 현황 · 입퇴사 · 직급/부서 구성",en:"Headcount · hires/exits · rank & dept mix",id:"Jumlah karyawan · masuk/keluar · komposisi jabatan/departemen",zh:"人数 · 入职/离职 · 职级与部门构成",ja:"在籍人数・入退社・職級/部門構成"},
+"reports.cat.attendance":{ko:"근태 리포트",en:"Attendance Report",id:"Laporan Kehadiran",zh:"考勤报表",ja:"勤怠レポート"},
+"reports.cat.attendance.desc":{ko:"출퇴근 기록 · 지각·결근 이상",en:"Clock-in/out records · anomalies",id:"Catatan absen masuk/keluar · anomali",zh:"打卡记录 · 异常情况",ja:"出退勤記録・異常打刻"},
+"reports.cat.reimbursement":{ko:"실비정산 리포트",en:"Reimbursement Report",id:"Laporan Reimbursement",zh:"实报实销报表",ja:"実費精算レポート"},
+"reports.cat.reimbursement.desc":{ko:"실비정산 청구 내역",en:"Expense reimbursement claims",id:"Klaim reimbursement biaya",zh:"费用报销申请",ja:"実費精算の申請内容"},
+"reports.cat.overtime":{ko:"초과근무 리포트",en:"Overtime Report",id:"Laporan Lembur",zh:"加班报表",ja:"残業レポート"},
+"reports.cat.overtime.desc":{ko:"초과근무 시간 · 수당",en:"Overtime hours & pay",id:"Jam & upah lembur",zh:"加班时长与工资",ja:"残業時間・残業代"},
+"reports.cat.loan":{ko:"대출 리포트",en:"Loan Report",id:"Laporan Pinjaman",zh:"贷款报表",ja:"貸付レポート"},
+"reports.cat.loan.desc":{ko:"대출·EWA 잔액 · 상환",en:"Loan/EWA balances & repayments",id:"Saldo & pembayaran Pinjaman/EWA",zh:"贷款/EWA余额与还款",ja:"貸付・EWA残高と返済"},
+"reports.salary.month.name":{ko:"급여명세 2026년 8월",en:"Payslip August 2026",id:"Slip Gaji Agustus 2026",zh:"薪资单 2026年8月",ja:"給与明細 2026年8月"},
+"reports.salary.month.meta":{ko:"2026-08 차수 · 전 직원 412명 · 지급일 08-28",en:"Aug 2026 cycle · all 412 employees · pay date 08-28",id:"Siklus Agu 2026 · seluruh 412 karyawan · tanggal bayar 08-28",zh:"2026年8月批次 · 全体412名员工 · 发放日08-28",ja:"2026年8月サイクル・全412名・支給日08-28"},
+"reports.salary.adhoc.name":{ko:"급여명세 리포트",en:"Payslip Report",id:"Laporan Slip Gaji",zh:"薪资单报表",ja:"給与明細レポート"},
+"reports.salary.adhoc.meta":{ko:"기간을 직접 지정해 조회하는 전체 급여명세 (전 차수 통합)",en:"Full payslip data for a custom date range, across all pay cycles",id:"Data slip gaji lengkap untuk rentang tanggal kustom, di semua siklus pembayaran",zh:"可自定义日期区间查询的全部薪资单数据（合并所有批次）",ja:"任意の期間を指定して照会する全支給サイクル統合の給与明細データ"},
+"reports.salary.yearly.name":{ko:"급여명세 연간 리포트",en:"Payslip Yearly Report",id:"Laporan Slip Gaji Tahunan",zh:"薪资单年度报表",ja:"給与明細 年間レポート"},
+"reports.salary.yearly.meta":{ko:"2026년 1월~8월 누적 급여명세 (THR·상여금 포함)",en:"Cumulative payslip data Jan-Aug 2026 (incl. THR & bonus)",id:"Data slip gaji kumulatif Jan-Agu 2026 (termasuk THR & bonus)",zh:"2026年1月至8月累计薪资单数据（含THR及奖金）",ja:"2026年1月～8月累計給与明細（THR・賞与含む）"},
+"reports.tax.month.name":{ko:"세금 2026년 8월",en:"Tax August 2026",id:"Pajak Agustus 2026",zh:"税务 2026年8月",ja:"税金 2026年8月"},
+"reports.tax.month.meta":{ko:"2026-08 차수 PPh21 원천징수 내역 · e-Bupot 업로드 포맷",en:"Aug 2026 PPh21 withholding detail · e-Bupot upload format",id:"Detail pemotongan PPh21 siklus Agu 2026 · format unggah e-Bupot",zh:"2026年8月批次PPh21代扣明细 · e-Bupot上传格式",ja:"2026年8月PPh21源泉徴収明細・e-Bupotアップロード形式"},
+"reports.tax.adhoc.name":{ko:"세금 리포트",en:"Tax Report",id:"Laporan Pajak",zh:"税务报表",ja:"税金レポート"},
+"reports.tax.adhoc.meta":{ko:"기간 지정 조회 · 직원별/부서별 PPh21 원천징수 상세",en:"Custom date range · PPh21 withholding detail by employee/department",id:"Rentang tanggal kustom · detail pemotongan PPh21 per karyawan/departemen",zh:"自定义日期区间 · 按员工/部门查看PPh21代扣明细",ja:"期間指定照会・従業員別/部門別PPh21源泉徴収明細"},
+"reports.tax.yearly.name":{ko:"세금 연간 리포트",en:"Tax Yearly Report",id:"Laporan Pajak Tahunan",zh:"税务年度报表",ja:"税金 年間レポート"},
+"reports.tax.yearly.meta":{ko:"2026년 연간 PPh21 누적 · SPT Tahunan 신고 대사용",en:"Cumulative 2026 PPh21 · for SPT Tahunan filing reconciliation",id:"Kumulatif PPh21 2026 · untuk rekonsiliasi pelaporan SPT Tahunan",zh:"2026年度PPh21累计 · 用于SPT Tahunan年度申报核对",ja:"2026年通期PPh21累計・SPT Tahunan申告照合用"},
+"reports.bpjs.month.name":{ko:"BPJS 2026년 8월",en:"BPJS August 2026",id:"BPJS Agustus 2026",zh:"BPJS 2026年8月",ja:"BPJS 2026年8月"},
+"reports.bpjs.month.meta":{ko:"2026-08 차수 Kesehatan·Ketenagakerjaan 기여금 · SIPP 파일 형식",en:"Aug 2026 Kesehatan/Ketenagakerjaan contributions · SIPP file format",id:"Iuran Kesehatan/Ketenagakerjaan siklus Agu 2026 · format file SIPP",zh:"2026年8月Kesehatan/Ketenagakerjaan缴费 · SIPP文件格式",ja:"2026年8月Kesehatan・Ketenagakerjaan拠出金・SIPPファイル形式"},
+"reports.bpjs.adhoc.name":{ko:"BPJS 리포트",en:"BPJS Report",id:"Laporan BPJS",zh:"BPJS报表",ja:"BPJSレポート"},
+"reports.bpjs.adhoc.meta":{ko:"기간 지정 조회 · 직원별 BPJS 기여금 상세 내역",en:"Custom date range · BPJS contribution detail by employee",id:"Rentang tanggal kustom · detail iuran BPJS per karyawan",zh:"自定义日期区间 · 按员工查看BPJS缴费明细",ja:"期間指定照会・従業員別BPJS拠出金明細"},
+"reports.bpjs.yearly.name":{ko:"BPJS 연간 리포트",en:"BPJS Yearly Report",id:"Laporan BPJS Tahunan",zh:"BPJS年度报表",ja:"BPJS 年間レポート"},
+"reports.bpjs.yearly.meta":{ko:"2026년 연간 BPJS 기여금 누적 · 회사/직원 부담분 구분",en:"Cumulative 2026 BPJS contributions · split by company/employee share",id:"Kumulatif iuran BPJS 2026 · dipisah porsi perusahaan/karyawan",zh:"2026年度BPJS缴费累计 · 区分公司/员工承担部分",ja:"2026年通期BPJS拠出金累計・会社/従業員負担分の区分"},
+"reports.hr.month.name":{ko:"인사 2026년 8월",en:"HR August 2026",id:"SDM Agustus 2026",zh:"人事 2026年8月",ja:"人事 2026年8月"},
+"reports.hr.month.meta":{ko:"재직 412명 · 입사 4명 · 퇴사 2명 · 직급/부서별 현황",en:"412 active · 4 hires · 2 exits · breakdown by rank/department",id:"412 aktif · 4 masuk · 2 keluar · rincian per jabatan/departemen",zh:"在职412人 · 入职4人 · 离职2人 · 按职级/部门统计",ja:"在籍412名・入社4名・退職2名・職級/部門別内訳"},
+"reports.hr.adhoc.name":{ko:"인사 리포트",en:"HR Report",id:"Laporan SDM",zh:"人事报表",ja:"人事レポート"},
+"reports.hr.adhoc.meta":{ko:"기간 지정 조회 · 입퇴사·직급 변동 등 전체 인사 이력",en:"Custom date range · full HR history incl. hires/exits and rank changes",id:"Rentang tanggal kustom · seluruh riwayat SDM termasuk masuk/keluar dan perubahan jabatan",zh:"自定义日期区间 · 含入离职、职级变动等全部人事记录",ja:"期間指定照会・入退社や職級変更を含む全人事履歴"},
+"reports.hr.yearly.name":{ko:"인사 연간 리포트",en:"HR Yearly Report",id:"Laporan SDM Tahunan",zh:"人事年度报表",ja:"人事 年間レポート"},
+"reports.hr.yearly.meta":{ko:"2026년 연간 인력 현황 추이 · 부서별/직급별 구성 변화",en:"2026 headcount trend · changes in department/rank composition",id:"Tren jumlah karyawan 2026 · perubahan komposisi departemen/jabatan",zh:"2026年度人力状况趋势 · 部门/职级构成变化",ja:"2026年通期の人員推移・部門別/職級別構成の変化"},
+"reports.attendance.month.name":{ko:"근태 2026년 8월",en:"Attendance August 2026",id:"Kehadiran Agustus 2026",zh:"考勤 2026年8月",ja:"勤怠 2026年8月"},
+"reports.attendance.month.meta":{ko:"컷오프 07-26~08-25 · 출퇴근 기록 및 지각·결근 이상 태깅",en:"Cutoff 07-26 to 08-25 · clock-in/out records with late/absence flags",id:"Cutoff 07-26~08-25 · catatan absen masuk/keluar dengan tanda terlambat/tidak hadir",zh:"截止日07-26~08-25 · 打卡记录及迟到/缺勤异常标记",ja:"締切07-26〜08-25・出退勤記録および遅刻・欠勤の異常タグ"},
+"reports.attendance.adhoc.name":{ko:"근태 리포트",en:"Attendance Report",id:"Laporan Kehadiran",zh:"考勤报表",ja:"勤怠レポート"},
+"reports.attendance.adhoc.meta":{ko:"기간 지정 조회 · 전체 출퇴근 원본 기록 및 예외 건",en:"Custom date range · raw clock-in/out records and exceptions",id:"Rentang tanggal kustom · seluruh catatan absen mentah dan pengecualian",zh:"自定义日期区间 · 全部打卡原始记录及异常事项",ja:"期間指定照会・全出退勤の原本記録および例外事項"},
+"reports.attendance.yearly.name":{ko:"근태 연간 리포트",en:"Attendance Yearly Report",id:"Laporan Kehadiran Tahunan",zh:"考勤年度报表",ja:"勤怠 年間レポート"},
+"reports.attendance.yearly.meta":{ko:"2026년 연간 근태 누적 · 부서별 지각·결근율 추이",en:"Cumulative 2026 attendance · late/absence rate trend by department",id:"Kumulatif kehadiran 2026 · tren tingkat terlambat/tidak hadir per departemen",zh:"2026年度考勤累计 · 各部门迟到/缺勤率趋势",ja:"2026年通期勤怠累計・部門別遅刻・欠勤率の推移"},
+"reports.reimbursement.month.name":{ko:"실비정산 2026년 8월",en:"Reimbursement August 2026",id:"Reimbursement Agustus 2026",zh:"实报实销 2026年8月",ja:"実費精算 2026年8月"},
+"reports.reimbursement.month.meta":{ko:"2026-08 차수 실비정산 청구·승인 내역 · 통근/출장/의료비",en:"Aug 2026 reimbursement claims & approvals · commute/travel/medical",id:"Klaim & persetujuan reimbursement siklus Agu 2026 · transportasi/perjalanan dinas/medis",zh:"2026年8月批次实报实销申请及审批 · 通勤/差旅/医疗",ja:"2026年8月申請・承認内訳・通勤/出張/医療費"},
+"reports.reimbursement.adhoc.name":{ko:"실비정산 리포트",en:"Reimbursement Report",id:"Laporan Reimbursement",zh:"实报实销报表",ja:"実費精算レポート"},
+"reports.reimbursement.adhoc.meta":{ko:"기간 지정 조회 · 전체 실비정산 청구 이력",en:"Custom date range · full reimbursement claim history",id:"Rentang tanggal kustom · seluruh riwayat klaim reimbursement",zh:"自定义日期区间 · 全部实报实销申请历史",ja:"期間指定照会・全実費精算申請履歴"},
+"reports.reimbursement.yearly.name":{ko:"실비정산 연간 리포트",en:"Reimbursement Yearly",id:"Reimbursement Tahunan",zh:"实报实销年度报表",ja:"実費精算 年間レポート"},
+"reports.reimbursement.yearly.meta":{ko:"2026년 연간 실비정산 누적 · 항목별 지출 추이",en:"Cumulative 2026 reimbursement · spending trend by expense category",id:"Kumulatif reimbursement 2026 · tren pengeluaran per kategori",zh:"2026年度实报实销累计 · 各项目支出趋势",ja:"2026年通期実費精算累計・費目別支出推移"},
+"reports.overtime.month.name":{ko:"초과근무 2026년 8월",en:"Overtime August 2026",id:"Lembur Agustus 2026",zh:"加班 2026年8月",ja:"残業 2026年8月"},
+"reports.overtime.month.meta":{ko:"2026-08 차수 초과근무 시간·수당 상세 (배율 적용 포함)",en:"Aug 2026 overtime hours & pay detail (incl. multiplier rates)",id:"Detail jam & upah lembur siklus Agu 2026 (termasuk tarif kali lipat)",zh:"2026年8月批次加班时长与工资明细（含倍率）",ja:"2026年8月残業時間・残業代明細（割増率適用含む）"},
+"reports.overtime.adhoc.name":{ko:"초과근무 리포트",en:"Overtime Report",id:"Laporan Lembur",zh:"加班报表",ja:"残業レポート"},
+"reports.overtime.adhoc.meta":{ko:"기간 지정 조회 · 직원별/부서별 전체 초과근무 이력",en:"Custom date range · full overtime history by employee/department",id:"Rentang tanggal kustom · seluruh riwayat lembur per karyawan/departemen",zh:"自定义日期区间 · 按员工/部门查看全部加班记录",ja:"期間指定照会・従業員別/部門別全残業履歴"},
+"reports.overtime.yearly.name":{ko:"초과근무 연간 리포트",en:"Overtime Yearly Report",id:"Laporan Lembur Tahunan",zh:"加班年度报表",ja:"残業 年間レポート"},
+"reports.overtime.yearly.meta":{ko:"2026년 연간 초과근무 시간·수당 누적 추이",en:"Cumulative 2026 overtime hours & pay trend",id:"Tren kumulatif jam & upah lembur 2026",zh:"2026年度加班时长与工资累计趋势",ja:"2026年通期残業時間・残業代累計推移"},
+"reports.loan.month.name":{ko:"대출 2026년 8월",en:"Loan August 2026",id:"Pinjaman Agustus 2026",zh:"贷款 2026年8月",ja:"貸付 2026年8月"},
+"reports.loan.month.meta":{ko:"2026-08 차수 대출·EWA 잔액 및 상환(공제) 내역",en:"Aug 2026 loan/EWA balances & repayment (deduction) detail",id:"Saldo Pinjaman/EWA & detail pembayaran (potongan) siklus Agu 2026",zh:"2026年8月批次贷款/EWA余额及还款（扣款）明细",ja:"2026年8月貸付・EWA残高および返済（控除）明細"},
+"reports.loan.adhoc.name":{ko:"대출 리포트",en:"Loan Report",id:"Laporan Pinjaman",zh:"贷款报表",ja:"貸付レポート"},
+"reports.loan.adhoc.meta":{ko:"기간 지정 조회 · 전체 대출·EWA 취급 및 상환 이력",en:"Custom date range · full loan/EWA issuance and repayment history",id:"Rentang tanggal kustom · seluruh riwayat pencairan dan pembayaran Pinjaman/EWA",zh:"自定义日期区间 · 全部贷款/EWA发放及还款历史",ja:"期間指定照会・全貸付・EWA実行および返済履歴"},
+"reports.loan.yearly.name":{ko:"대출 연간 리포트",en:"Loan Yearly Report",id:"Laporan Pinjaman Tahunan",zh:"贷款年度报表",ja:"貸付 年間レポート"},
+"reports.loan.yearly.meta":{ko:"2026년 연간 대출·EWA 취급액·상환액 누적 추이",en:"Cumulative 2026 loan/EWA issuance and repayment trend",id:"Tren kumulatif pencairan dan pembayaran Pinjaman/EWA 2026",zh:"2026年度贷款/EWA发放额与还款额累计趋势",ja:"2026年通期貸付・EWA実行額・返済額累計推移"},
 };
 
 function applyLang(lang){
@@ -4375,6 +5157,39 @@ function applyLang(lang){
   });
   document.documentElement.lang = lang;
 }
+
+/* ---------- Reports module: category switching + mock action feedback ---------- */
+(function(){
+  var root = document.getElementById('view-reports');
+  if(!root) return;
+
+  var catBtns = root.querySelectorAll('.rpt-cat-btn');
+  var groups = root.querySelectorAll('.rpt-report-group');
+
+  catBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var cat = btn.getAttribute('data-category');
+      catBtns.forEach(function(b){ b.classList.remove('active'); });
+      groups.forEach(function(g){ g.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = root.querySelector('.rpt-report-group[data-category-group="' + cat + '"]');
+      if(target){ target.classList.add('active'); }
+    });
+  });
+
+  root.querySelectorAll('.rpt-action-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var row = btn.closest('.rpt-report-row');
+      var note = row ? row.querySelector('.rpt-report-note') : null;
+      if(!note) return;
+      var type = btn.getAttribute('data-note-type');
+      note.textContent = type === 'view' ? '리포트를 불러왔습니다 (모의)' : '다운로드 완료 (모의)';
+      note.style.color = 'var(--success)';
+      setTimeout(function(){ note.textContent = ''; }, 4000);
+    });
+  });
+})();
+
 document.getElementById('langSelect').addEventListener('change', function(ev){ applyLang(ev.target.value); });
 applyLang('ko');
 </script>
