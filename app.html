@@ -375,7 +375,19 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.anomaly">이상근태</div><div class="kpi-value up">0/3 <span data-i18n="status.resolved_short">해결</span></div></div>
       <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.claims_pending">소명 대기</div><div class="kpi-value warn" id="homeKpiClaimsPending">2/7</div></div>
     </div>
+
+    <div class="field-row" style="margin-top:12px;margin-bottom:0;justify-content:flex-end;">
+      <div class="field">
+        <div class="field-label" data-i18n="period.selectorLabel">조회 차수</div>
+        <select class="input period-selector" data-scope="home" style="width:170px;">
+          <option value="2026-08" selected data-i18n="period.opt202608">2026-08 (진행중)</option>
+          <option value="2026-07" data-i18n="period.opt202607">2026-07 (마감)</option>
+          <option value="2026-06" data-i18n="period.opt202606">2026-06 (마감)</option>
+        </select>
+      </div>
+    </div>
   </div>
+<div class="period-panel" data-scope="home" data-period="2026-08">
 
   <div class="section-title" data-i18n="home.paymentSchedule.title">이번 달 지급 일정</div>
   <div class="banner-info">
@@ -551,6 +563,31 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       </div>
     </div>
   </div>
+</div>
+<div class="card period-panel" data-scope="home" data-period="2026-07" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.headcount">인원</div><div class="kpi-value">407<span data-i18n="unit.people">명</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.net_payout">실지급</div><div class="kpi-value">Rp 3.39B</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.overtime">초과근무</div><div class="kpi-value">11,540h</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="period.gateStatus">게이트 상태</div><div class="kpi-value up" data-i18n="period.allPassed">G1~G4 전체 통과</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="period.finalApproval">최종 승인</div><div class="kpi-value">07-26 14:20</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.payFileNote07">지급파일 MCM_PAYROLL_202607.txt 생성 완료 · 명세서 배포 완료</div>
+  <div style="margin-top:14px;"><button class="btn btn-sm" type="button" data-goto="view-reports" data-i18n="period.gotoReports">리포트에서 상세 보기 →</button></div>
+</div>
+<div class="card period-panel" data-scope="home" data-period="2026-06" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.headcount">인원</div><div class="kpi-value">403<span data-i18n="unit.people">명</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.net_payout">실지급</div><div class="kpi-value">Rp 3.30B</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.overtime">초과근무</div><div class="kpi-value">10,890h</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="period.gateStatus">게이트 상태</div><div class="kpi-value up" data-i18n="period.allPassed">G1~G4 전체 통과</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="period.finalApproval">최종 승인</div><div class="kpi-value">06-26 14:05</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.payFileNote06">지급파일 MCM_PAYROLL_202606.txt 생성 완료 · 명세서 배포 완료</div>
+  <div style="margin-top:14px;"><button class="btn btn-sm" type="button" data-goto="view-reports" data-i18n="period.gotoReports">리포트에서 상세 보기 →</button></div>
+</div>
 </section>
 <section class="view" id="view-upload">
   <div class="page-header">
@@ -649,7 +686,19 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.leave_used">연차사용</div><div class="kpi-value">218<span data-i18n="unit.days">일</span></div></div>
       <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.fp_sync">지문기 동기화</div><div class="kpi-value">12/12</div></div>
     </div>
+
+    <div class="field-row" style="margin-top:12px;margin-bottom:0;justify-content:flex-end;">
+      <div class="field">
+        <div class="field-label" data-i18n="period.selectorLabel">조회 차수</div>
+        <select class="input period-selector" data-scope="g1" style="width:170px;">
+          <option value="2026-08" selected data-i18n="period.opt202608">2026-08 (진행중)</option>
+          <option value="2026-07" data-i18n="period.opt202607">2026-07 (마감)</option>
+          <option value="2026-06" data-i18n="period.opt202606">2026-06 (마감)</option>
+        </select>
+      </div>
+    </div>
   </div>
+<div class="period-panel" data-scope="g1" data-period="2026-08">
 
   <div class="card-title" data-i18n="g1.anomaly_title">이상근태 처리내역 (3건, 전건 해결)</div>
   <div class="table-wrap">
@@ -727,6 +776,27 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       </table>
     </div>
   </div>
+</div>
+<div class="card period-panel" data-scope="g1" data-period="2026-07" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.attendance">출근율</div><div class="kpi-value">96.8%</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.total_hours">총근무</div><div class="kpi-value">80,930h</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.overtime">초과근무</div><div class="kpi-value">11,540h</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.fp_sync">지문기 동기화</div><div class="kpi-value">12/12</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g1PassNote07">통과 07-25 08:40 · 이상근태 0건 (전건 해결)</div>
+</div>
+<div class="card period-panel" data-scope="g1" data-period="2026-06" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.attendance">출근율</div><div class="kpi-value">96.5%</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.total_hours">총근무</div><div class="kpi-value">79,850h</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.overtime">초과근무</div><div class="kpi-value">10,890h</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g1.kpi.fp_sync">지문기 동기화</div><div class="kpi-value">12/12</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g1PassNote06">통과 06-25 08:35 · 이상근태 0건 (전건 해결)</div>
+</div>
 </section>
 <section class="view" id="view-g2">
   <div class="page-header">
@@ -744,7 +814,19 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.net_payout">실지급</div><div class="kpi-value">3,470.1M</div></div>
       <div class="kpi-item"><div class="kpi-label" data-i18n="g2.kpi.avg">1인평균</div><div class="kpi-value">8.42M</div></div>
     </div>
+
+    <div class="field-row" style="margin-top:12px;margin-bottom:0;justify-content:flex-end;">
+      <div class="field">
+        <div class="field-label" data-i18n="period.selectorLabel">조회 차수</div>
+        <select class="input period-selector" data-scope="g2" style="width:170px;">
+          <option value="2026-08" selected data-i18n="period.opt202608">2026-08 (진행중)</option>
+          <option value="2026-07" data-i18n="period.opt202607">2026-07 (마감)</option>
+          <option value="2026-06" data-i18n="period.opt202606">2026-06 (마감)</option>
+        </select>
+      </div>
+    </div>
   </div>
+<div class="period-panel" data-scope="g2" data-period="2026-08">
 
   <div class="two-col">
     <div class="card">
@@ -847,6 +929,27 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       </tbody>
     </table>
   </div>
+</div>
+<div class="card period-panel" data-scope="g2" data-period="2026-07" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g2.kpi.gross">지급총액</div><div class="kpi-value">Rp3,890.2M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g2.kpi.deduction">공제총액</div><div class="kpi-value" style="color:var(--danger);">−500.1M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.net_payout">실지급</div><div class="kpi-value">3,390.1M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g2.kpi.avg">1인평균</div><div class="kpi-value">8.33M</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g2PassNote07">통과 07-25 08:55 · 재계산일치 407/407 · TER-2025.2</div>
+</div>
+<div class="card period-panel" data-scope="g2" data-period="2026-06" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g2.kpi.gross">지급총액</div><div class="kpi-value">Rp3,790.5M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g2.kpi.deduction">공제총액</div><div class="kpi-value" style="color:var(--danger);">−490.5M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.net_payout">실지급</div><div class="kpi-value">3,300.0M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g2.kpi.avg">1인평균</div><div class="kpi-value">8.19M</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g2PassNote06">통과 06-25 09:02 · 재계산일치 403/403 · TER-2025.2</div>
+</div>
 </section>
 <section class="view" id="view-g3">
   <div class="page-header">
@@ -863,7 +966,19 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.claims_pending">소명 대기</div><div class="kpi-value warn" id="g3KpiPending">2<span data-i18n="unit.cases">건</span></div></div>
       <div class="kpi-item"><div class="kpi-label" data-i18n="g3.kpi.rulefail">규칙실패</div><div class="kpi-value">0<span data-i18n="g3.on_hold">(보류2)</span></div></div>
     </div>
+
+    <div class="field-row" style="margin-top:12px;margin-bottom:0;justify-content:flex-end;">
+      <div class="field">
+        <div class="field-label" data-i18n="period.selectorLabel">조회 차수</div>
+        <select class="input period-selector" data-scope="g3" style="width:170px;">
+          <option value="2026-08" selected data-i18n="period.opt202608">2026-08 (진행중)</option>
+          <option value="2026-07" data-i18n="period.opt202607">2026-07 (마감)</option>
+          <option value="2026-06" data-i18n="period.opt202606">2026-06 (마감)</option>
+        </select>
+      </div>
+    </div>
   </div>
+<div class="period-panel" data-scope="g3" data-period="2026-08">
 
   <div class="banner-danger" id="g3BlockBanner">
     <div><strong data-i18n="g3.block_title">차단 사유 2건</strong> — <span data-i18n="g3.block_desc">소명 대기(Agus W. · Dewi L.). 승인 즉시 G4 개방, 지급파일 08-27 09:00 자동 생성.</span></div>
@@ -926,6 +1041,27 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       </div>
     </div>
   </div>
+</div>
+<div class="card period-panel" data-scope="g3" data-period="2026-07" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g3.kpi.exceed">변동초과자(±20%)</div><div class="kpi-value">5<span data-i18n="unit.people">명</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g3.kpi.approved">소명승인</div><div class="kpi-value">5<span data-i18n="unit.cases">건</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.claims_pending">소명 대기</div><div class="kpi-value">0<span data-i18n="unit.cases">건</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g3.kpi.rulefail">규칙실패</div><div class="kpi-value">0</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g3PassNote07">규칙 14/14 통과 · 소명 5/5 전건 승인</div>
+</div>
+<div class="card period-panel" data-scope="g3" data-period="2026-06" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g3.kpi.exceed">변동초과자(±20%)</div><div class="kpi-value">4<span data-i18n="unit.people">명</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g3.kpi.approved">소명승인</div><div class="kpi-value">4<span data-i18n="unit.cases">건</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="kpi.claims_pending">소명 대기</div><div class="kpi-value">0<span data-i18n="unit.cases">건</span></div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g3.kpi.rulefail">규칙실패</div><div class="kpi-value">0</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g3PassNote06">규칙 14/14 통과 · 소명 4/4 전건 승인</div>
+</div>
 </section>
 <section class="view" id="view-g4">
   <div class="page-header">
@@ -943,7 +1079,19 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.approval_stage">승인단계</div><div class="kpi-value">2/3</div></div>
       <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.funding">자금확보</div><div class="kpi-value up" data-i18n="status.confirmed">확인(재무)</div></div>
     </div>
+
+    <div class="field-row" style="margin-top:12px;margin-bottom:0;justify-content:flex-end;">
+      <div class="field">
+        <div class="field-label" data-i18n="period.selectorLabel">조회 차수</div>
+        <select class="input period-selector" data-scope="g4" style="width:170px;">
+          <option value="2026-08" selected data-i18n="period.opt202608">2026-08 (진행중)</option>
+          <option value="2026-07" data-i18n="period.opt202607">2026-07 (마감)</option>
+          <option value="2026-06" data-i18n="period.opt202606">2026-06 (마감)</option>
+        </select>
+      </div>
+    </div>
   </div>
+<div class="period-panel" data-scope="g4" data-period="2026-08">
 
   <div class="card-title" data-i18n="g4.chain_title">승인체인 (순차서명, 위임불가)</div>
   <div class="table-wrap">
@@ -1017,6 +1165,27 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       </tbody>
     </table>
   </div>
+</div>
+<div class="card period-panel" data-scope="g4" data-period="2026-07" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.transfers">이체건수</div><div class="kpi-value">407</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.total_net">실지급총액</div><div class="kpi-value">3,390.1M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.approval_stage">승인단계</div><div class="kpi-value">3/3</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.funding">자금확보</div><div class="kpi-value up" data-i18n="status.confirmed">확인(재무)</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g4PassNote07">지급파일 MCM_PAYROLL_202607.txt 생성 완료 · 법인장 서명 07-26 14:20</div>
+</div>
+<div class="card period-panel" data-scope="g4" data-period="2026-06" style="display:none;">
+  <div class="banner-info"><span>ⓘ</span><span data-i18n="period.closedBanner">선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.</span></div>
+  <div class="kpi-strip">
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.transfers">이체건수</div><div class="kpi-value">403</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.total_net">실지급총액</div><div class="kpi-value">3,300.0M</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.approval_stage">승인단계</div><div class="kpi-value">3/3</div></div>
+    <div class="kpi-item"><div class="kpi-label" data-i18n="g4.kpi.funding">자금확보</div><div class="kpi-value up" data-i18n="status.confirmed">확인(재무)</div></div>
+  </div>
+  <div class="card-sub" style="margin-top:10px;" data-i18n="period.g4PassNote06">지급파일 MCM_PAYROLL_202606.txt 생성 완료 · 법인장 서명 06-26 14:05</div>
+</div>
 </section>
 <section class="view" id="view-loan">
   <div class="page-header">
@@ -5147,6 +5316,25 @@ const I18N = {
 "reports.loan.adhoc.meta":{ko:"기간 지정 조회 · 전체 대출·EWA 취급 및 상환 이력",en:"Custom date range · full loan/EWA issuance and repayment history",id:"Rentang tanggal kustom · seluruh riwayat pencairan dan pembayaran Pinjaman/EWA",zh:"自定义日期区间 · 全部贷款/EWA发放及还款历史",ja:"期間指定照会・全貸付・EWA実行および返済履歴"},
 "reports.loan.yearly.name":{ko:"대출 연간 리포트",en:"Loan Yearly Report",id:"Laporan Pinjaman Tahunan",zh:"贷款年度报表",ja:"貸付 年間レポート"},
 "reports.loan.yearly.meta":{ko:"2026년 연간 대출·EWA 취급액·상환액 누적 추이",en:"Cumulative 2026 loan/EWA issuance and repayment trend",id:"Tren kumulatif pencairan dan pembayaran Pinjaman/EWA 2026",zh:"2026年度贷款/EWA发放额与还款额累计趋势",ja:"2026年通期貸付・EWA実行額・返済額累計推移"},
+"period.selectorLabel":{ko:"조회 차수",en:"View Period",id:"Periode Tampilan",zh:"查看周期",ja:"表示対象期"},
+"period.opt202608":{ko:"2026-08 (진행중)",en:"2026-08 (In Progress)",id:"2026-08 (Berjalan)",zh:"2026-08（进行中）",ja:"2026-08（進行中）"},
+"period.opt202607":{ko:"2026-07 (마감)",en:"2026-07 (Closed)",id:"2026-07 (Ditutup)",zh:"2026-07（已结算）",ja:"2026-07（締切済）"},
+"period.opt202606":{ko:"2026-06 (마감)",en:"2026-06 (Closed)",id:"2026-06 (Ditutup)",zh:"2026-06（已结算）",ja:"2026-06（締切済）"},
+"period.closedBanner":{ko:"선택한 차수는 마감이 완료되어 요약 정보만 표시됩니다. 상세 내역은 리포트 메뉴에서 확인할 수 있습니다.",en:"The selected period is closed, so only a summary is shown. See the Reports menu for full detail.",id:"Periode yang dipilih sudah ditutup, sehingga hanya ringkasan yang ditampilkan. Lihat menu Laporan untuk detail lengkap.",zh:"所选周期已结算，仅显示摘要信息。完整明细请查看报表菜单。",ja:"選択した期は締め切り済みのため、要約情報のみ表示されます。詳細はリポートメニューでご確認ください。"},
+"period.gateStatus":{ko:"게이트 상태",en:"Gate Status",id:"Status Gate",zh:"关卡状态",ja:"ゲート状態"},
+"period.allPassed":{ko:"G1~G4 전체 통과",en:"G1-G4 All Passed",id:"G1-G4 Semua Lolos",zh:"G1~G4 全部通过",ja:"G1〜G4 全通過"},
+"period.finalApproval":{ko:"최종 승인",en:"Final Approval",id:"Persetujuan Akhir",zh:"最终审批",ja:"最終承認"},
+"period.payFileNote07":{ko:"지급파일 MCM_PAYROLL_202607.txt 생성 완료 · 명세서 배포 완료",en:"Payment file MCM_PAYROLL_202607.txt generated · payslips distributed",id:"File pembayaran MCM_PAYROLL_202607.txt dibuat · slip gaji telah didistribusikan",zh:"支付文件 MCM_PAYROLL_202607.txt 已生成 · 工资单已发放",ja:"支給ファイルMCM_PAYROLL_202607.txt生成完了・明細配布完了"},
+"period.payFileNote06":{ko:"지급파일 MCM_PAYROLL_202606.txt 생성 완료 · 명세서 배포 완료",en:"Payment file MCM_PAYROLL_202606.txt generated · payslips distributed",id:"File pembayaran MCM_PAYROLL_202606.txt dibuat · slip gaji telah didistribusikan",zh:"支付文件 MCM_PAYROLL_202606.txt 已生成 · 工资单已发放",ja:"支給ファイルMCM_PAYROLL_202606.txt生成完了・明細配布完了"},
+"period.g1PassNote07":{ko:"통과 07-25 08:40 · 이상근태 0건 (전건 해결)",en:"Passed 07-25 08:40 · 0 attendance anomalies (all resolved)",id:"Lolos 07-25 08:40 · 0 anomali kehadiran (semua terselesaikan)",zh:"通过 07-25 08:40 · 异常考勤0件（全部已解决）",ja:"通過 07-25 08:40・勤怠異常0件（全件解決済）"},
+"period.g1PassNote06":{ko:"통과 06-25 08:35 · 이상근태 0건 (전건 해결)",en:"Passed 06-25 08:35 · 0 attendance anomalies (all resolved)",id:"Lolos 06-25 08:35 · 0 anomali kehadiran (semua terselesaikan)",zh:"通过 06-25 08:35 · 异常考勤0件（全部已解决）",ja:"通過 06-25 08:35・勤怠異常0件（全件解決済）"},
+"period.g2PassNote07":{ko:"통과 07-25 08:55 · 재계산일치 407/407 · TER-2025.2",en:"Passed 07-25 08:55 · recompute match 407/407 · TER-2025.2",id:"Lolos 07-25 08:55 · kecocokan hitung ulang 407/407 · TER-2025.2",zh:"通过 07-25 08:55 · 重算一致407/407 · TER-2025.2",ja:"通過 07-25 08:55・再計算一致407/407・TER-2025.2"},
+"period.g2PassNote06":{ko:"통과 06-25 09:02 · 재계산일치 403/403 · TER-2025.2",en:"Passed 06-25 09:02 · recompute match 403/403 · TER-2025.2",id:"Lolos 06-25 09:02 · kecocokan hitung ulang 403/403 · TER-2025.2",zh:"通过 06-25 09:02 · 重算一致403/403 · TER-2025.2",ja:"通過 06-25 09:02・再計算一致403/403・TER-2025.2"},
+"period.g3PassNote07":{ko:"규칙 14/14 통과 · 소명 5/5 전건 승인",en:"14/14 rules passed · 5/5 claims approved",id:"14/14 aturan lolos · 5/5 klaim disetujui",zh:"规则14/14通过 · 申诉5/5全部批准",ja:"ルール14/14通過・申立5/5全件承認"},
+"period.g3PassNote06":{ko:"규칙 14/14 통과 · 소명 4/4 전건 승인",en:"14/14 rules passed · 4/4 claims approved",id:"14/14 aturan lolos · 4/4 klaim disetujui",zh:"规则14/14通过 · 申诉4/4全部批准",ja:"ルール14/14通過・申立4/4全件承認"},
+"period.g4PassNote07":{ko:"지급파일 MCM_PAYROLL_202607.txt 생성 완료 · 법인장 서명 07-26 14:20",en:"Payment file MCM_PAYROLL_202607.txt generated · director signed 07-26 14:20",id:"File pembayaran MCM_PAYROLL_202607.txt dibuat · ditandatangani direktur 07-26 14:20",zh:"支付文件 MCM_PAYROLL_202607.txt 已生成 · 法人代表签署 07-26 14:20",ja:"支給ファイルMCM_PAYROLL_202607.txt生成完了・法人代表署名07-26 14:20"},
+"period.g4PassNote06":{ko:"지급파일 MCM_PAYROLL_202606.txt 생성 완료 · 법인장 서명 06-26 14:05",en:"Payment file MCM_PAYROLL_202606.txt generated · director signed 06-26 14:05",id:"File pembayaran MCM_PAYROLL_202606.txt dibuat · ditandatangani direktur 06-26 14:05",zh:"支付文件 MCM_PAYROLL_202606.txt 已生成 · 法人代表签署 06-26 14:05",ja:"支給ファイルMCM_PAYROLL_202606.txt生成完了・法人代表署名06-26 14:05"},
+"period.gotoReports":{ko:"리포트에서 상세 보기 →",en:"View detail in Reports →",id:"Lihat detail di Laporan →",zh:"在报表中查看详情 →",ja:"レポートで詳細を見る →"},
 };
 
 function applyLang(lang){
@@ -5157,6 +5345,23 @@ function applyLang(lang){
   });
   document.documentElement.lang = lang;
 }
+
+/* ---------- Period selector: switch Home/G1-G4 between live view and closed-period summary ---------- */
+(function(){
+  var selectors = document.querySelectorAll('.period-selector');
+  if (!selectors.length) return;
+
+  function applyPeriod(scope, period){
+    document.querySelectorAll('.period-panel[data-scope="' + scope + '"]').forEach(function(panel){
+      panel.style.display = (panel.getAttribute('data-period') === period) ? '' : 'none';
+    });
+  }
+
+  selectors.forEach(function(sel){
+    var scope = sel.getAttribute('data-scope');
+    sel.addEventListener('change', function(){ applyPeriod(scope, sel.value); });
+  });
+})();
 
 /* ---------- Reports module: category switching + mock action feedback ---------- */
 (function(){
