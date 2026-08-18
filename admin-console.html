@@ -642,6 +642,24 @@
       </div>
 
       <div class="card">
+        <div class="card-title" data-i18n="billing.whitelabel.title">화이트라벨(White-label) 애드온</div>
+        <div class="card-sub" data-i18n="billing.whitelabel.sub">직원 앱을 고객사 자체 브랜드(앱 이름·아이콘)로 별도 앱스토어에 등록하고 싶은 고객사를 위한 프리미엄 옵션입니다. Standard 이상 플랜에서만 제공됩니다.</div>
+        <div class="field-row">
+          <label class="field-label" for="whitelabelSetupFee" data-i18n="billing.whitelabel.setupFee">설정비 (1회, Rp)</label>
+          <input class="field-input num" id="whitelabelSetupFee" type="text" placeholder="30,000,000">
+        </div>
+        <div class="field-row">
+          <label class="field-label" for="whitelabelMonthlyFee" data-i18n="billing.whitelabel.monthlyFee">월 유지비 (Rp)</label>
+          <input class="field-input num" id="whitelabelMonthlyFee" type="text" placeholder="4,000,000">
+        </div>
+        <div class="field-hint" data-i18n="billing.whitelabel.note">앱스토어 개별 등록·심사 대응, OS 업데이트 대응, 별도 빌드 파이프라인 유지 비용을 포함합니다.</div>
+        <div style="margin-top:6px;">
+          <button class="btn btn-primary" id="saveWhitelabelBtn" data-i18n="btn.save">저장</button>
+          <span class="save-toast" id="whitelabelSaveToast" data-i18n="billing.saved">✓ 저장되었습니다</span>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="billing-controls">
           <div class="billing-controls-left">
             <div>
@@ -670,11 +688,12 @@
                 <th class="num" data-i18n="billing.th.baseFee">기본요금</th>
                 <th class="num" data-i18n="billing.th.employeeFee">직원수요금</th>
                 <th class="num" data-i18n="billing.th.discount">할인</th>
+                <th class="num" data-i18n="billing.th.whitelabel">화이트라벨</th>
                 <th class="num" data-i18n="billing.th.total">합계</th>
               </tr>
             </thead>
             <tbody id="billingTableBody">
-              <tr><td colspan="6" style="text-align:center;color:var(--text-faint);padding:22px;" data-i18n="billing.emptyState">청구월을 선택하고 "빌링 생성" 버튼을 눌러주세요</td></tr>
+              <tr><td colspan="7" style="text-align:center;color:var(--text-faint);padding:22px;" data-i18n="billing.emptyState">청구월을 선택하고 "빌링 생성" 버튼을 눌러주세요</td></tr>
             </tbody>
             <tfoot id="billingTableFoot"></tfoot>
           </table>
@@ -897,6 +916,13 @@ document.getElementById('savePlanBtn').addEventListener('click', function(){
   setTimeout(function(){ toast.classList.remove('show'); }, 1800);
 });
 
+/* ===================== BILLING: SAVE WHITELABEL ADDON ===================== */
+document.getElementById('saveWhitelabelBtn').addEventListener('click', function(){
+  var toast = document.getElementById('whitelabelSaveToast');
+  toast.classList.add('show');
+  setTimeout(function(){ toast.classList.remove('show'); }, 1800);
+});
+
 /* ===================== BILLING: GENERATE ===================== */
 function parseNum(str){
   if(!str) return 0;
@@ -932,10 +958,10 @@ function resolveDiscountPct(tiers, employees){
 function fmt(n){ return n.toLocaleString('en-US'); }
 
 var BILLING_CUSTOMERS = [
-  { name:'PT Karya Metal Presisi', plan:'pro', employees:412 },
-  { name:'PT Lintas Logistik Nusantara', plan:'pro', employees:620 },
-  { name:'PT Sinar Tekstil Abadi', plan:'standard', employees:280 },
-  { name:'PT Otomotif Komponen Indonesia', plan:'pro', employees:890 }
+  { name:'PT Karya Metal Presisi', plan:'pro', employees:412, whitelabel:false },
+  { name:'PT Lintas Logistik Nusantara', plan:'pro', employees:620, whitelabel:false },
+  { name:'PT Sinar Tekstil Abadi', plan:'standard', employees:280, whitelabel:false },
+  { name:'PT Otomotif Komponen Indonesia', plan:'pro', employees:890, whitelabel:true }
 ];
 
 document.getElementById('generateBillingBtn').addEventListener('click', function(){
@@ -943,6 +969,7 @@ document.getElementById('generateBillingBtn').addEventListener('click', function
   var cfgStandard = getConfigFor('standard');
   var cfgPro = getConfigFor('pro');
   var cfgMap = { basic:cfgBasic, standard:cfgStandard, pro:cfgPro };
+  var whitelabelMonthlyFee = parseNum(fieldValue('whitelabelMonthlyFee'));
 
   var tbody = document.getElementById('billingTableBody');
   var tfoot = document.getElementById('billingTableFoot');
@@ -954,15 +981,18 @@ document.getElementById('generateBillingBtn').addEventListener('click', function
     var empFee = c.employees * cfg.perEmp;
     var subtotal = cfg.base + empFee;
     var discountPct = resolveDiscountPct(cfg.tiers, c.employees);
-    var total = subtotal * (1 + discountPct/100);
+    var whitelabelFee = c.whitelabel ? whitelabelMonthlyFee : 0;
+    var total = subtotal * (1 + discountPct/100) + whitelabelFee;
     grandTotal += total;
     var discountLabel = discountPct !== 0 ? (discountPct+'%') : '—';
+    var whitelabelLabel = c.whitelabel ? 'Rp '+fmt(whitelabelFee) : '—';
     rowsHtml += '<tr>' +
       '<td>'+c.name+'</td>' +
       '<td class="num">'+c.employees.toLocaleString('en-US')+'명</td>' +
       '<td class="num">Rp '+fmt(cfg.base)+'</td>' +
       '<td class="num">Rp '+fmt(empFee)+'</td>' +
       '<td class="num">'+discountLabel+'</td>' +
+      '<td class="num">'+whitelabelLabel+'</td>' +
       '<td class="num">Rp '+fmt(Math.round(total))+'</td>' +
     '</tr>';
   });
@@ -971,7 +1001,7 @@ document.getElementById('generateBillingBtn').addEventListener('click', function
   var totalLabelEntry = I18N['billing.totalLabel'];
   var lang = document.getElementById('langSelect').value;
   var totalLabel = (totalLabelEntry && totalLabelEntry[lang]) ? totalLabelEntry[lang] : '이번달 청구 총액 (미리보기 대상 4개사)';
-  tfoot.innerHTML = '<tr class="total-row"><td colspan="5">'+totalLabel+'</td><td class="num">Rp '+fmt(Math.round(grandTotal))+'</td></tr>';
+  tfoot.innerHTML = '<tr class="total-row"><td colspan="6">'+totalLabel+'</td><td class="num">Rp '+fmt(Math.round(grandTotal))+'</td></tr>';
 });
 
 /* ===================== I18N ===================== */
@@ -1082,6 +1112,12 @@ var I18N = {
   "billing.th.employeeFee": {ko:"직원수요금", en:"Employee Fee", id:"Biaya Karyawan", zh:"人数费用", ja:"従業員数料金"},
   "billing.th.discount": {ko:"할인", en:"Discount", id:"Diskon", zh:"折扣", ja:"割引"},
   "billing.th.total": {ko:"합계", en:"Total", id:"Total", zh:"合计", ja:"合計"},
+  "billing.th.whitelabel": {ko:"화이트라벨", en:"White-label", id:"White-label", zh:"白标", ja:"ホワイトレーベル"},
+  "billing.whitelabel.title": {ko:"화이트라벨(White-label) 애드온", en:"White-label Add-on", id:"Add-on White-label", zh:"白标附加服务", ja:"ホワイトレーベルアドオン"},
+  "billing.whitelabel.sub": {ko:"직원 앱을 고객사 자체 브랜드(앱 이름·아이콘)로 별도 앱스토어에 등록하고 싶은 고객사를 위한 프리미엄 옵션입니다. Standard 이상 플랜에서만 제공됩니다.", en:"A premium option for customers who want the employee app published under their own brand (name/icon) as a separate app store listing. Available on Standard plan and above only.", id:"Opsi premium untuk klien yang ingin aplikasi karyawan diterbitkan dengan merek mereka sendiri (nama/ikon) sebagai listing app store terpisah. Hanya tersedia mulai paket Standard.", zh:"面向希望以自有品牌（名称·图标）在独立应用商店发布员工端App的客户提供的高级选项。仅限Standard及以上套餐提供。", ja:"従業員アプリを顧客企業独自のブランド（アプリ名・アイコン）で別のアプリストアに登録したい顧客向けのプレミアムオプションです。Standard以上のプランでのみ提供されます。"},
+  "billing.whitelabel.setupFee": {ko:"설정비 (1회, Rp)", en:"Setup Fee (One-time, Rp)", id:"Biaya Setup (Sekali, Rp)", zh:"设置费（一次性，Rp）", ja:"設定費（初回のみ、Rp）"},
+  "billing.whitelabel.monthlyFee": {ko:"월 유지비 (Rp)", en:"Monthly Maintenance Fee (Rp)", id:"Biaya Pemeliharaan Bulanan (Rp)", zh:"每月维护费（Rp）", ja:"月次維持費（Rp）"},
+  "billing.whitelabel.note": {ko:"앱스토어 개별 등록·심사 대응, OS 업데이트 대응, 별도 빌드 파이프라인 유지 비용을 포함합니다.", en:"Covers separate app store listing/review handling, OS update maintenance, and keeping a dedicated build pipeline current.", id:"Mencakup pendaftaran/peninjauan app store terpisah, pemeliharaan pembaruan OS, dan menjaga pipeline build khusus tetap terkini.", zh:"涵盖独立应用商店上架·审核对应、系统更新维护及专属构建流水线的持续维护费用。", ja:"個別のアプリストア登録・審査対応、OSアップデート対応、専用ビルドパイプラインの維持費用を含みます。"},
   "billing.emptyState": {ko:"청구월을 선택하고 \"빌링 생성\" 버튼을 눌러주세요", en:"Select a billing month and click \"Generate Billing\"", id:"Pilih bulan tagihan lalu klik \"Buat Tagihan\"", zh:"请选择账单月份并点击“生成账单”", ja:"請求月を選択し「請求データ生成」を押してください"},
   "billing.totalLabel": {ko:"이번달 청구 총액 (미리보기 대상 4개사)", en:"Total Billing This Month (4 preview accounts)", id:"Total Tagihan Bulan Ini (4 klien pratinjau)", zh:"本月账单总额（预览4家客户）", ja:"今月請求総額（プレビュー対象4社）"},
   "billing.previewNote": {ko:"※ 위 요금제 설정값을 기준으로 실시간 계산되는 미리보기이며, 실제 청구서 발행 전 검토가 필요합니다.", en:"※ This preview is calculated live from the plan settings above and requires review before actual invoicing.", id:"※ Pratinjau ini dihitung secara langsung berdasarkan pengaturan paket di atas dan perlu ditinjau sebelum penagihan aktual.", zh:"※ 此预览基于上方套餐设置实时计算，正式开票前需人工复核。", ja:"※ 本プレビューは上記プラン設定に基づきリアルタイムで計算されており、実際の請求発行前にレビューが必要です。"},
