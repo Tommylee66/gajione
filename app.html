@@ -6245,7 +6245,7 @@ function applyLang(lang){
   });
 })();
 
-/* ---------- Reports module: category switching + mock action feedback ---------- */
+/* ---------- Reports module: category switching + real CSV download ---------- */
 (function(){
   var root = document.getElementById('view-reports');
   if(!root) return;
@@ -6275,17 +6275,131 @@ function applyLang(lang){
     return '';
   }
 
+  /* One representative CSV dataset per report category. Rows reuse the same
+     11-employee roster and figures shown elsewhere in this app (G2 payroll
+     register, employee master, fingerprint sync, loan book) so the exported
+     numbers stay consistent across screens. */
+  var REPORT_CSV = {
+    salary: {
+      header: ['사번','이름','부서','기본급','초과근무','수당·식대','지급총액','공제','실지급'],
+      rows: [
+        ['MF-0104','Budi Santoso','조립1라인',6340000,1689400,1580000,9609400,-1425100,8184300],
+        ['MF-0212','Agus Wijaya','프레스',8120000,2430000,1640000,12190000,-1157600,11032400],
+        ['MF-0155','Joko Susilo','프레스',7450000,2100000,1390000,10940000,-1094000,9846000],
+        ['MF-0233','Dewi Lestari','도장',6980000,850000,1490000,9320000,-885400,8434600],
+        ['MF-0341','Siti Rahayu','조립2라인',5690000,380000,1060000,7130000,-499100,6630900],
+        ['MF-0512','Eko Prasetyo','용접',7120000,610000,1340000,9070000,-843500,8226500],
+        ['MF-0287','Ratna Sari','도장',6110000,250000,1140000,7500000,-562500,6937500],
+        ['MF-0501','Sri Wahyuni','조립1라인',6900000,550000,1290000,8740000,-720000,8020000],
+        ['MF-0587','Andi Saputra','물류',5980000,320000,1020000,7320000,-480000,6840000],
+        ['MF-0620','Hendra Gunawan','조립2라인',4200000,0,786000,4986000,-1170000,3816000],
+        ['MF-0198','Tono Wijaya','물류',6300000,200000,2090000,8590000,-560000,8030000]
+      ]
+    },
+    tax: {
+      header: ['사번','이름','과세대상소득','TER 구간','PPh21 원천징수액'],
+      rows: [
+        ['MF-0104','Budi Santoso',9609400,'TER-2026.1 A',245200],
+        ['MF-0212','Agus Wijaya',12190000,'TER-2026.1 B',412800],
+        ['MF-0155','Joko Susilo',10940000,'TER-2026.1 A',318500],
+        ['MF-0233','Dewi Lestari',9320000,'TER-2026.1 A',231900],
+        ['MF-0341','Siti Rahayu',7130000,'TER-2026.1 A',96400]
+      ]
+    },
+    bpjs: {
+      header: ['사번','이름','BPJS Kesehatan(직원)','JHT(직원)','JP(직원)','JKK(회사)','합계 공제'],
+      rows: [
+        ['MF-0104','Budi Santoso',63400,126800,63400,56426,253600],
+        ['MF-0212','Agus Wijaya',81200,162400,81200,72268,324800],
+        ['MF-0155','Joko Susilo',74500,149000,74500,66305,298000],
+        ['MF-0233','Dewi Lestari',69800,139600,69800,62122,279200],
+        ['MF-0341','Siti Rahayu',56900,113800,56900,50641,227600]
+      ]
+    },
+    hr: {
+      header: ['사번','이름','부서','직급','입사일','고용형태','상태'],
+      rows: [
+        ['MF-0104','Budi Santoso','조립1라인','사원','2022-03-14','정규직','재직'],
+        ['MF-0212','Agus Wijaya','프레스','반장','2019-11-02','정규직','재직'],
+        ['MF-0341','Siti Rahayu','조립2라인','사원','2024-01-08','계약직','재직'],
+        ['MF-0620','Hendra Gunawan','조립2라인','사원','2020-07-15','정규직','휴직·무급휴가'],
+        ['MF-0198','Tono Wijaya','물류','사원','2016-02-01','정규직','퇴사예정 08-31']
+      ]
+    },
+    attendance: {
+      header: ['사번','이름','부서','출근일수','지각','결근','초과근무시간'],
+      rows: [
+        ['MF-0104','Budi Santoso','조립1라인',22,0,0,38],
+        ['MF-0212','Agus Wijaya','프레스',22,1,0,54],
+        ['MF-0155','Joko Susilo','프레스',22,0,0,47],
+        ['MF-0233','Dewi Lestari','도장',21,0,1,19],
+        ['MF-0341','Siti Rahayu','조립2라인',22,2,0,8]
+      ]
+    },
+    reimbursement: {
+      header: ['사번','이름','항목','금액','상태','신청일'],
+      rows: [
+        ['MF-0104','Budi Santoso','통근교통비',180000,'승인',20260812],
+        ['MF-0212','Agus Wijaya','출장비',650000,'승인',20260810],
+        ['MF-0233','Dewi Lestari','의료비',320000,'검토중',20260815],
+        ['MF-0587','Andi Saputra','통근교통비',150000,'승인',20260811]
+      ]
+    },
+    overtime: {
+      header: ['사번','이름','부서','초과근무시간','적용 배율/요율','초과근무수당'],
+      rows: [
+        ['MF-0104','Budi Santoso','조립1라인',38,'1.5x/2.0x',1689400],
+        ['MF-0212','Agus Wijaya','프레스',54,'1.5x/2.0x',2430000],
+        ['MF-0155','Joko Susilo','프레스',47,'1.5x/2.0x',2100000],
+        ['MF-0233','Dewi Lestari','도장',19,'1.5x/2.0x',850000]
+      ]
+    },
+    loan: {
+      header: ['사번','이름','대출잔액','월 상환액(공제)','상태'],
+      rows: [
+        ['MF-0104','Budi Santoso',5700000,1425100,'상환중'],
+        ['MF-0212','Agus Wijaya',4630000,1157600,'상환중'],
+        ['MF-0155','Joko Susilo',4376000,1094000,'상환중'],
+        ['MF-0620','Hendra Gunawan',4680000,1170000,'상환중']
+      ]
+    }
+  };
+
+  function buildCsv(cat){
+    var data = REPORT_CSV[cat];
+    if (!data) return null;
+    var lines = [data.header.map(pph21CsvEscape).join(',')];
+    data.rows.forEach(function(r){ lines.push(r.map(pph21CsvEscape).join(',')); });
+    return lines.join('\r\n');
+  }
+
   root.querySelectorAll('.rpt-action-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       var row = btn.closest('.rpt-report-row');
       var note = row ? row.querySelector('.rpt-report-note') : null;
-      if(!note) return;
-      var type = btn.getAttribute('data-note-type');
+      var group = btn.closest('.rpt-report-group');
+      var cat = group ? group.getAttribute('data-category-group') : null;
       var period = row ? periodLabelFor(row) : '';
-      var base = type === 'view' ? '리포트를 불러왔습니다' : '다운로드 완료';
-      note.textContent = (period ? '[' + period + '] ' : '') + base + ' (모의)';
-      note.style.color = 'var(--success)';
-      setTimeout(function(){ note.textContent = ''; }, 4000);
+      var type = btn.getAttribute('data-note-type');
+      var csv = buildCsv(cat);
+
+      if (!csv) {
+        if (note) { note.textContent = '리포트 데이터를 찾을 수 없습니다.'; note.style.color = 'var(--danger)'; }
+        return;
+      }
+
+      var safePeriod = (period || 'latest').replace(/[^0-9A-Za-z~_-]+/g, '_');
+      var filename = 'gajione_report_' + cat + '_' + safePeriod + '.csv';
+
+      if (note) { note.textContent = type === 'view' ? '불러오는 중…' : '다운로드 준비 중…'; note.style.color = 'var(--text-muted)'; }
+
+      pph21DownloadTextFile(filename, csv).then(function(result){
+        if (!note) return;
+        var prefix = period ? '[' + period + '] ' : '';
+        note.textContent = prefix + result.message;
+        note.style.color = result.ok ? 'var(--success)' : 'var(--danger)';
+        setTimeout(function(){ note.textContent = ''; }, 5000);
+      });
     });
   });
 })();
