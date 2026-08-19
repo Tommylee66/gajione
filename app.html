@@ -226,6 +226,14 @@ tbody tr.row-highlight{background:var(--accent-soft);}
 .timeline-time{font-size:11.5px;font-weight:700;color:var(--text-faint);width:52px;flex:0 0 52px;}
 .timeline-text{font-size:12.5px;color:var(--text);}
 
+/* Drawer tabs */
+.drawer-tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:14px 0 16px 0;}
+.drawer-tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:8px 12px;font-size:12.5px;font-weight:700;color:var(--text-muted);cursor:pointer;font-family:inherit;white-space:nowrap;}
+.drawer-tab-btn:hover{color:var(--text);}
+.drawer-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.drawer-tab-panel{display:none;}
+.drawer-tab-panel.active{display:block;}
+
 /* Upload */
 .banner-warning{
   background:var(--warning-soft);border:1px solid var(--warning);color:var(--warning-text);
@@ -1573,6 +1581,104 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
     <button class="btn btn-primary" type="button" data-i18n="master.btn.new_hire">신규 입사 처리</button>
     <button class="btn" type="button" data-i18n="master.btn.exit_process">퇴사 처리</button>
   </div>
+<div class="card" id="newHireForm" style="display:none;background:var(--surface-alt);margin-top:16px;">
+          <div class="card-title" data-i18n="master.newhire.title">신규 입사 등록</div>
+          <div class="card-sub" data-i18n="master.newhire.subtitle">최초 등록에는 핵심 항목만 입력합니다. 가족·부양가족, 근태, 연차, 서류 등 나머지 프로필 항목은 등록 후 상세 프로필 화면에서 이어서 완성할 수 있습니다.</div>
+
+          <div style="font-size:12.5px;font-weight:800;color:var(--navy);margin:4px 0 8px;" data-i18n="master.newhire.section_basic">기본정보</div>
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label" data-i18n="master.newhire.full_name">성명</div>
+              <input type="text" class="input" id="newHireName" style="width:200px;" placeholder="예: Rina Marlina">
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.newhire.emp_no">사번</div>
+              <input type="text" class="input" id="newHireEmpNo" style="width:130px;" value="MF-0621">
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.drawer.gender">성별</div>
+              <select class="input" id="newHireGender" style="width:110px;">
+                <option value="M" data-i18n="master.gender.male">남</option>
+                <option value="F" data-i18n="master.gender.female">여</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.drawer.dob">생년월일</div>
+              <input type="date" class="input" id="newHireDob" style="width:160px;">
+            </div>
+          </div>
+
+          <div style="font-size:12.5px;font-weight:800;color:var(--navy);margin:14px 0 8px;" data-i18n="master.newhire.section_employment">고용정보</div>
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label" data-i18n="master.filter.dept_label">부서</div>
+              <select class="input" id="newHireDept" style="width:140px;">
+                <option value="assembly1">조립1라인</option>
+                <option value="assembly2">조립2라인</option>
+                <option value="press">프레스</option>
+                <option value="weld">용접</option>
+                <option value="paint">도장</option>
+                <option value="quality">품질</option>
+                <option value="logistics">물류</option>
+                <option value="office">사무</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.th.rank">직급</div>
+              <select class="input" id="newHireRank" style="width:110px;">
+                <option value="staff" data-i18n="master.rank.staff">사원</option>
+                <option value="foreman" data-i18n="master.rank.foreman">반장</option>
+                <option value="supervisor" data-i18n="master.rank.supervisor">계장</option>
+                <option value="manager" data-i18n="master.rank.manager">과장</option>
+                <option value="senior_manager" data-i18n="master.rank.senior_manager">부장</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.th.emp_type">고용형태</div>
+              <select class="input" id="newHireEmpType" style="width:120px;">
+                <option value="permanent" data-i18n="master.type.permanent">정규직</option>
+                <option value="contract" data-i18n="master.type.contract">계약직</option>
+                <option value="probation" data-i18n="master.type.probation">수습</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.th.hire_date">입사일</div>
+              <input type="date" class="input" id="newHireJoinDate" style="width:160px;" value="2026-08-25">
+            </div>
+          </div>
+
+          <div style="font-size:12.5px;font-weight:800;color:var(--navy);margin:14px 0 8px;" data-i18n="master.newhire.section_pay">급여·세금</div>
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label" data-i18n="th.base_salary">기본급</div>
+              <input type="number" class="input" id="newHireBasicSalary" style="width:150px;" placeholder="5000000" min="0" step="10000">
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.newhire.bank_name">은행명</div>
+              <input type="text" class="input" id="newHireBankName" style="width:130px;" placeholder="예: BCA">
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.newhire.bank_account">계좌번호</div>
+              <input type="text" class="input" id="newHireBankAccount" style="width:180px;" placeholder="예: 812-004-XXXX">
+            </div>
+            <div class="field">
+              <div class="field-label" data-i18n="master.newhire.tax_method">세금 부담 방식</div>
+              <select class="input" id="newHireTaxMethod" style="width:130px;">
+                <option value="gross" data-i18n="master.newhire.tax_gross">Gross</option>
+                <option value="net" data-i18n="master.newhire.tax_net">Net</option>
+                <option value="gross_up" data-i18n="master.newhire.tax_gross_up">Gross-Up</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="caption" data-i18n="master.newhire.auto_note">정규직 신규 입사자는 BPJS(건강보험·JHT·JP·JKK·JKM) 가입 대상 전 항목이 기본값 '가입'으로 자동 적용되며, 상세 프로필에서 개별 수정할 수 있습니다. 연차 부여일수는 정책 화면의 비례배분(Proration) 기준에 따라 입사일 기준으로 자동 일할 계산됩니다.</div>
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:14px;">
+            <button class="btn btn-primary btn-sm" type="button" id="newHireSaveBtn" data-i18n="btn.save">저장</button>
+            <button class="btn btn-sm" type="button" id="newHireCancelBtn" data-i18n="btn.cancel">취소</button>
+            <span id="newHireSaveNote" class="caption" style="margin-top:0;"></span>
+          </div>
+        </div>
 
   <div class="card-title" style="margin-top:20px;" data-i18n="master.directory_title">직원 디렉토리</div>
   <div class="card-sub" data-i18n="master.directory_sub">사번 또는 이름 검색, 부서·상태·고용형태로 필터링할 수 있습니다.</div>
@@ -1688,48 +1794,357 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
 
   <div class="drawer" id="drawer-emp-mf0104">
     <div class="card-title"><span data-i18n="master.drawer.overview_title">직원 상세 정보 — Budi Santoso (MF-0104)</span></div>
-    <div class="grid grid-3">
-      <div class="card">
-        <div class="card-title" data-i18n="master.drawer.personal_title">개인정보</div>
-        <table style="min-width:0;">
-          <tbody>
-            <tr><td data-i18n="master.drawer.dob">생년월일</td><td style="text-align:right;">1994-06-02</td></tr>
-            <tr><td data-i18n="master.drawer.gender">성별</td><td style="text-align:right;" data-i18n="master.gender.male">남</td></tr>
-            <tr><td data-i18n="master.drawer.contact">연락처</td><td style="text-align:right;">+62 812-9911-2234</td></tr>
-            <tr><td data-i18n="master.drawer.address">주소</td><td style="text-align:right;">Bekasi, Jawa Barat</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <div class="card-title" data-i18n="master.drawer.employment_title">고용정보</div>
-        <table style="min-width:0;">
-          <tbody>
-            <tr><td data-i18n="master.th.rank">직급</td><td style="text-align:right;" data-i18n="master.rank.staff">사원</td></tr>
-            <tr><td data-i18n="master.filter.dept_label">부서</td><td style="text-align:right;">조립1라인</td></tr>
-            <tr><td data-i18n="master.th.emp_type">고용형태</td><td style="text-align:right;" data-i18n="master.type.permanent">정규직</td></tr>
-            <tr><td data-i18n="master.th.hire_date">입사일</td><td style="text-align:right;">2022-03-14</td></tr>
-            <tr><td data-i18n="master.drawer.line_leader">담당 라인장</td><td style="text-align:right;">Ujang Supriadi</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <div class="card-title" data-i18n="master.drawer.pay_title">급여·계좌</div>
-        <table style="min-width:0;">
-          <tbody>
-            <tr><td data-i18n="th.base_salary">기본급</td><td style="text-align:right;">6,340,000</td></tr>
-            <tr><td data-i18n="master.drawer.fixed_allowance">고정수당</td><td style="text-align:right;">1,140,000</td></tr>
-            <tr><td data-i18n="master.th.account">계좌</td><td style="text-align:right;">BCA 812-004-4471</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="drawer-tabs">
+      <button class="drawer-tab-btn active" data-tab="personal" type="button" data-i18n="master.tab.personal">기본정보</button>
+      <button class="drawer-tab-btn" data-tab="employment" type="button" data-i18n="master.tab.employment">고용정보</button>
+      <button class="drawer-tab-btn" data-tab="employment-history" type="button" data-i18n="master.tab.employmentHistory">고용 이력</button>
+      <button class="drawer-tab-btn" data-tab="salary-info" type="button" data-i18n="master.tab.salaryInfo">급여정보</button>
+      <button class="drawer-tab-btn" data-tab="salary-history" type="button" data-i18n="master.tab.salaryHistory">급여 이력</button>
+      <button class="drawer-tab-btn" data-tab="tax" type="button" data-i18n="master.tab.tax">세금·BPJS</button>
+      <button class="drawer-tab-btn" data-tab="attendance" type="button" data-i18n="master.tab.attendance">근태·교대</button>
+      <button class="drawer-tab-btn" data-tab="leave" type="button" data-i18n="master.tab.leave">연차·휴가</button>
+      <button class="drawer-tab-btn" data-tab="documents" type="button" data-i18n="master.tab.documents">문서 관리</button>
     </div>
-    <div class="card-title" style="margin-top:16px;" data-i18n="master.drawer.history_title">변경 이력</div>
-    <div class="timeline">
-      <div class="timeline-item"><div class="timeline-time">2022-03-14</div><div class="timeline-text">입사 등록</div></div>
-      <div class="timeline-item"><div class="timeline-time">2024-03-14</div><div class="timeline-text">계약 정규직 전환</div></div>
-      <div class="timeline-item"><div class="timeline-time">2026-01-08</div><div class="timeline-text">기본급 조정 +4.2% (5,082,000 → 6,340,000)</div></div>
+<div class="drawer-tab-panel active" data-tab-panel="personal">
+  <div class="grid grid-3">
+    <div class="card">
+      <div class="card-title" data-i18n="master.personal.identity_title">신상 정보</div>
+      <table style="min-width:0;">
+        <tbody>
+          <tr><td data-i18n="master.personal.full_name">성명</td><td style="text-align:right;">Budi Santoso</td></tr>
+          <tr><td data-i18n="master.personal.preferred_name">선호 이름</td><td style="text-align:right;">Budi</td></tr>
+          <tr><td data-i18n="master.drawer.gender">성별</td><td style="text-align:right;" data-i18n="master.gender.male">남</td></tr>
+          <tr><td data-i18n="master.personal.pob">출생지</td><td style="text-align:right;">Purwakarta, Jawa Barat</td></tr>
+          <tr><td data-i18n="master.drawer.dob">생년월일</td><td style="text-align:right;">1994-06-02</td></tr>
+          <tr><td data-i18n="master.personal.marital_status">결혼상태</td><td style="text-align:right;" data-i18n="master.personal.marital_married">기혼</td></tr>
+          <tr><td data-i18n="master.personal.nationality">국적</td><td style="text-align:right;" data-i18n="master.personal.nationality_id">인도네시아</td></tr>
+          <tr><td data-i18n="master.personal.ktp_no">KTP 번호</td><td style="text-align:right;">3275040206940007</td></tr>
+          <tr><td data-i18n="master.personal.kk_no">KK 번호</td><td style="text-align:right;">3275031503220089</td></tr>
+          <tr><td data-i18n="master.personal.npwp_no">NPWP 번호</td><td style="text-align:right;">3275040206940007</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title" data-i18n="master.personal.contact_title">연락처 및 주소</div>
+      <table style="min-width:0;">
+        <tbody>
+          <tr><td data-i18n="master.personal.mobile">휴대전화번호</td><td style="text-align:right;">+62 812-9911-2234</td></tr>
+          <tr><td data-i18n="master.personal.personal_email">개인 이메일</td><td style="text-align:right;">budi.santoso94@gmail.com</td></tr>
+          <tr><td data-i18n="master.personal.company_email">회사 이메일</td><td style="text-align:right;">budi.santoso@karyametalpresisi.co.id</td></tr>
+          <tr><td data-i18n="master.drawer.address">주소</td><td style="text-align:right;">Jl. Mawar Raya No. 27, RT 004/RW 006, Kel. Margahayu</td></tr>
+          <tr><td data-i18n="master.personal.city">시/도시</td><td style="text-align:right;">Kota Bekasi</td></tr>
+          <tr><td data-i18n="master.personal.province">주(州)</td><td style="text-align:right;">Jawa Barat</td></tr>
+          <tr><td data-i18n="master.personal.postal_code">우편번호</td><td style="text-align:right;">17113</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title" data-i18n="master.personal.family_title">가족 및 비상연락처</div>
+      <table style="min-width:0;">
+        <tbody>
+          <tr><td data-i18n="master.personal.spouse_name">배우자 성명</td><td style="text-align:right;">Ratna Dewi</td></tr>
+          <tr><td data-i18n="master.personal.num_children">자녀 수</td><td style="text-align:right;">2</td></tr>
+          <tr><td data-i18n="master.personal.num_dependents">부양가족 수</td><td style="text-align:right;">2</td></tr>
+          <tr><td data-i18n="master.personal.emergency_contact">비상연락처 성명</td><td style="text-align:right;">Siti Aminah</td></tr>
+          <tr><td data-i18n="master.personal.emergency_relationship">관계</td><td style="text-align:right;" data-i18n="master.personal.relation_mother">어머니</td></tr>
+          <tr><td data-i18n="master.personal.emergency_phone">비상연락처 전화번호</td><td style="text-align:right;">+62 813-4456-7789</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="employment" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.drawer.employment_title">고용정보</div>
+    <div class="grid grid-2">
+      <table style="min-width:0;">
+        <tbody>
+          <tr><td data-i18n="master.employment.company">회사</td><td style="text-align:right;">PT Karya Metal Presisi</td></tr>
+          <tr><td data-i18n="master.employment.branch">지점/사업장</td><td style="text-align:right;">Bekasi Plant (단일 사업장)</td></tr>
+          <tr><td data-i18n="master.employment.division">본부</td><td style="text-align:right;">제조본부</td></tr>
+          <tr><td data-i18n="master.filter.dept_label">부서</td><td style="text-align:right;">조립1라인</td></tr>
+          <tr><td data-i18n="master.employment.section">파트</td><td style="text-align:right;">조립1파트 A조</td></tr>
+          <tr><td data-i18n="master.employment.cost_center">코스트센터</td><td style="text-align:right;">CC-1010-ASSY1</td></tr>
+          <tr><td data-i18n="master.employment.work_location">근무지</td><td style="text-align:right;">Bekasi 공장 1동</td></tr>
+        </tbody>
+      </table>
+      <table style="min-width:0;">
+        <tbody>
+          <tr><td data-i18n="master.employment.position">직책</td><td style="text-align:right;">조립 오퍼레이터</td></tr>
+          <tr><td data-i18n="master.th.rank">직급</td><td style="text-align:right;" data-i18n="master.rank.staff">사원</td></tr>
+          <tr><td data-i18n="master.employment.grade">직급 등급</td><td style="text-align:right;">G3</td></tr>
+          <tr><td data-i18n="master.drawer.line_leader">담당 라인장</td><td style="text-align:right;">Ujang Supriadi</td></tr>
+          <tr><td data-i18n="master.th.emp_type">고용형태</td><td style="text-align:right;" data-i18n="master.type.permanent">정규직</td></tr>
+          <tr><td data-i18n="master.employment.emp_status">고용상태</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="master.status.active">재직</span></td></tr>
+          <tr><td data-i18n="master.employment.employee_status">직원 상태</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="master.employment.status_normal">정상</span></td></tr>
+          <tr><td data-i18n="master.th.hire_date">입사일</td><td style="text-align:right;">2022-03-14</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="employment-history" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.history.employment.title">고용 이력</div>
+    <div class="card-sub" data-i18n="master.history.employment.sub">입사부터 현재까지 고용 형태 및 배치 변경 이력</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="master.history.employment.col.date">일자</th>
+            <th data-i18n="master.history.employment.col.type">구분</th>
+            <th data-i18n="master.history.employment.col.detail">상세</th>
+            <th data-i18n="master.history.employment.col.by">처리자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2022-03-14</td>
+            <td><span class="pill pill-info" data-i18n="master.history.employment.event.hire">입사</span></td>
+            <td>조립1라인 배치, 계약직(PKWT) 2년 계약으로 입사</td>
+            <td>HR팀 Jiwon Park</td>
+          </tr>
+          <tr>
+            <td>2023-09-20</td>
+            <td><span class="pill pill-neutral" data-i18n="master.history.employment.event.review">인사평가</span></td>
+            <td>정기 인사평가 결과 우수(Good) 등급 - 정규직 전환 대상자로 선정</td>
+            <td>라인장 Ujang Supriadi</td>
+          </tr>
+          <tr>
+            <td>2024-03-14</td>
+            <td><span class="pill pill-success" data-i18n="master.history.employment.event.permanent">정규직 전환</span></td>
+            <td>고용형태 변경: 계약직(PKWT) → 정규직(PKWTT)</td>
+            <td>HR팀 Jiwon Park</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="salary-info" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.tab.salary.title">급여정보</div>
+    <div class="card-sub" data-i18n="master.tab.salary.sub">현재 적용중인 기본급, 급여 체계 및 지급 계좌 정보</div>
+    <div class="grid grid-2">
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.basic">기본급</div>
+        <div>Rp 6,340,000</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.effectiveDate">적용일</div>
+        <div>2026-01-08</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.type">급여 유형</div>
+        <div>월급제 (Monthly)</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.structure">급여 체계</div>
+        <div>생산직 급여 체계 (Staff Produksi)</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.grade">급여 그레이드</div>
+        <div>Grade II</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.step">급여 스텝</div>
+        <div>Step 3</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.payrollGroup">급여 그룹</div>
+        <div>조립1라인 생산직 그룹</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.paymentFrequency">지급 주기</div>
+        <div>월 1회 (매월 28일)</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" data-i18n="master.salary.bank.title">지급 계좌 정보</div>
+    <div class="grid grid-3">
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.bankName">은행명</div>
+        <div>BCA</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.bankAccountNumber">계좌번호</div>
+        <div>812-004-4471</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.bankAccountHolder">예금주</div>
+        <div>Budi Santoso</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" data-i18n="master.salary.allowance.title">고정수당</div>
+    <div class="field-row">
+      <div class="field">
+        <div class="field-label" data-i18n="master.salary.fixedAllowance">고정수당 (월 지급액)</div>
+        <div>Rp 1,140,000</div>
+      </div>
+    </div>
+    <div class="caption" data-i18n="master.salary.fixedAllowanceCaption">기본급과 별도로 매월 고정 지급되는 수당이며, 기본급 조정과는 별개로 관리됩니다.</div>
+  </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="salary-history" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.history.salary.title">급여 이력</div>
+    <div class="card-sub" data-i18n="master.history.salary.sub">입사 이후 기본급 변동 이력</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="master.history.salary.col.effectiveDate">효력일</th>
+            <th data-i18n="master.history.salary.col.previous">이전 금액</th>
+            <th data-i18n="master.history.salary.col.new">변경 금액</th>
+            <th data-i18n="master.history.salary.col.rate">변동률</th>
+            <th data-i18n="master.history.salary.col.reason">사유</th>
+            <th data-i18n="master.history.salary.col.approver">승인자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2022-03-14</td>
+            <td>-</td>
+            <td>Rp 4,650,000</td>
+            <td>-</td>
+            <td>신규 입사 - 계약직(PKWT) 초임 기본급</td>
+            <td>HR장 Jiwon Park</td>
+          </tr>
+          <tr>
+            <td>2024-03-14</td>
+            <td>Rp 4,650,000</td>
+            <td>Rp 5,082,000</td>
+            <td><span class="pill pill-success">+9.3%</span></td>
+            <td>계약 정규직(PKWTT) 전환에 따른 기본급 조정</td>
+            <td>HR장 Jiwon Park</td>
+          </tr>
+          <tr>
+            <td>2026-01-08</td>
+            <td>Rp 5,082,000</td>
+            <td>Rp 6,340,000</td>
+            <td><span class="pill pill-success">+4.2%</span></td>
+            <td>정기 승급 (우수 평가)</td>
+            <td>HR장 Jiwon Park</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="tax" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.tax.title">세금 정보</div>
+    <table style="min-width:0;">
+      <tbody>
+        <tr><td data-i18n="master.tax.method">과세 방식</td><td style="text-align:right;">Gross</td></tr>
+        <tr><td data-i18n="master.tax.ptkp">PTKP 상태</td><td style="text-align:right;">K/1</td></tr>
+        <tr><td data-i18n="master.tax.pph21_method">PPh 21 방식</td><td style="text-align:right;">TER (TER-2026.1)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title" data-i18n="master.tax.bpjs_title">BPJS 정보</div>
+    <table style="min-width:0;">
+      <tbody>
+        <tr><td data-i18n="master.tax.bpjs_health_no">BPJS Kesehatan 번호</td><td style="text-align:right;">0001987654321</td></tr>
+        <tr><td data-i18n="master.tax.bpjs_employment_no">BPJS Ketenagakerjaan 번호</td><td style="text-align:right;">91234560104</td></tr>
+      </tbody>
+    </table>
+    <div class="field-row" style="margin-top:12px;">
+      <div class="field-label" data-i18n="master.tax.eligibility_label">가입 대상 여부</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">
+        <span class="pill pill-success" data-i18n="master.tax.bpjs_health_eligible">BPJS Kesehatan 대상</span>
+        <span class="pill pill-success" data-i18n="master.tax.jht_eligible">JHT 대상</span>
+        <span class="pill pill-success" data-i18n="master.tax.jp_eligible">JP 대상</span>
+        <span class="pill pill-success" data-i18n="master.tax.jkk_eligible">JKK 대상</span>
+        <span class="pill pill-success" data-i18n="master.tax.jkm_eligible">JKM 대상</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" data-i18n="master.tax.other_title">기타 적용 여부</div>
+    <table style="min-width:0;">
+      <tbody>
+        <tr><td data-i18n="master.tax.overtime_eligible">초과근무 수당 대상</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="master.common.eligible_yes">대상</span></td></tr>
+        <tr><td data-i18n="master.tax.thr_eligible">THR(종교절기수당) 대상</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="master.common.eligible_yes">대상</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="attendance" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.att.title">근태·교대 정보</div>
+    <table style="min-width:0;">
+      <tbody>
+        <tr><td data-i18n="master.att.id">근태관리 ID</td><td style="text-align:right;">ATT-0104</td></tr>
+        <tr><td data-i18n="master.att.rfid">RFID/사원증 카드 ID</td><td style="text-align:right;">FP-0104 (지문기 A-3 연동)</td></tr>
+        <tr><td data-i18n="master.att.group">근태 그룹</td><td style="text-align:right;">조립1라인 근태그룹</td></tr>
+        <tr><td data-i18n="master.att.shift_group">교대 그룹</td><td style="text-align:right;">주간A조</td></tr>
+        <tr><td data-i18n="master.att.work_schedule">근무 스케줄</td><td style="text-align:right;">08:00–17:00 (주간 표준)</td></tr>
+        <tr><td data-i18n="master.att.rest_day">휴무일</td><td style="text-align:right;">일요일</td></tr>
+        <tr><td data-i18n="master.att.gps">GPS 출퇴근 인증</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="master.common.enabled">사용</span></td></tr>
+        <tr><td data-i18n="master.att.location">출퇴근 인증 위치</td><td style="text-align:right;">조립1라인 매장(Plant)</td></tr>
+        <tr><td data-i18n="master.att.late_tolerance">지각 허용시간(분)</td><td style="text-align:right;">10분</td></tr>
+        <tr><td data-i18n="master.att.early_leave_tolerance">조퇴 허용시간(분)</td><td style="text-align:right;">10분</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="leave" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.leave.title">연차·휴가</div>
+    <table style="min-width:0;">
+      <tbody>
+        <tr><td data-i18n="master.leave.group">연차 그룹</td><td style="text-align:right;">생산직 연차그룹 A</td></tr>
+      </tbody>
+    </table>
+    <div class="grid grid-3" style="margin-top:12px;">
+      <div class="field">
+        <div class="field-label" data-i18n="master.leave.entitlement">연간 발생 연차</div>
+        <div>12일</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.leave.balance">잔여 연차</div>
+        <div>7 / 12일</div>
+      </div>
+      <div class="field">
+        <div class="field-label" data-i18n="master.leave.carry_forward">이월 연차</div>
+        <div>2일 (이월 가능)</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="drawer-tab-panel" data-tab-panel="documents" style="display:none;">
+  <div class="card">
+    <div class="card-title" data-i18n="master.docs.title">문서 관리</div>
+    <div class="field-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+      <div class="field-label" data-i18n="master.docs.status_label">서류 제출 상태</div>
+      <span class="pill pill-warning" data-i18n="master.docs.status_partial">일부 서류 보완 필요</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="master.docs.col_type">문서 종류</th>
+            <th data-i18n="master.docs.col_status">상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-i18n="master.docs.ktp">KTP 사본</td><td><span class="pill pill-success" data-i18n="master.docs.status_done">제출완료</span></td></tr>
+          <tr><td data-i18n="master.docs.kk">KK(가족관계증명서) 사본</td><td><span class="pill pill-success" data-i18n="master.docs.status_done">제출완료</span></td></tr>
+          <tr><td data-i18n="master.docs.npwp">NPWP 사본</td><td><span class="pill pill-success" data-i18n="master.docs.status_done">제출완료</span></td></tr>
+          <tr><td data-i18n="master.docs.diploma">졸업증명서/학위증</td><td><span class="pill pill-danger" data-i18n="master.docs.status_missing">누락</span></td></tr>
+          <tr><td data-i18n="master.docs.contract">근로계약서</td><td><span class="pill pill-success" data-i18n="master.docs.status_done">제출완료</span></td></tr>
+          <tr><td data-i18n="master.docs.bpjs_proof">BPJS 가입증명</td><td><span class="pill pill-success" data-i18n="master.docs.status_done">제출완료</span></td></tr>
+          <tr><td data-i18n="master.docs.photo">증명사진</td><td><span class="pill pill-success" data-i18n="master.docs.status_done">제출완료</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>  </div>
 
   <div class="card" style="margin-top:16px;">
     <div class="card-title" data-i18n="master.upload_link_title">원천데이터 업로드와의 관계</div>
@@ -4121,6 +4536,185 @@ btnDark.addEventListener('click', notifyThemeChange);
   });
 })();
 
+/* ---------- Employee Master: drawer tab switching (Budi Santoso flagship profile) ---------- */
+(function(){
+  document.querySelectorAll('.drawer-tabs').forEach(function(tabs){
+    var drawer = tabs.closest('.drawer');
+    if (!drawer) return;
+    tabs.querySelectorAll('.drawer-tab-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        tabs.querySelectorAll('.drawer-tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        drawer.querySelectorAll('.drawer-tab-panel').forEach(function(p){ p.classList.remove('active'); p.style.display = 'none'; });
+        btn.classList.add('active');
+        var panel = drawer.querySelector('.drawer-tab-panel[data-tab-panel="' + btn.getAttribute('data-tab') + '"]');
+        if (panel) { panel.classList.add('active'); panel.style.display = ''; }
+      });
+    });
+  });
+})();
+
+/* ---------- Employee Master: new-hire quick registration ---------- */
+(function(){
+  var openBtn = document.querySelector('button[data-i18n="master.btn.new_hire"]');
+  var form = document.getElementById('newHireForm');
+  var body = document.getElementById('masterEmpBody');
+  var saveBtn = document.getElementById('newHireSaveBtn');
+  var cancelBtn = document.getElementById('newHireCancelBtn');
+  var saveNote = document.getElementById('newHireSaveNote');
+  if (!openBtn || !form || !body || !saveBtn || !cancelBtn) return;
+
+  var nameInput = document.getElementById('newHireName');
+  var empNoInput = document.getElementById('newHireEmpNo');
+  var genderInput = document.getElementById('newHireGender');
+  var dobInput = document.getElementById('newHireDob');
+  var deptInput = document.getElementById('newHireDept');
+  var rankInput = document.getElementById('newHireRank');
+  var empTypeInput = document.getElementById('newHireEmpType');
+  var joinDateInput = document.getElementById('newHireJoinDate');
+  var basicSalaryInput = document.getElementById('newHireBasicSalary');
+  var bankNameInput = document.getElementById('newHireBankName');
+  var bankAccountInput = document.getElementById('newHireBankAccount');
+  var taxMethodInput = document.getElementById('newHireTaxMethod');
+
+  var DEFAULT_JOIN_DATE = '2026-08-25';
+
+  var RANK_LABEL = {
+    staff: { key: 'master.rank.staff', ko: '사원' },
+    foreman: { key: 'master.rank.foreman', ko: '반장' },
+    supervisor: { key: 'master.rank.supervisor', ko: '계장' },
+    manager: { key: 'master.rank.manager', ko: '과장' },
+    senior_manager: { key: 'master.rank.senior_manager', ko: '부장' }
+  };
+  var TYPE_LABEL = {
+    permanent: { key: 'master.type.permanent', ko: '정규직' },
+    contract: { key: 'master.type.contract', ko: '계약직' },
+    probation: { key: 'master.type.probation', ko: '수습' }
+  };
+  var STATUS_ACTIVE_LABEL = { key: 'master.status.active', ko: '재직' };
+  var DETAIL_BTN_LABEL = { key: 'btn.detail', ko: '상세보기' };
+
+  function currentLangCode(){ return document.documentElement.getAttribute('lang') || 'ko'; }
+
+  function labelText(meta){
+    try {
+      if (typeof I18N !== 'undefined' && I18N[meta.key]) {
+        var l = currentLangCode();
+        return I18N[meta.key][l] || I18N[meta.key].ko || meta.ko;
+      }
+    } catch (e) {}
+    return meta.ko;
+  }
+
+  function nextEmpNo(){
+    var max = 0;
+    body.querySelectorAll('tr').forEach(function(tr){
+      var firstCell = tr.querySelector('td');
+      if (!firstCell) return;
+      var m = /^MF-(\d+)/.exec(firstCell.textContent.trim());
+      if (m) {
+        var n = parseInt(m[1], 10);
+        if (n > max) max = n;
+      }
+    });
+    var next = String(max + 1);
+    while (next.length < 4) next = '0' + next;
+    return 'MF-' + next;
+  }
+
+  function resetForm(){
+    nameInput.value = '';
+    empNoInput.value = nextEmpNo();
+    genderInput.value = 'M';
+    dobInput.value = '';
+    deptInput.value = 'assembly1';
+    rankInput.value = 'staff';
+    empTypeInput.value = 'permanent';
+    joinDateInput.value = DEFAULT_JOIN_DATE;
+    basicSalaryInput.value = '';
+    bankNameInput.value = '';
+    bankAccountInput.value = '';
+    taxMethodInput.value = 'gross';
+  }
+
+  openBtn.addEventListener('click', function(){
+    resetForm();
+    form.style.display = '';
+    nameInput.focus();
+  });
+
+  cancelBtn.addEventListener('click', function(){
+    form.style.display = 'none';
+    resetForm();
+    if (saveNote) saveNote.textContent = '';
+  });
+
+  saveBtn.addEventListener('click', function(){
+    var name = nameInput.value.trim();
+    var empNo = empNoInput.value.trim();
+    if (!name) { nameInput.focus(); return; }
+    if (!empNo) { empNoInput.focus(); return; }
+
+    var deptValue = deptInput.value;
+    var deptOption = deptInput.options[deptInput.selectedIndex];
+    var deptLabel = deptOption ? deptOption.textContent.trim() : deptValue;
+
+    var rankValue = rankInput.value;
+    var rankMeta = RANK_LABEL[rankValue] || RANK_LABEL.staff;
+
+    var typeValue = empTypeInput.value;
+    var typeMeta = TYPE_LABEL[typeValue] || TYPE_LABEL.permanent;
+
+    var joinDate = joinDateInput.value || DEFAULT_JOIN_DATE;
+    var basicSalaryNum = parseInt(basicSalaryInput.value, 10);
+    if (isNaN(basicSalaryNum)) basicSalaryNum = 0;
+
+    var bankName = bankNameInput.value.trim();
+    var bankAccountRaw = bankAccountInput.value.trim();
+    var last4 = bankAccountRaw.replace(/\D/g, '').slice(-4);
+    var maskedAccount = bankName || '-';
+    if (last4) maskedAccount += ' •••• ' + last4;
+
+    var tr = document.createElement('tr');
+    tr.setAttribute('data-dept', deptValue);
+    tr.setAttribute('data-status', 'active');
+    tr.setAttribute('data-type', typeValue);
+    tr.setAttribute('data-search', (empNo + ' ' + name).toLowerCase());
+
+    tr.innerHTML =
+      '<td></td><td></td><td></td>' +
+      '<td data-i18n="' + rankMeta.key + '"></td>' +
+      '<td data-i18n="' + typeMeta.key + '"></td>' +
+      '<td></td>' +
+      '<td><span class="pill pill-success" data-i18n="' + STATUS_ACTIVE_LABEL.key + '"></span></td>' +
+      '<td style="text-align:right;"></td>' +
+      '<td></td>' +
+      '<td><button class="btn btn-sm" type="button" disabled data-i18n="' + DETAIL_BTN_LABEL.key + '"></button></td>';
+
+    var cells = tr.querySelectorAll('td');
+    cells[0].textContent = empNo;
+    cells[1].textContent = name;
+    cells[2].textContent = deptLabel;
+    cells[3].textContent = labelText(rankMeta);
+    cells[4].textContent = labelText(typeMeta);
+    cells[5].textContent = joinDate;
+    cells[6].querySelector('.pill').textContent = labelText(STATUS_ACTIVE_LABEL);
+    cells[7].textContent = basicSalaryNum.toLocaleString('en-US');
+    cells[8].textContent = maskedAccount;
+    cells[9].querySelector('button').textContent = labelText(DETAIL_BTN_LABEL);
+
+    body.appendChild(tr);
+
+    form.style.display = 'none';
+    resetForm();
+
+    if (saveNote) {
+      saveNote.textContent = name + '(' + empNo + ') 신규 등록이 완료되었습니다. 나머지 프로필 항목은 상세 화면에서 이어서 입력하세요.';
+      saveNote.style.color = 'var(--success)';
+      setTimeout(function(){ saveNote.textContent = ''; }, 4000);
+    }
+  });
+})();
+
 /* ---------- Policy & Rates: rank-based OT eligibility ---------- */
 (function(){
   var STORAGE_KEY = 'gajionePolicyOtEligibility';
@@ -5480,6 +6074,149 @@ const I18N = {
 "period.g4PassNote06":{ko:"지급파일 MCM_PAYROLL_202606.txt 생성 완료 · 법인장 서명 06-26 14:05",en:"Payment file MCM_PAYROLL_202606.txt generated · director signed 06-26 14:05",id:"File pembayaran MCM_PAYROLL_202606.txt dibuat · ditandatangani direktur 06-26 14:05",zh:"支付文件 MCM_PAYROLL_202606.txt 已生成 · 法人代表签署 06-26 14:05",ja:"支給ファイルMCM_PAYROLL_202606.txt生成完了・法人代表署名06-26 14:05"},
 "period.gotoReports":{ko:"리포트에서 상세 보기 →",en:"View detail in Reports →",id:"Lihat detail di Laporan →",zh:"在报表中查看详情 →",ja:"レポートで詳細を見る →"},
 "reports.period.rangeSep":{ko:"~",en:"to",id:"s.d.",zh:"至",ja:"〜"},
+"master.tab.personal":{ko:"기본정보",en:"Personal Info",id:"Info Pribadi",zh:"基本信息",ja:"基本情報"},
+"master.tab.employment":{ko:"고용정보",en:"Employment",id:"Kepegawaian",zh:"雇佣信息",ja:"雇用情報"},
+"master.tab.employmentHistory":{ko:"고용 이력",en:"Employment History",id:"Riwayat Kepegawaian",zh:"雇佣历史",ja:"雇用履歴"},
+"master.tab.salaryInfo":{ko:"급여정보",en:"Salary Info",id:"Info Gaji",zh:"薪资信息",ja:"給与情報"},
+"master.tab.salaryHistory":{ko:"급여 이력",en:"Salary History",id:"Riwayat Gaji",zh:"薪资历史",ja:"給与履歴"},
+"master.tab.tax":{ko:"세금·BPJS",en:"Tax & BPJS",id:"Pajak & BPJS",zh:"税务与BPJS",ja:"税金・BPJS"},
+"master.tab.attendance":{ko:"근태·교대",en:"Attendance & Shift",id:"Kehadiran & Shift",zh:"考勤与排班",ja:"勤怠・シフト"},
+"master.tab.leave":{ko:"연차·휴가",en:"Leave",id:"Cuti",zh:"休假",ja:"休暇"},
+"master.tab.documents":{ko:"문서 관리",en:"Documents",id:"Dokumen",zh:"文档管理",ja:"書類管理"},
+"master.personal.identity_title":{ko:"신상 정보",en:"Identity Information",id:"Informasi Identitas",zh:"身份信息",ja:"身上情報"},
+"master.personal.full_name":{ko:"성명",en:"Full Name",id:"Nama Lengkap",zh:"姓名",ja:"氏名"},
+"master.personal.preferred_name":{ko:"선호 이름",en:"Preferred Name",id:"Nama Panggilan",zh:"常用名",ja:"通称"},
+"master.personal.pob":{ko:"출생지",en:"Place of Birth",id:"Tempat Lahir",zh:"出生地",ja:"出生地"},
+"master.personal.marital_status":{ko:"결혼상태",en:"Marital Status",id:"Status Pernikahan",zh:"婚姻状况",ja:"婚姻状況"},
+"master.personal.marital_married":{ko:"기혼",en:"Married",id:"Menikah",zh:"已婚",ja:"既婚"},
+"master.personal.nationality":{ko:"국적",en:"Nationality",id:"Kewarganegaraan",zh:"国籍",ja:"国籍"},
+"master.personal.nationality_id":{ko:"인도네시아",en:"Indonesian",id:"Indonesia",zh:"印度尼西亚",ja:"インドネシア"},
+"master.personal.ktp_no":{ko:"KTP 번호",en:"KTP Number",id:"Nomor KTP",zh:"KTP号码",ja:"KTP番号"},
+"master.personal.kk_no":{ko:"KK 번호",en:"KK Number",id:"Nomor KK",zh:"KK号码(户口簿)",ja:"KK番号(家族カード)"},
+"master.personal.npwp_no":{ko:"NPWP 번호",en:"NPWP Number",id:"Nomor NPWP",zh:"NPWP号码(纳税人识别号)",ja:"NPWP番号(納税者番号)"},
+"master.personal.contact_title":{ko:"연락처 및 주소",en:"Contact & Address",id:"Kontak & Alamat",zh:"联系方式与地址",ja:"連絡先・住所"},
+"master.personal.mobile":{ko:"휴대전화번호",en:"Mobile Number",id:"Nomor HP",zh:"手机号码",ja:"携帯電話番号"},
+"master.personal.personal_email":{ko:"개인 이메일",en:"Personal Email",id:"Email Pribadi",zh:"个人邮箱",ja:"個人メール"},
+"master.personal.company_email":{ko:"회사 이메일",en:"Company Email",id:"Email Perusahaan",zh:"公司邮箱",ja:"会社メール"},
+"master.personal.city":{ko:"시/도시",en:"City",id:"Kota",zh:"城市",ja:"市"},
+"master.personal.province":{ko:"주(州)",en:"Province",id:"Provinsi",zh:"省",ja:"州"},
+"master.personal.postal_code":{ko:"우편번호",en:"Postal Code",id:"Kode Pos",zh:"邮政编码",ja:"郵便番号"},
+"master.personal.family_title":{ko:"가족 및 비상연락처",en:"Family & Emergency Contact",id:"Keluarga & Kontak Darurat",zh:"家庭与紧急联系人",ja:"家族・緊急連絡先"},
+"master.personal.spouse_name":{ko:"배우자 성명",en:"Spouse Name",id:"Nama Pasangan",zh:"配偶姓名",ja:"配偶者氏名"},
+"master.personal.num_children":{ko:"자녀 수",en:"Number of Children",id:"Jumlah Anak",zh:"子女数",ja:"子供の数"},
+"master.personal.num_dependents":{ko:"부양가족 수",en:"Number of Dependents",id:"Jumlah Tanggungan",zh:"受抚养人数",ja:"扶養家族数"},
+"master.personal.emergency_contact":{ko:"비상연락처 성명",en:"Emergency Contact",id:"Nama Kontak Darurat",zh:"紧急联系人姓名",ja:"緊急連絡先氏名"},
+"master.personal.emergency_relationship":{ko:"관계",en:"Relationship",id:"Hubungan",zh:"关系",ja:"続柄"},
+"master.personal.relation_mother":{ko:"어머니",en:"Mother",id:"Ibu",zh:"母亲",ja:"母"},
+"master.personal.emergency_phone":{ko:"비상연락처 전화번호",en:"Emergency Contact Phone",id:"Nomor Telepon Kontak Darurat",zh:"紧急联系人电话",ja:"緊急連絡先電話番号"},
+"master.employment.company":{ko:"회사",en:"Company",id:"Perusahaan",zh:"公司",ja:"会社"},
+"master.employment.branch":{ko:"지점/사업장",en:"Branch",id:"Cabang",zh:"分支/工厂",ja:"支店・事業所"},
+"master.employment.division":{ko:"본부",en:"Division",id:"Divisi",zh:"事业部",ja:"事業部"},
+"master.employment.section":{ko:"파트",en:"Section",id:"Bagian",zh:"组别",ja:"セクション"},
+"master.employment.cost_center":{ko:"코스트센터",en:"Cost Center",id:"Pusat Biaya",zh:"成本中心",ja:"コストセンター"},
+"master.employment.work_location":{ko:"근무지",en:"Work Location",id:"Lokasi Kerja",zh:"工作地点",ja:"勤務地"},
+"master.employment.position":{ko:"직책",en:"Position",id:"Jabatan",zh:"职位",ja:"職位"},
+"master.employment.grade":{ko:"직급 등급",en:"Grade",id:"Golongan",zh:"职等",ja:"等級"},
+"master.employment.emp_status":{ko:"고용상태",en:"Employment Status",id:"Status Kepegawaian",zh:"雇佣状态",ja:"雇用ステータス"},
+"master.employment.employee_status":{ko:"직원 상태",en:"Employee Status",id:"Status Karyawan",zh:"员工状态",ja:"従業員ステータス"},
+"master.employment.status_normal":{ko:"정상",en:"Normal",id:"Normal",zh:"正常",ja:"正常"},
+"master.history.employment.title":{ko:"고용 이력",en:"Employment History",id:"Riwayat Kepegawaian",zh:"雇佣历史",ja:"雇用履歴"},
+"master.history.employment.sub":{ko:"입사부터 현재까지 고용 형태 및 배치 변경 이력",en:"History of employment type and placement changes from hire to present",id:"Riwayat perubahan jenis kepegawaian dan penempatan sejak bergabung hingga saat ini",zh:"从入职到现在的雇佣类型及岗位变更历史",ja:"入社から現在までの雇用形態および配置変更の履歴"},
+"master.history.employment.col.date":{ko:"일자",en:"Date",id:"Tanggal",zh:"日期",ja:"日付"},
+"master.history.employment.col.type":{ko:"구분",en:"Event Type",id:"Jenis Kejadian",zh:"类型",ja:"区分"},
+"master.history.employment.col.detail":{ko:"상세",en:"Detail",id:"Detail",zh:"详情",ja:"詳細"},
+"master.history.employment.col.by":{ko:"처리자",en:"Processed By",id:"Diproses Oleh",zh:"处理人",ja:"処理者"},
+"master.history.employment.event.hire":{ko:"입사",en:"Hired",id:"Bergabung",zh:"入职",ja:"入社"},
+"master.history.employment.event.review":{ko:"인사평가",en:"Performance Review",id:"Evaluasi Kinerja",zh:"绩效评估",ja:"人事評価"},
+"master.history.employment.event.permanent":{ko:"정규직 전환",en:"Permanent Conversion",id:"Konversi ke Karyawan Tetap",zh:"转为正式员工",ja:"正社員転換"},
+"master.tab.salary.title":{ko:"급여정보",en:"Salary Info",id:"Informasi Gaji",zh:"薪资信息",ja:"給与情報"},
+"master.tab.salary.sub":{ko:"현재 적용중인 기본급, 급여 체계 및 지급 계좌 정보",en:"Current basic salary, pay structure, and disbursement account information",id:"Informasi gaji pokok, struktur gaji, dan rekening pembayaran yang berlaku saat ini",zh:"当前生效的基本工资、薪资结构及发放账户信息",ja:"現在適用中の基本給、給与体系および支給口座情報"},
+"master.salary.basic":{ko:"기본급",en:"Basic Salary",id:"Gaji Pokok",zh:"基本工资",ja:"基本給"},
+"master.salary.effectiveDate":{ko:"적용일",en:"Effective Date",id:"Tanggal Berlaku",zh:"生效日期",ja:"適用日"},
+"master.salary.type":{ko:"급여 유형",en:"Salary Type",id:"Jenis Gaji",zh:"薪资类型",ja:"給与区分"},
+"master.salary.structure":{ko:"급여 체계",en:"Salary Structure",id:"Struktur Gaji",zh:"薪资体系",ja:"給与体系"},
+"master.salary.grade":{ko:"급여 그레이드",en:"Salary Grade",id:"Grade Gaji",zh:"薪资等级",ja:"給与グレード"},
+"master.salary.step":{ko:"급여 스텝",en:"Salary Step",id:"Step Gaji",zh:"薪资级差",ja:"給与ステップ"},
+"master.salary.payrollGroup":{ko:"급여 그룹",en:"Payroll Group",id:"Grup Payroll",zh:"薪资组",ja:"給与グループ"},
+"master.salary.paymentFrequency":{ko:"지급 주기",en:"Payment Frequency",id:"Frekuensi Pembayaran",zh:"发放周期",ja:"支給周期"},
+"master.salary.bank.title":{ko:"지급 계좌 정보",en:"Payment Account Information",id:"Informasi Rekening Pembayaran",zh:"发放账户信息",ja:"支払口座情報"},
+"master.salary.bankName":{ko:"은행명",en:"Bank Name",id:"Nama Bank",zh:"银行名称",ja:"銀行名"},
+"master.salary.bankAccountNumber":{ko:"계좌번호",en:"Bank Account Number",id:"Nomor Rekening",zh:"银行账号",ja:"口座番号"},
+"master.salary.bankAccountHolder":{ko:"예금주",en:"Bank Account Holder",id:"Nama Pemilik Rekening",zh:"账户持有人",ja:"口座名義人"},
+"master.salary.allowance.title":{ko:"고정수당",en:"Fixed Allowance",id:"Tunjangan Tetap",zh:"固定津贴",ja:"固定手当"},
+"master.salary.fixedAllowance":{ko:"고정수당 (월 지급액)",en:"Fixed Allowance (Monthly)",id:"Tunjangan Tetap (Bulanan)",zh:"固定津贴(月发放额)",ja:"固定手当(月額)"},
+"master.salary.fixedAllowanceCaption":{ko:"기본급과 별도로 매월 고정 지급되는 수당이며, 기본급 조정과는 별개로 관리됩니다.",en:"Paid monthly separately from the basic salary and managed independently of basic salary adjustments.",id:"Dibayarkan setiap bulan secara terpisah dari gaji pokok dan dikelola secara independen dari penyesuaian gaji pokok.",zh:"与基本工资分开按月固定发放,并独立于基本工资调整进行管理。",ja:"基本給とは別に毎月固定で支給される手当であり、基本給の調整とは別に管理されます。"},
+"master.history.salary.title":{ko:"급여 이력",en:"Salary History",id:"Riwayat Gaji",zh:"薪资历史",ja:"給与履歴"},
+"master.history.salary.sub":{ko:"입사 이후 기본급 변동 이력",en:"History of basic salary changes since hire",id:"Riwayat perubahan gaji pokok sejak bergabung",zh:"入职以来基本工资变动历史",ja:"入社以降の基本給変動履歴"},
+"master.history.salary.col.effectiveDate":{ko:"효력일",en:"Effective Date",id:"Tanggal Berlaku",zh:"生效日",ja:"発効日"},
+"master.history.salary.col.previous":{ko:"이전 금액",en:"Previous Amount",id:"Jumlah Sebelumnya",zh:"变更前金额",ja:"変更前金額"},
+"master.history.salary.col.new":{ko:"변경 금액",en:"New Amount",id:"Jumlah Baru",zh:"变更后金额",ja:"変更後金額"},
+"master.history.salary.col.rate":{ko:"변동률",en:"Change %",id:"Persentase Perubahan",zh:"变动率",ja:"変動率"},
+"master.history.salary.col.reason":{ko:"사유",en:"Reason",id:"Alasan",zh:"事由",ja:"事由"},
+"master.history.salary.col.approver":{ko:"승인자",en:"Approved By",id:"Disetujui Oleh",zh:"批准人",ja:"承認者"},
+"master.tax.title":{ko:"세금 정보",en:"Tax Information",id:"Informasi Pajak",zh:"税务信息",ja:"税務情報"},
+"master.tax.method":{ko:"과세 방식",en:"Tax Method",id:"Metode Pajak",zh:"计税方式",ja:"課税方式"},
+"master.tax.ptkp":{ko:"PTKP 상태",en:"PTKP Status",id:"Status PTKP",zh:"PTKP状态",ja:"PTKPステータス"},
+"master.tax.pph21_method":{ko:"PPh 21 방식",en:"PPh 21 Method",id:"Metode PPh 21",zh:"PPh21方式",ja:"PPh21方式"},
+"master.tax.bpjs_title":{ko:"BPJS 정보",en:"BPJS Information",id:"Informasi BPJS",zh:"BPJS信息",ja:"BPJS情報"},
+"master.tax.bpjs_health_no":{ko:"BPJS Kesehatan 번호",en:"BPJS Health Number",id:"Nomor BPJS Kesehatan",zh:"BPJS医疗保险号",ja:"BPJS Kesehatan番号"},
+"master.tax.bpjs_employment_no":{ko:"BPJS Ketenagakerjaan 번호",en:"BPJS Employment Number",id:"Nomor BPJS Ketenagakerjaan",zh:"BPJS就业保险号",ja:"BPJS Ketenagakerjaan番号"},
+"master.tax.eligibility_label":{ko:"가입 대상 여부",en:"BPJS Eligibility",id:"Kelayakan BPJS",zh:"BPJS参保资格",ja:"BPJS加入対象"},
+"master.tax.bpjs_health_eligible":{ko:"BPJS Kesehatan 대상",en:"BPJS Health Eligible",id:"BPJS Kesehatan Berhak",zh:"BPJS医疗保险 符合资格",ja:"BPJS Kesehatan 対象"},
+"master.tax.jht_eligible":{ko:"JHT 대상",en:"JHT Eligible",id:"JHT Berhak",zh:"JHT 符合资格",ja:"JHT 対象"},
+"master.tax.jp_eligible":{ko:"JP 대상",en:"JP Eligible",id:"JP Berhak",zh:"JP 符合资格",ja:"JP 対象"},
+"master.tax.jkk_eligible":{ko:"JKK 대상",en:"JKK Eligible",id:"JKK Berhak",zh:"JKK 符合资格",ja:"JKK 対象"},
+"master.tax.jkm_eligible":{ko:"JKM 대상",en:"JKM Eligible",id:"JKM Berhak",zh:"JKM 符合资格",ja:"JKM 対象"},
+"master.tax.other_title":{ko:"기타 적용 여부",en:"Other Eligibility",id:"Kelayakan Lainnya",zh:"其他适用资格",ja:"その他適用対象"},
+"master.tax.overtime_eligible":{ko:"초과근무 수당 대상",en:"Overtime Eligible",id:"Berhak Lembur",zh:"加班资格",ja:"残業対象"},
+"master.tax.thr_eligible":{ko:"THR(종교절기수당) 대상",en:"THR Eligible",id:"Berhak THR",zh:"THR资格",ja:"THR対象"},
+"master.common.eligible_yes":{ko:"대상",en:"Eligible",id:"Berhak",zh:"符合资格",ja:"対象"},
+"master.common.enabled":{ko:"사용",en:"Enabled",id:"Aktif",zh:"启用",ja:"有効"},
+"master.att.title":{ko:"근태·교대 정보",en:"Attendance & Shift Information",id:"Informasi Kehadiran & Shift",zh:"考勤与排班信息",ja:"勤怠・シフト情報"},
+"master.att.id":{ko:"근태관리 ID",en:"Attendance ID",id:"ID Kehadiran",zh:"考勤ID",ja:"勤怠ID"},
+"master.att.rfid":{ko:"RFID/사원증 카드 ID",en:"RFID/Card ID",id:"ID RFID/Kartu",zh:"RFID/卡号",ja:"RFID/カードID"},
+"master.att.group":{ko:"근태 그룹",en:"Attendance Group",id:"Grup Kehadiran",zh:"考勤组",ja:"勤怠グループ"},
+"master.att.shift_group":{ko:"교대 그룹",en:"Shift Group",id:"Grup Shift",zh:"班次组",ja:"シフトグループ"},
+"master.att.work_schedule":{ko:"근무 스케줄",en:"Work Schedule",id:"Jadwal Kerja",zh:"工作时间表",ja:"勤務スケジュール"},
+"master.att.rest_day":{ko:"휴무일",en:"Rest Day",id:"Hari Libur",zh:"休息日",ja:"休日"},
+"master.att.gps":{ko:"GPS 출퇴근 인증",en:"GPS Attendance",id:"Absensi GPS",zh:"GPS考勤",ja:"GPS出退勤認証"},
+"master.att.location":{ko:"출퇴근 인증 위치",en:"Attendance Location",id:"Lokasi Absensi",zh:"考勤地点",ja:"出退勤認証場所"},
+"master.att.late_tolerance":{ko:"지각 허용시간(분)",en:"Late Tolerance (Minutes)",id:"Toleransi Terlambat (Menit)",zh:"迟到容许时间(分钟)",ja:"遅刻許容時間(分)"},
+"master.att.early_leave_tolerance":{ko:"조퇴 허용시간(분)",en:"Early Leave Tolerance (Minutes)",id:"Toleransi Pulang Awal (Menit)",zh:"早退容许时间(分钟)",ja:"早退許容時間(分)"},
+"master.leave.title":{ko:"연차·휴가",en:"Leave",id:"Cuti",zh:"休假",ja:"休暇"},
+"master.leave.group":{ko:"연차 그룹",en:"Leave Group",id:"Grup Cuti",zh:"休假组",ja:"休暇グループ"},
+"master.leave.entitlement":{ko:"연간 발생 연차",en:"Annual Leave Entitlement",id:"Hak Cuti Tahunan",zh:"年度年假天数",ja:"年次有給休暇付与日数"},
+"master.leave.balance":{ko:"잔여 연차",en:"Leave Balance",id:"Saldo Cuti",zh:"剩余年假",ja:"残休暇日数"},
+"master.leave.carry_forward":{ko:"이월 연차",en:"Carry Forward Leave",id:"Cuti Dibawa Maju",zh:"结转年假",ja:"繰越休暇"},
+"master.docs.title":{ko:"문서 관리",en:"Document Management",id:"Manajemen Dokumen",zh:"文档管理",ja:"書類管理"},
+"master.docs.status_label":{ko:"서류 제출 상태",en:"Document Status",id:"Status Dokumen",zh:"文件状态",ja:"書類ステータス"},
+"master.docs.status_partial":{ko:"일부 서류 보완 필요",en:"Some Documents Need Completion",id:"Beberapa Dokumen Perlu Dilengkapi",zh:"部分文件待补充",ja:"一部書類の補完が必要"},
+"master.docs.col_type":{ko:"문서 종류",en:"Document Type",id:"Jenis Dokumen",zh:"文件类型",ja:"書類種類"},
+"master.docs.col_status":{ko:"상태",en:"Status",id:"Status",zh:"状态",ja:"ステータス"},
+"master.docs.ktp":{ko:"KTP 사본",en:"KTP Copy",id:"Fotokopi KTP",zh:"KTP复印件",ja:"KTPコピー"},
+"master.docs.kk":{ko:"KK(가족관계증명서) 사본",en:"KK (Family Card) Copy",id:"Fotokopi KK (Kartu Keluarga)",zh:"KK(户籍证明)复印件",ja:"KK(家族関係証明書)コピー"},
+"master.docs.npwp":{ko:"NPWP 사본",en:"NPWP Copy",id:"Fotokopi NPWP",zh:"NPWP复印件",ja:"NPWPコピー"},
+"master.docs.diploma":{ko:"졸업증명서/학위증",en:"Diploma/Degree Certificate",id:"Ijazah/Sertifikat",zh:"毕业证书/学位证",ja:"卒業証明書/学位証"},
+"master.docs.contract":{ko:"근로계약서",en:"Employment Contract",id:"Kontrak Kerja",zh:"劳动合同",ja:"雇用契約書"},
+"master.docs.bpjs_proof":{ko:"BPJS 가입증명",en:"BPJS Registration Proof",id:"Bukti Pendaftaran BPJS",zh:"BPJS参保证明",ja:"BPJS加入証明"},
+"master.docs.photo":{ko:"증명사진",en:"Photo",id:"Pas Foto",zh:"证件照",ja:"証明写真"},
+"master.docs.status_done":{ko:"제출완료",en:"Submitted",id:"Sudah Diserahkan",zh:"已提交",ja:"提出済み"},
+"master.docs.status_missing":{ko:"누락",en:"Missing",id:"Tidak Ada",zh:"缺失",ja:"未提出"},
+"master.newhire.title":{ko:"신규 입사 등록",en:"New Hire Registration",id:"Registrasi Karyawan Baru",zh:"新员工登记",ja:"新規入社登録"},
+"master.newhire.subtitle":{ko:"최초 등록에는 핵심 항목만 입력합니다. 가족·부양가족, 근태, 연차, 서류 등 나머지 프로필 항목은 등록 후 상세 프로필 화면에서 이어서 완성할 수 있습니다.",en:"Initial registration captures only the core fields. Family/dependents, attendance, leave and document details can be completed afterward in the full profile.",id:"Registrasi awal hanya mencakup data inti. Detail keluarga/tanggungan, kehadiran, cuti, dan dokumen dapat dilengkapi setelahnya di profil lengkap.",zh:"初次登记仅需填写核心信息。家庭/受抚养人、考勤、休假和证件等其余资料可在登记后于完整档案中继续补充。",ja:"初回登録ではコア項目のみ入力します。家族・扶養家族、勤怠、休暇、書類などの残りのプロフィール項目は登録後に詳細プロフィール画面で続けて完成できます。"},
+"master.newhire.section_basic":{ko:"기본정보",en:"Basic Information",id:"Informasi Dasar",zh:"基本信息",ja:"基本情報"},
+"master.newhire.full_name":{ko:"성명",en:"Full Name",id:"Nama Lengkap",zh:"姓名",ja:"氏名"},
+"master.newhire.emp_no":{ko:"사번",en:"Employee Number",id:"Nomor Karyawan",zh:"员工编号",ja:"社員番号"},
+"master.gender.female":{ko:"여",en:"Female",id:"Perempuan",zh:"女",ja:"女性"},
+"master.newhire.section_employment":{ko:"고용정보",en:"Employment Information",id:"Informasi Kepegawaian",zh:"雇佣信息",ja:"雇用情報"},
+"master.newhire.section_pay":{ko:"급여·세금",en:"Salary & Tax",id:"Gaji & Pajak",zh:"薪资与税务",ja:"給与・税金"},
+"master.newhire.bank_name":{ko:"은행명",en:"Bank Name",id:"Nama Bank",zh:"银行名称",ja:"銀行名"},
+"master.newhire.bank_account":{ko:"계좌번호",en:"Bank Account Number",id:"Nomor Rekening",zh:"银行账号",ja:"口座番号"},
+"master.newhire.tax_method":{ko:"세금 부담 방식",en:"Tax Method",id:"Metode Pajak",zh:"税负方式",ja:"税負担方式"},
+"master.newhire.tax_gross":{ko:"Gross",en:"Gross",id:"Gross",zh:"Gross",ja:"Gross"},
+"master.newhire.tax_net":{ko:"Net",en:"Net",id:"Net",zh:"Net",ja:"Net"},
+"master.newhire.tax_gross_up":{ko:"Gross-Up",en:"Gross-Up",id:"Gross-Up",zh:"Gross-Up",ja:"Gross-Up"},
+"master.newhire.auto_note":{ko:"정규직 신규 입사자는 BPJS(건강보험·JHT·JP·JKK·JKM) 가입 대상 전 항목이 기본값 '가입'으로 자동 적용되며, 상세 프로필에서 개별 수정할 수 있습니다. 연차 부여일수는 정책 화면의 비례배분(Proration) 기준에 따라 입사일 기준으로 자동 일할 계산됩니다.",en:"For new permanent hires, all statutory BPJS programs (Health, JHT, JP, JKK, JKM) default to enrolled, editable later in the full profile. Annual leave entitlement is auto-prorated from the join date per the Proration policy.",id:"Untuk karyawan tetap baru, seluruh program BPJS wajib (Kesehatan, JHT, JP, JKK, JKM) otomatis berstatus 'terdaftar' dan dapat diubah nanti di profil lengkap. Hak cuti tahunan dihitung otomatis secara proporsional dari tanggal bergabung sesuai kebijakan Proration.",zh:"对于新入职的正式员工，所有法定BPJS项目（医疗、JHT、JP、JKK、JKM）默认自动设为'已参保'，可在完整档案中另行修改。年假天数将根据入职日期按比例分配政策自动折算。",ja:"新規正社員には、BPJS(健康保険・JHT・JP・JKK・JKM)の全法定プログラムが自動的に「加入」として適用され、詳細プロフィールで個別に修正できます。年次有給休暇の付与日数は、按分(Proration)方針に基づき入社日を基準に自動的に日割り計算されます。"},
 };
 
 function applyLang(lang){
