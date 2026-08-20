@@ -284,7 +284,9 @@ input.input,select.input{
           <div class="ios-tabbar">
             <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
             <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
             <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
           </div>
           <div class="home-indicator"></div>
         </div>
@@ -333,11 +335,81 @@ input.input,select.input{
           <div class="ios-tabbar">
             <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
             <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
             <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
           </div>
           <div class="home-indicator"></div>
         </div>
       </div>
+
+      <!-- iOS · Phone 3: Payslip -->
+<div class="device device-ios">
+  <div class="notch"></div>
+  <div class="device-screen">
+    <div class="statusbar">
+      <span class="sb-clock">09:14</span>
+      <span class="statusbar-icons">
+        <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="0.8" fill="currentColor"/><rect x="5" y="6" width="3" height="6" rx="0.8" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="0.8" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.8" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 12" width="16" height="12"><path d="M1 4.5C4.5 1 11.5 1 15 4.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M3.5 7.3C6 5 10 5 12.5 7.3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="8" cy="10.3" r="1.3" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/><rect x="2" y="2" width="15" height="8" rx="1.3" fill="currentColor"/><rect x="21.5" y="4" width="1.8" height="4" rx="0.8" fill="currentColor" opacity="0.5"/></svg>
+        <span class="statusbar-pct">82%</span>
+      </span>
+    </div>
+    <div class="app-content">
+      <div class="ios-large-title" data-i18n="screen.payslip.title">급여명세</div>
+      <div class="card-sub" style="margin:0;" data-i18n="payslip.period">2026년 8월 (지급 예정 08-28)</div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="payslip.net_title">실지급액</div>
+        <div style="font-size:25px;font-weight:800;color:var(--text);margin-top:2px;">Rp 8,184,300</div>
+        <div class="card-sub" style="margin-top:8px;margin-bottom:0;"><span data-i18n="payslip.gross_label">지급총액</span> Rp 9,609,400</div>
+        <div class="card-sub" style="margin-top:2px;margin-bottom:0;"><span data-i18n="payslip.deduction_total_label">공제 합계</span> <span style="color:var(--danger);">−Rp 1,425,100</span></div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="payslip.earnings_title">지급 항목</div>
+        <table style="min-width:0;font-size:12px;">
+          <tbody>
+            <tr><td data-i18n="payslip.earn_base">기본급</td><td style="text-align:right;">6,340,000</td></tr>
+            <tr><td data-i18n="payslip.earn_ot">초과근무수당</td><td style="text-align:right;">1,689,400</td></tr>
+            <tr><td data-i18n="payslip.earn_allowance">수당·식대</td><td style="text-align:right;">1,580,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="payslip.deductions_title">공제 항목</div>
+        <table style="min-width:0;font-size:12px;">
+          <tbody>
+            <tr><td data-i18n="payslip.ded_bpjs_kes">BPJS Kesehatan (직원부담)</td><td style="text-align:right;color:var(--danger);">−63,400</td></tr>
+            <tr><td data-i18n="payslip.ded_bpjs_jht">BPJS JHT (직원부담)</td><td style="text-align:right;color:var(--danger);">−126,800</td></tr>
+            <tr><td data-i18n="payslip.ded_bpjs_jp">BPJS JP (직원부담)</td><td style="text-align:right;color:var(--danger);">−63,400</td></tr>
+            <tr><td data-i18n="payslip.ded_pph21">PPh 21 원천징수</td><td style="text-align:right;color:var(--danger);">−371,500</td></tr>
+            <tr><td data-i18n="payslip.ded_loan">사내대출 상환</td><td style="text-align:right;color:var(--danger);">−800,000</td></tr>
+          </tbody>
+        </table>
+        <div class="caption" data-i18n="payslip.deduction_caption">BPJS·PPh 21은 법정 공제 항목이며, 사내대출 상환은 직원이 신청한 선택적 공제입니다.</div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <button class="btn btn-primary" id="payslipDownloadBtnIos" type="button" style="width:100%;justify-content:center;" data-i18n="payslip.btn_download">급여명세서 다운로드</button>
+        <div id="payslipDownloadNoteIos" class="card-sub" style="margin-top:8px;"></div>
+        <button class="btn" id="tax1721DownloadBtnIos" type="button" style="width:100%;justify-content:center;margin-top:10px;" data-i18n="payslip.btn_download_1721">1721-A1 연간 원천징수증명서 다운로드</button>
+        <div id="tax1721DownloadNoteIos" class="card-sub" style="margin-top:4px;"></div>
+        <div class="caption" data-i18n="payslip.annual_caption">1721-A1은 회계연도 마감 후 연 1회 생성되는 연간 서류입니다 (데모에서는 언제든 다운로드할 수 있습니다).</div>
+      </div>
+    </div>
+    <div class="ios-tabbar">
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+      <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+</div>
 
       <!-- iOS · Phone 3: Credit / Loan -->
       <div class="device device-ios">
@@ -396,11 +468,176 @@ input.input,select.input{
           <div class="ios-tabbar">
             <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
             <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
             <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+            <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
           </div>
           <div class="home-indicator"></div>
         </div>
       </div>
+
+      <!-- iOS · Phone 4: More / Account -->
+<div class="device device-ios">
+  <div class="notch"></div>
+  <div class="device-screen">
+    <div class="statusbar">
+      <span class="sb-clock">09:14</span>
+      <span class="statusbar-icons">
+        <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="0.8" fill="currentColor"/><rect x="5" y="6" width="3" height="6" rx="0.8" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="0.8" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.8" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 12" width="16" height="12"><path d="M1 4.5C4.5 1 11.5 1 15 4.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M3.5 7.3C6 5 10 5 12.5 7.3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="8" cy="10.3" r="1.3" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor" stroke-width="1" fill="none" opacity="0.5"/><rect x="2" y="2" width="15" height="8" rx="1.3" fill="currentColor"/><rect x="21.5" y="4" width="1.8" height="4" rx="0.8" fill="currentColor" opacity="0.5"/></svg>
+        <span class="statusbar-pct">82%</span>
+      </span>
+    </div>
+    <div class="app-content">
+      <div class="ios-large-title" data-i18n="screen.more.title">더보기</div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex:0 0 52px;">BS</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:800;color:var(--text);">Budi Santoso</div>
+            <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="more.profile_role">사원 · 조립1라인</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="requestChangeBtnIos" type="button" style="margin-top:12px;width:100%;justify-content:center;" data-i18n="more.request_change_btn">정보 변경 요청</button>
+        <div class="caption" id="requestChangeNoteIos" style="min-height:14px;"></div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.account_title">계정</div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.my_info">내 정보</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.emergency_contact">비상연락처</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.payroll_info">급여정보</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.my_files">파일함</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.change_password">비밀번호 변경</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.announce_title">공지사항</div>
+        <div style="border-bottom:1px solid var(--border-soft);padding-bottom:10px;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:13px;font-weight:700;color:var(--text);" data-i18n="more.announce1_title">국경일 연휴 근무 일정 안내</span>
+            <span style="font-size:10.5px;color:var(--text-faint);white-space:nowrap;flex:0 0 auto;">08-22</span>
+          </div>
+          <div class="card-sub" style="margin:4px 0 0 0;" data-i18n="more.announce1_preview">9월 국경일 연휴 기간 근무 배정 및 조별 순환 일정을 안내드립니다.</div>
+          <button class="btn btn-sm score-toggle" type="button" data-target="drawerAnnounceIos" style="margin-top:8px;" data-i18n="more.read_more">자세히 보기</button>
+          <div class="drawer" id="drawerAnnounceIos">
+            <div style="font-size:12px;color:var(--text);line-height:1.6;" data-i18n="more.announce1_full">9월 국경일 연휴 기간 중 조립1라인·도장라인은 순환 근무로 운영되며, 프레스라인은 전일 휴무 처리됩니다. 휴일 근무를 배정받은 인원에게는 근로기준법에 따른 휴일근무수당이 적용되며, 상세 배정표는 라인장을 통해 개별 공지됩니다.</div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:13px;font-weight:700;color:var(--text);" data-i18n="more.announce2_title">초과근무수당(OT) 정산 안내</span>
+            <span style="font-size:10.5px;color:var(--text-faint);white-space:nowrap;flex:0 0 auto;">08-19</span>
+          </div>
+          <div class="card-sub" style="margin:4px 0 0 0;" data-i18n="more.announce2_preview">10월 급여분부터 초과근무수당 정산 마감일이 매월 20일로 앞당겨집니다.</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.directory_title">동료 찾기</div>
+        <div style="position:relative;margin-bottom:10px;">
+          <input class="input" type="text" data-i18n="more.search_placeholder" placeholder="동료 이름 검색" style="width:100%;padding-left:32px;">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);position:absolute;left:10px;top:50%;transform:translateY(-50%);"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">AW</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Agus Wijaya</div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.agus_role">반장 · 프레스</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">DL</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span style="font-size:13px;font-weight:700;color:var(--text);">Dewi Lestari</span>
+              <span class="pill pill-warning" data-i18n="more.dir.absent_today">오늘 부재중</span>
+            </div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.dewi_role">사원 · 도장</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">US</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Ujang Supriadi</div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.ujang_role">라인장 · 조립1라인</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">JP</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Jiwon Park</div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.jiwon_role">HR장</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.notif_title">최근 알림</div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--success-soft);color:var(--success);display:flex;align-items:center;justify-content:center;flex:0 0 28px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);" data-i18n="more.notif1_text">연차 신청이 승인되었습니다</div>
+            <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="more.notif1_time">2시간 전</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:0 0 28px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);" data-i18n="more.notif2_text">8월 급여명세서가 도착했습니다</div>
+            <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="more.notif2_time">어제</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ios-tabbar">
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
+      <div class="ios-tabbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+      <div class="ios-tabbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+</div>
 
     </div>
   </section>
@@ -473,7 +710,9 @@ input.input,select.input{
           <div class="android-navbar">
             <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
             <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
             <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
           </div>
           <button class="fab" type="button" aria-label="quick action">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -526,7 +765,9 @@ input.input,select.input{
           <div class="android-navbar">
             <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
             <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
             <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
           </div>
           <button class="fab" type="button" aria-label="quick action">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -534,6 +775,76 @@ input.input,select.input{
           <div class="gesture-bar"></div>
         </div>
       </div>
+
+      <!-- Android · Phone 3: Payslip -->
+<div class="device device-android">
+  <div class="device-screen">
+    <div class="statusbar">
+      <span class="sb-clock">09:14</span>
+      <span class="statusbar-icons">
+        <svg viewBox="0 0 16 12" width="16" height="12"><path d="M0 12 L16 12 L16 0 Z" fill="currentColor" opacity="0.35"/><path d="M0 12 L11 12 L11 3 Z" fill="currentColor" opacity="0.65"/><path d="M0 12 L6 12 L6 7 Z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.6L9.6 9.5C8.7 8.8 7.3 8.8 6.4 9.5Z" fill="currentColor"/><path d="M8 6.8c-2 0-3.9.8-5.3 2.1l1.7 2.1c1-1 2.3-1.5 3.6-1.5s2.6.6 3.6 1.5l1.7-2.1C11.9 7.6 10 6.8 8 6.8Z" fill="currentColor" opacity="0.75"/><path d="M8 2.3C4.7 2.3 1.7 3.6 0 5.6l1.7 2.1C3.1 6.1 5.4 5.1 8 5.1s4.9 1 6.3 2.6L16 5.6C14.3 3.6 11.3 2.3 8 2.3Z" fill="currentColor" opacity="0.5"/></svg>
+        <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6"/><rect x="2" y="2.5" width="15" height="7" rx="1" fill="currentColor"/><rect x="21" y="4" width="2.2" height="4" rx="0.7" fill="currentColor" opacity="0.6"/></svg>
+        <span class="statusbar-pct">82%</span>
+      </span>
+    </div>
+    <div class="android-appbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+      <span class="android-appbar-title" data-i18n="screen.payslip.title">급여명세</span>
+    </div>
+    <div class="app-content">
+      <div class="card-sub" style="margin:0;" data-i18n="payslip.period">2026년 8월 (지급 예정 08-28)</div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="payslip.net_title">실지급액</div>
+        <div style="font-size:25px;font-weight:800;color:var(--text);margin-top:2px;">Rp 8,184,300</div>
+        <div class="card-sub" style="margin-top:8px;margin-bottom:0;"><span data-i18n="payslip.gross_label">지급총액</span> Rp 9,609,400</div>
+        <div class="card-sub" style="margin-top:2px;margin-bottom:0;"><span data-i18n="payslip.deduction_total_label">공제 합계</span> <span style="color:var(--danger);">−Rp 1,425,100</span></div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="payslip.earnings_title">지급 항목</div>
+        <table style="min-width:0;font-size:12px;">
+          <tbody>
+            <tr><td data-i18n="payslip.earn_base">기본급</td><td style="text-align:right;">6,340,000</td></tr>
+            <tr><td data-i18n="payslip.earn_ot">초과근무수당</td><td style="text-align:right;">1,689,400</td></tr>
+            <tr><td data-i18n="payslip.earn_allowance">수당·식대</td><td style="text-align:right;">1,580,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="payslip.deductions_title">공제 항목</div>
+        <table style="min-width:0;font-size:12px;">
+          <tbody>
+            <tr><td data-i18n="payslip.ded_bpjs_kes">BPJS Kesehatan (직원부담)</td><td style="text-align:right;color:var(--danger);">−63,400</td></tr>
+            <tr><td data-i18n="payslip.ded_bpjs_jht">BPJS JHT (직원부담)</td><td style="text-align:right;color:var(--danger);">−126,800</td></tr>
+            <tr><td data-i18n="payslip.ded_bpjs_jp">BPJS JP (직원부담)</td><td style="text-align:right;color:var(--danger);">−63,400</td></tr>
+            <tr><td data-i18n="payslip.ded_pph21">PPh 21 원천징수</td><td style="text-align:right;color:var(--danger);">−371,500</td></tr>
+            <tr><td data-i18n="payslip.ded_loan">사내대출 상환</td><td style="text-align:right;color:var(--danger);">−800,000</td></tr>
+          </tbody>
+        </table>
+        <div class="caption" data-i18n="payslip.deduction_caption">BPJS·PPh 21은 법정 공제 항목이며, 사내대출 상환은 직원이 신청한 선택적 공제입니다.</div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <button class="btn btn-primary" id="payslipDownloadBtnAndroid" type="button" style="width:100%;justify-content:center;" data-i18n="payslip.btn_download">급여명세서 다운로드</button>
+        <div id="payslipDownloadNoteAndroid" class="card-sub" style="margin-top:8px;"></div>
+        <button class="btn" id="tax1721DownloadBtnAndroid" type="button" style="width:100%;justify-content:center;margin-top:10px;" data-i18n="payslip.btn_download_1721">1721-A1 연간 원천징수증명서 다운로드</button>
+        <div id="tax1721DownloadNoteAndroid" class="card-sub" style="margin-top:4px;"></div>
+        <div class="caption" data-i18n="payslip.annual_caption">1721-A1은 회계연도 마감 후 연 1회 생성되는 연간 서류입니다 (데모에서는 언제든 다운로드할 수 있습니다).</div>
+      </div>
+    </div>
+    <div class="android-navbar">
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+      <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
+    </div>
+    <div class="gesture-bar"></div>
+  </div>
+</div>
 
       <!-- Android · Phone 3: Credit / Loan -->
       <div class="device device-android">
@@ -593,7 +904,9 @@ input.input,select.input{
           <div class="android-navbar">
             <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
             <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
             <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+            <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
           </div>
           <button class="fab" type="button" aria-label="quick action">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -602,12 +915,214 @@ input.input,select.input{
         </div>
       </div>
 
+      <!-- Android · Phone 4: More / Account -->
+<div class="device device-android">
+  <div class="device-screen">
+    <div class="statusbar">
+      <span class="sb-clock">09:14</span>
+      <span class="statusbar-icons">
+        <svg viewBox="0 0 16 12" width="16" height="12"><path d="M0 12 L16 12 L16 0 Z" fill="currentColor" opacity="0.35"/><path d="M0 12 L11 12 L11 3 Z" fill="currentColor" opacity="0.65"/><path d="M0 12 L6 12 L6 7 Z" fill="currentColor"/></svg>
+        <svg viewBox="0 0 16 12" width="16" height="12"><path d="M8 11.6L9.6 9.5C8.7 8.8 7.3 8.8 6.4 9.5Z" fill="currentColor"/><path d="M8 6.8c-2 0-3.9.8-5.3 2.1l1.7 2.1c1-1 2.3-1.5 3.6-1.5s2.6.6 3.6 1.5l1.7-2.1C11.9 7.6 10 6.8 8 6.8Z" fill="currentColor" opacity="0.75"/><path d="M8 2.3C4.7 2.3 1.7 3.6 0 5.6l1.7 2.1C3.1 6.1 5.4 5.1 8 5.1s4.9 1 6.3 2.6L16 5.6C14.3 3.6 11.3 2.3 8 2.3Z" fill="currentColor" opacity="0.5"/></svg>
+        <svg viewBox="0 0 24 12" width="24" height="12"><rect x="0.5" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6"/><rect x="2" y="2.5" width="15" height="7" rx="1" fill="currentColor"/><rect x="21" y="4" width="2.2" height="4" rx="0.7" fill="currentColor" opacity="0.6"/></svg>
+        <span class="statusbar-pct">82%</span>
+      </span>
+    </div>
+    <div class="android-appbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+      <span class="android-appbar-title" data-i18n="screen.more.title">더보기</span>
+    </div>
+    <div class="app-content">
+      <div class="card" style="padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex:0 0 52px;">BS</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:800;color:var(--text);">Budi Santoso</div>
+            <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="more.profile_role">사원 · 조립1라인</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="requestChangeBtnAndroid" type="button" style="margin-top:12px;width:100%;justify-content:center;" data-i18n="more.request_change_btn">정보 변경 요청</button>
+        <div class="caption" id="requestChangeNoteAndroid" style="min-height:14px;"></div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.account_title">계정</div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.my_info">내 정보</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.emergency_contact">비상연락처</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.payroll_info">급여정보</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft);">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.my_files">파일함</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);flex:0 0 19px;"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);" data-i18n="more.menu.change_password">비밀번호 변경</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);flex:0 0 16px;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.announce_title">공지사항</div>
+        <div style="border-bottom:1px solid var(--border-soft);padding-bottom:10px;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:13px;font-weight:700;color:var(--text);" data-i18n="more.announce1_title">국경일 연휴 근무 일정 안내</span>
+            <span style="font-size:10.5px;color:var(--text-faint);white-space:nowrap;flex:0 0 auto;">08-22</span>
+          </div>
+          <div class="card-sub" style="margin:4px 0 0 0;" data-i18n="more.announce1_preview">9월 국경일 연휴 기간 근무 배정 및 조별 순환 일정을 안내드립니다.</div>
+          <button class="btn btn-sm score-toggle" type="button" data-target="drawerAnnounceAndroid" style="margin-top:8px;" data-i18n="more.read_more">자세히 보기</button>
+          <div class="drawer" id="drawerAnnounceAndroid">
+            <div style="font-size:12px;color:var(--text);line-height:1.6;" data-i18n="more.announce1_full">9월 국경일 연휴 기간 중 조립1라인·도장라인은 순환 근무로 운영되며, 프레스라인은 전일 휴무 처리됩니다. 휴일 근무를 배정받은 인원에게는 근로기준법에 따른 휴일근무수당이 적용되며, 상세 배정표는 라인장을 통해 개별 공지됩니다.</div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <span style="font-size:13px;font-weight:700;color:var(--text);" data-i18n="more.announce2_title">초과근무수당(OT) 정산 안내</span>
+            <span style="font-size:10.5px;color:var(--text-faint);white-space:nowrap;flex:0 0 auto;">08-19</span>
+          </div>
+          <div class="card-sub" style="margin:4px 0 0 0;" data-i18n="more.announce2_preview">10월 급여분부터 초과근무수당 정산 마감일이 매월 20일로 앞당겨집니다.</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.directory_title">동료 찾기</div>
+        <div style="position:relative;margin-bottom:10px;">
+          <input class="input" type="text" data-i18n="more.search_placeholder" placeholder="동료 이름 검색" style="width:100%;padding-left:32px;">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-faint);position:absolute;left:10px;top:50%;transform:translateY(-50%);"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">AW</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Agus Wijaya</div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.agus_role">반장 · 프레스</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">DL</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span style="font-size:13px;font-weight:700;color:var(--text);">Dewi Lestari</span>
+              <span class="pill pill-warning" data-i18n="more.dir.absent_today">오늘 부재중</span>
+            </div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.dewi_role">사원 · 도장</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">US</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Ujang Supriadi</div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.ujang_role">라인장 · 조립1라인</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text-muted);flex:0 0 34px;">JP</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Jiwon Park</div>
+            <div class="card-sub" style="margin:1px 0 0 0;" data-i18n="more.dir.jiwon_role">HR장</div>
+          </div>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="call"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3.3l1.3 4.1-2.1 1.7a11.2 11.2 0 0 0 5.7 5.7l1.7-2.1 4.1 1.3V18a2 2 0 0 1-2.2 2C9.7 19.6 4.4 14.3 4 7.2A2 2 0 0 1 5 4z"/></svg></button>
+          <button class="btn btn-sm" type="button" style="padding:6px;border-radius:50%;" aria-label="message"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3.5V16H6a2 2 0 0 1-2-2V6z"/></svg></button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px 16px;">
+        <div class="card-title" data-i18n="more.notif_title">최근 알림</div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-soft);">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--success-soft);color:var(--success);display:flex;align-items:center;justify-content:center;flex:0 0 28px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);" data-i18n="more.notif1_text">연차 신청이 승인되었습니다</div>
+            <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="more.notif1_time">2시간 전</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:0 0 28px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);" data-i18n="more.notif2_text">8월 급여명세서가 도착했습니다</div>
+            <div class="card-sub" style="margin:2px 0 0 0;" data-i18n="more.notif2_time">어제</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="android-navbar">
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg><span data-i18n="tabbar.home">홈</span></div>
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3.5v3M16 3.5v3"/><path d="M9 14l2 2 4-4"/></svg><span data-i18n="tabbar.attendance">근태</span></div>
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="tabbar.payslip">급여명세</span></div>
+      <div class="android-navbar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14h4"/></svg><span data-i18n="tabbar.credit">신용</span></div>
+      <div class="android-navbar-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><span data-i18n="tabbar.more">더보기</span></div>
+    </div>
+    <div class="gesture-bar"></div>
+  </div>
+</div>
+
     </div>
   </section>
 
 </div>
 
 <script>
+/* ---------- Downloads: prefer window.claude.downloads.save() (Artifact platform), fall back to
+   Blob+<a download> outside that sandbox. Mirrors the same helper already used in app.html. ---------- */
+function empCsvEscape(v){
+  if (v === null || v === undefined) return '';
+  var s = String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+async function empDownloadTextFile(filename, text){
+  var withBom = "﻿" + text;
+  if (window.claude && window.claude.downloads) {
+    try {
+      await window.claude.downloads.save({ filename: filename, data: withBom });
+      return { ok: true, message: '다운로드 요청을 보냈습니다 · 브라우저의 저장 확인창을 확인해주세요.' };
+    } catch (err) {
+      var code = err && err.code;
+      var msg = {
+        rejected_extension: '이 확장자는 다운로드가 지원되지 않습니다.',
+        extension_not_enabled: '이 확장자는 현재 이 화면에서 활성화되어 있지 않습니다.',
+        too_large: '파일이 너무 큽니다 (16MB 초과).',
+        declined: '다운로드가 취소되었습니다.',
+        rate_limited: '다운로드 요청이 너무 잦습니다 — 잠시 후 다시 시도해주세요.',
+      }[code] || ('다운로드에 실패했습니다 (' + (code || 'unknown') + ').');
+      return { ok: false, message: msg };
+    }
+  }
+  try {
+    var blob = new Blob([withBom], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    return { ok: true, message: '다운로드되었습니다.' };
+  } catch (e) {
+    return { ok: false, message: '다운로드에 실패했습니다.' };
+  }
+}
+
 /* ---------- i18n ---------- */
 var I18N = {
 "top.title":{ko:"GajiOne 직원 앱 — iOS / Android",en:"GajiOne Employee App — iOS / Android",id:"Aplikasi Karyawan GajiOne — iOS / Android",zh:"GajiOne 员工应用 — iOS / Android",ja:"GajiOne 従業員アプリ — iOS / Android"},
@@ -671,7 +1186,56 @@ var I18N = {
 "credit.btn_apply":{ko:"대출 신청",en:"Apply for Loan",id:"Ajukan Pinjaman",zh:"申请贷款",ja:"融資申請"},
 "tabbar.home":{ko:"홈",en:"Home",id:"Beranda",zh:"首页",ja:"ホーム"},
 "tabbar.attendance":{ko:"근태",en:"Attendance",id:"Kehadiran",zh:"考勤",ja:"勤怠"},
-"tabbar.credit":{ko:"신용",en:"Credit",id:"Kredit",zh:"信用",ja:"信用"}
+"tabbar.credit":{ko:"신용",en:"Credit",id:"Kredit",zh:"信用",ja:"信用"},
+"tabbar.payslip":{ko:"급여명세",en:"Payslip",id:"Slip Gaji",zh:"薪资单",ja:"給与明細"},
+"tabbar.more":{ko:"더보기",en:"More",id:"Lainnya",zh:"更多",ja:"その他"},
+"screen.payslip.title":{ko:"급여명세",en:"Payslip",id:"Slip Gaji",zh:"工资单",ja:"給与明細"},
+"payslip.period":{ko:"2026년 8월 (지급 예정 08-28)",en:"August 2026 (Payday scheduled 08-28)",id:"Agustus 2026 (Estimasi gajian 08-28)",zh:"2026年8月（预计发放08-28）",ja:"2026年8月（支給予定08-28）"},
+"payslip.net_title":{ko:"실지급액",en:"Take Home Pay",id:"Gaji Bersih Diterima",zh:"实发工资",ja:"手取り支給額"},
+"payslip.gross_label":{ko:"지급총액",en:"Gross pay",id:"Total penghasilan kotor",zh:"应发工资总额",ja:"支給総額"},
+"payslip.deduction_total_label":{ko:"공제 합계",en:"Total deductions",id:"Total potongan",zh:"扣款合计",ja:"控除合計"},
+"payslip.earnings_title":{ko:"지급 항목",en:"Earnings",id:"Rincian Penghasilan",zh:"支付项目",ja:"支給項目"},
+"payslip.earn_base":{ko:"기본급",en:"Basic salary",id:"Gaji pokok",zh:"基本工资",ja:"基本給"},
+"payslip.earn_ot":{ko:"초과근무수당",en:"Overtime pay",id:"Upah lembur",zh:"加班津贴",ja:"残業手当"},
+"payslip.earn_allowance":{ko:"수당·식대",en:"Allowances & meal",id:"Tunjangan & uang makan",zh:"津贴·餐补",ja:"手当・食費"},
+"payslip.deductions_title":{ko:"공제 항목",en:"Deductions",id:"Rincian Potongan",zh:"扣除项目",ja:"控除項目"},
+"payslip.ded_bpjs_kes":{ko:"BPJS Kesehatan (직원부담)",en:"BPJS Kesehatan (employee share)",id:"BPJS Kesehatan (tanggungan karyawan)",zh:"BPJS Kesehatan（员工负担）",ja:"BPJS Kesehatan（従業員負担）"},
+"payslip.ded_bpjs_jht":{ko:"BPJS JHT (직원부담)",en:"BPJS JHT (employee share)",id:"BPJS JHT (tanggungan karyawan)",zh:"BPJS JHT（员工负担）",ja:"BPJS JHT（従業員負担）"},
+"payslip.ded_bpjs_jp":{ko:"BPJS JP (직원부담)",en:"BPJS JP (employee share)",id:"BPJS JP (tanggungan karyawan)",zh:"BPJS JP（员工负担）",ja:"BPJS JP（従業員負担）"},
+"payslip.ded_pph21":{ko:"PPh 21 원천징수",en:"PPh 21 withholding tax",id:"Pemotongan PPh 21",zh:"PPh 21 预扣税",ja:"PPh 21 源泉徴収"},
+"payslip.ded_loan":{ko:"사내대출 상환",en:"In-house loan repayment",id:"Pembayaran pinjaman karyawan",zh:"内部贷款还款",ja:"社内融資返済"},
+"payslip.deduction_caption":{ko:"BPJS·PPh 21은 법정 공제 항목이며, 사내대출 상환은 직원이 신청한 선택적 공제입니다.",en:"BPJS and PPh 21 are statutory deductions; the in-house loan repayment is an employee-elected deduction.",id:"BPJS dan PPh 21 merupakan potongan wajib sesuai peraturan; pembayaran pinjaman karyawan adalah potongan pilihan yang diajukan karyawan.",zh:"BPJS 与 PPh 21 为法定扣除项目，内部贷款还款为员工自行申请的选择性扣款。",ja:"BPJS・PPh 21は法定控除、社内融資の返済は従業員が申請した任意控除です。"},
+"payslip.btn_download":{ko:"급여명세서 다운로드",en:"Download Payslip",id:"Unduh Slip Gaji",zh:"下载工资单",ja:"給与明細をダウンロード"},
+"payslip.btn_download_1721":{ko:"1721-A1 연간 원천징수증명서 다운로드",en:"Download 1721-A1 Annual Tax Withholding Certificate",id:"Unduh Bukti Potong 1721-A1 Tahunan",zh:"下载1721-A1年度预扣税证明",ja:"1721-A1年間源泉徴収証明書をダウンロード"},
+"payslip.annual_caption":{ko:"1721-A1은 회계연도 마감 후 연 1회 생성되는 연간 서류입니다 (데모에서는 언제든 다운로드할 수 있습니다).",en:"1721-A1 is an annual document generated once per year after the fiscal year closes (downloadable anytime in this demo).",id:"1721-A1 adalah dokumen tahunan yang dibuat sekali setahun setelah tahun fiskal ditutup (di demo ini dapat diunduh kapan saja).",zh:"1721-A1 是会计年度结束后每年生成一次的年度文件（本演示中可随时下载）。",ja:"1721-A1は会計年度締め後に年1回作成される年次書類です（本デモではいつでもダウンロードできます）。"},
+"screen.more.title":{ko:"더보기",en:"More",id:"Lainnya",zh:"更多",ja:"その他"},
+"more.profile_role":{ko:"사원 · 조립1라인",en:"Staff · Assembly Line 1",id:"Staf · Lini Perakitan 1",zh:"员工·组装1线",ja:"社員・組立1ライン"},
+"more.request_change_btn":{ko:"정보 변경 요청",en:"Request Data Change",id:"Ajukan Perubahan Data",zh:"申请信息变更",ja:"情報変更リクエスト"},
+"more.account_title":{ko:"계정",en:"Account",id:"Akun",zh:"账户",ja:"アカウント"},
+"more.menu.my_info":{ko:"내 정보",en:"My Info",id:"Info Saya",zh:"我的信息",ja:"マイ情報"},
+"more.menu.emergency_contact":{ko:"비상연락처",en:"Emergency Contact",id:"Kontak Darurat",zh:"紧急联系人",ja:"緊急連絡先"},
+"more.menu.payroll_info":{ko:"급여정보",en:"Payroll Info",id:"Info Penggajian",zh:"薪资信息",ja:"給与情報"},
+"more.menu.my_files":{ko:"파일함",en:"My Files",id:"Berkas Saya",zh:"我的文件",ja:"マイファイル"},
+"more.menu.change_password":{ko:"비밀번호 변경",en:"Change Password",id:"Ubah Kata Sandi",zh:"修改密码",ja:"パスワード変更"},
+"more.announce_title":{ko:"공지사항",en:"Announcements",id:"Pengumuman",zh:"公告",ja:"お知らせ"},
+"more.announce1_title":{ko:"국경일 연휴 근무 일정 안내",en:"National Holiday Work Schedule Notice",id:"Pemberitahuan Jadwal Kerja Libur Nasional",zh:"国定假日工作排班通知",ja:"国民の祝日の勤務スケジュールのお知らせ"},
+"more.announce1_preview":{ko:"9월 국경일 연휴 기간 근무 배정 및 조별 순환 일정을 안내드립니다.",en:"Work assignments and shift rotation for the September national holiday period.",id:"Penugasan kerja dan rotasi shift selama periode libur nasional bulan September.",zh:"关于9月国定假期工作安排及各班组轮班计划的通知。",ja:"9月の国民の祝日期間の勤務割当とシフトローテーションのご案内です。"},
+"more.read_more":{ko:"자세히 보기",en:"Read More",id:"Lihat Selengkapnya",zh:"查看详情",ja:"詳しく見る"},
+"more.announce1_full":{ko:"9월 국경일 연휴 기간 중 조립1라인·도장라인은 순환 근무로 운영되며, 프레스라인은 전일 휴무 처리됩니다. 휴일 근무를 배정받은 인원에게는 근로기준법에 따른 휴일근무수당이 적용되며, 상세 배정표는 라인장을 통해 개별 공지됩니다.",en:"During the September national holiday period, Assembly Line 1 and the Paint Line will operate on rotating shifts, while the Press Line will be fully closed. Employees assigned holiday work will receive holiday premium pay under the Labor Law, and detailed rosters will be announced individually through line leads.",id:"Selama periode libur nasional bulan September, Lini Perakitan 1 dan Lini Pengecatan akan beroperasi dengan shift bergilir, sedangkan Lini Press akan libur penuh. Karyawan yang ditugaskan bekerja pada hari libur akan menerima upah lembur hari libur sesuai UU Ketenagakerjaan, dan jadwal rinci akan diumumkan secara individual melalui pemimpin lini.",zh:"9月国定假期期间，组装1线和涂装线将实行轮班运作，冲压线则全天停工。被安排在假期工作的员工将按劳动法获得假日加班津贴，详细排班表将由组长个别通知。",ja:"9月の国民の祝日期間中、組立1ラインと塗装ラインはローテーション勤務で運営され、プレスラインは終日休業となります。休日勤務を割り当てられた従業員には労働基準法に基づく休日勤務手当が適用され、詳細な配置表はラインリーダーを通じて個別に案内されます。"},
+"more.announce2_title":{ko:"초과근무수당(OT) 정산 안내",en:"Overtime Pay (OT) Settlement Notice",id:"Pemberitahuan Penyelesaian Upah Lembur (OT)",zh:"加班费(OT)结算通知",ja:"残業手当(OT)精算のお知らせ"},
+"more.announce2_preview":{ko:"10월 급여분부터 초과근무수당 정산 마감일이 매월 20일로 앞당겨집니다.",en:"Starting with October pay, the overtime settlement cutoff moves up to the 20th of each month.",id:"Mulai gaji bulan Oktober, batas waktu penyelesaian lembur dimajukan menjadi tanggal 20 setiap bulan.",zh:"从10月工资起，加班费结算截止日提前至每月20日。",ja:"10月支給分より、残業手当の精算締切日が毎月20日に前倒しされます。"},
+"more.directory_title":{ko:"동료 찾기",en:"Find Colleagues",id:"Cari Rekan Kerja",zh:"查找同事",ja:"同僚を探す"},
+"more.search_placeholder":{ko:"동료 이름 검색",en:"Search colleague name",id:"Cari nama rekan kerja",zh:"搜索同事姓名",ja:"同僚の名前を検索"},
+"more.dir.agus_role":{ko:"반장 · 프레스",en:"Foreman · Press",id:"Mandor · Press",zh:"班长·冲压",ja:"班長・プレス"},
+"more.dir.dewi_role":{ko:"사원 · 도장",en:"Staff · Paint Line",id:"Staf · Lini Pengecatan",zh:"员工·涂装",ja:"社員・塗装"},
+"more.dir.ujang_role":{ko:"라인장 · 조립1라인",en:"Line Lead · Assembly Line 1",id:"Pemimpin Lini · Lini Perakitan 1",zh:"线长·组装1线",ja:"ラインリーダー・組立1ライン"},
+"more.dir.jiwon_role":{ko:"HR장",en:"Head of HR",id:"Kepala HR",zh:"人力资源主管",ja:"HR長"},
+"more.dir.absent_today":{ko:"오늘 부재중",en:"Out Today",id:"Tidak Masuk Hari Ini",zh:"今日缺勤",ja:"本日不在"},
+"more.notif_title":{ko:"최근 알림",en:"Recent Notifications",id:"Notifikasi Terbaru",zh:"最近通知",ja:"最近の通知"},
+"more.notif1_text":{ko:"연차 신청이 승인되었습니다",en:"Your leave request has been approved",id:"Pengajuan cuti Anda telah disetujui",zh:"您的年假申请已获批准",ja:"有給申請が承認されました"},
+"more.notif1_time":{ko:"2시간 전",en:"2 hours ago",id:"2 jam lalu",zh:"2小时前",ja:"2時間前"},
+"more.notif2_text":{ko:"8월 급여명세서가 도착했습니다",en:"Your August payslip has arrived",id:"Slip gaji Agustus Anda telah tersedia",zh:"8月工资单已送达",ja:"8月の給与明細が届きました"},
+"more.notif2_time":{ko:"어제",en:"Yesterday",id:"Kemarin",zh:"昨天",ja:"昨日"},
 };
 var currentLang = "ko";
 function applyLang(lang){
@@ -773,6 +1337,74 @@ document.querySelectorAll(".score-toggle").forEach(function(btn){
     if(el) el.classList.toggle("open");
   });
 });
+
+/* ---------- Payslip: payslip CSV + 1721-A1 downloads ---------- */
+(function(){
+  function payslipCsv(){
+    var rows = [
+      ['항목','금액(Rp)'],
+      ['기본급',6340000],
+      ['초과근무수당',1689400],
+      ['수당·식대',1580000],
+      ['지급총액',9609400],
+      ['BPJS Kesehatan(직원부담)',-63400],
+      ['BPJS JHT(직원부담)',-126800],
+      ['BPJS JP(직원부담)',-63400],
+      ['PPh 21 원천징수',-371500],
+      ['사내대출 상환',-800000],
+      ['공제 합계',-1425100],
+      ['실지급액(Take Home Pay)',8184300]
+    ];
+    return rows.map(function(r){ return r.map(empCsvEscape).join(','); }).join('\r\n');
+  }
+  function tax1721Csv(){
+    var rows = [
+      ['1721-A1 연간 원천징수증명서','2026년 귀속'],
+      ['성명','Budi Santoso'],
+      ['사번','MF-0104'],
+      ['총 급여(연간 누계, 진행중)','추후 확정'],
+      ['비고','본 문서는 회계연도 마감 후 최종 확정본으로 대체됩니다 (데모 미리보기)']
+    ];
+    return rows.map(function(r){ return r.map(empCsvEscape).join(','); }).join('\r\n');
+  }
+  ['Ios','Android'].forEach(function(plat){
+    var payBtn = document.getElementById('payslipDownloadBtn' + plat);
+    var payNote = document.getElementById('payslipDownloadNote' + plat);
+    if (payBtn) {
+      payBtn.addEventListener('click', function(){
+        if (payNote) { payNote.textContent = '다운로드 준비 중…'; }
+        empDownloadTextFile('gajione_payslip_202608_MF-0104.csv', payslipCsv()).then(function(result){
+          if (payNote) payNote.textContent = result.message;
+        });
+      });
+    }
+    var taxBtn = document.getElementById('tax1721DownloadBtn' + plat);
+    var taxNote = document.getElementById('tax1721DownloadNote' + plat);
+    if (taxBtn) {
+      taxBtn.addEventListener('click', function(){
+        if (taxNote) { taxNote.textContent = '다운로드 준비 중…'; }
+        empDownloadTextFile('gajione_1721A1_2026_MF-0104.csv', tax1721Csv()).then(function(result){
+          if (taxNote) taxNote.textContent = result.message;
+        });
+      });
+    }
+  });
+})();
+
+/* ---------- More: request-change confirmation ---------- */
+(function(){
+  ['Ios','Android'].forEach(function(plat){
+    var btn = document.getElementById('requestChangeBtn' + plat);
+    var note = document.getElementById('requestChangeNote' + plat);
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      if (!note) return;
+      note.textContent = '변경 요청이 HR팀으로 전송되었습니다. 승인 후 반영됩니다.';
+      note.style.color = 'var(--success)';
+      setTimeout(function(){ note.textContent = ''; }, 4000);
+    });
+  });
+})();
 
 /* ---------- Credit score gauge (semi-circle SVG) ---------- */
 function svgNS(tag){ return document.createElementNS("http://www.w3.org/2000/svg", tag); }
