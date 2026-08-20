@@ -1460,7 +1460,39 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
       </div>
     </div>
 
-    <!-- Phone 3: Credit/Loan -->
+    <!-- Phone 3: Payslip -->
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="phone-status"><span>09:12</span><span>LTE 82%</span></div>
+        <div class="phone-body">
+          <div style="font-size:15px;font-weight:800;" data-i18n="app.payslip.title">급여명세</div>
+          <div class="card-sub" style="margin:-6px 0 0 0;" data-i18n="app.payslip.period">2026년 8월 (지급 예정 08-28)</div>
+          <div class="phone-card">
+            <div class="phone-title" data-i18n="app.payslip.net_title">실지급액</div>
+            <div class="phone-big-num">Rp 8,184,300</div>
+            <div class="card-sub" style="margin-top:6px;"><span data-i18n="app.payslip.gross_label">지급총액</span> Rp 9,609,400</div>
+            <div class="card-sub" style="margin-top:2px;"><span data-i18n="app.payslip.deduction_total_label">공제 합계</span> <span style="color:var(--danger);">−Rp 1,425,100</span></div>
+          </div>
+          <div class="phone-card">
+            <table style="min-width:0;font-size:12px;">
+              <tbody>
+                <tr><td data-i18n="app.payslip.ded_bpjs_kes">BPJS Kesehatan</td><td style="text-align:right;color:var(--danger);">−63,400</td></tr>
+                <tr><td data-i18n="app.payslip.ded_bpjs_jht">BPJS JHT</td><td style="text-align:right;color:var(--danger);">−126,800</td></tr>
+                <tr><td data-i18n="app.payslip.ded_bpjs_jp">BPJS JP</td><td style="text-align:right;color:var(--danger);">−63,400</td></tr>
+                <tr><td data-i18n="app.payslip.ded_pph21">PPh 21</td><td style="text-align:right;color:var(--danger);">−371,500</td></tr>
+                <tr><td data-i18n="app.payslip.ded_loan">사내대출 상환</td><td style="text-align:right;color:var(--danger);">−800,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="phone-card">
+            <button class="btn btn-primary btn-sm" type="button" style="width:100%;justify-content:center;" data-i18n="app.payslip.btn_download">급여명세서 다운로드</button>
+            <button class="btn btn-sm" type="button" style="width:100%;justify-content:center;margin-top:8px;" data-i18n="app.payslip.btn_download_1721">1721-A1 연간증명서 다운로드</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone 4: Credit/Loan -->
     <div class="phone">
       <div class="phone-screen">
         <div class="phone-status"><span>09:12</span><span>LTE 82%</span></div>
@@ -1498,6 +1530,43 @@ input.input,select.input,input[type="text"],input[type="number"],input[type="sea
             <div class="phone-title" data-i18n="app.credit.active_loan">일반대출 8.0M 상환중 (4/10회차)</div>
             <div class="card-sub" style="margin-top:4px;" data-i18n="app.credit.active_loan_detail">잔액 4.8M · 이번달 공제 800,000</div>
             <button class="btn btn-sm" type="button" style="margin-top:10px;" data-i18n="app.credit.btn_apply">대출 신청</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone 5: More/Account -->
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="phone-status"><span>09:12</span><span>LTE 82%</span></div>
+        <div class="phone-body">
+          <div style="font-size:15px;font-weight:800;" data-i18n="app.more.title">더보기</div>
+          <div class="phone-card">
+            <div class="phone-title">Budi Santoso</div>
+            <div class="card-sub" style="margin-top:2px;" data-i18n="app.more.profile_sub">MF-0104 · 사원 · 조립1라인</div>
+            <button class="btn btn-sm" type="button" style="margin-top:10px;" data-i18n="app.more.btn_request_change">개인정보 변경 요청</button>
+          </div>
+          <div class="phone-card">
+            <div class="card-sub" style="margin:0;" data-i18n="app.more.announce_label">공지사항</div>
+            <div class="phone-title" style="margin-top:4px;" data-i18n="app.more.announce_title">8월 정기급여 지급일 안내 (08-28)</div>
+            <button class="btn btn-sm loan-detail-toggle" type="button" data-target="drawer-app-announce" style="margin-top:8px;" data-i18n="app.more.announce_more">자세히 보기</button>
+            <div id="drawer-app-announce" class="drawer">
+              <div class="card-sub" style="margin-top:8px;" data-i18n="app.more.announce_body">2026년 8월 정기급여는 8월 28일(금) 지급됩니다. 급여명세서는 지급일 당일 앱에서 확인 가능합니다.</div>
+            </div>
+          </div>
+          <div class="phone-card">
+            <div class="card-sub" style="margin:0;" data-i18n="app.more.colleagues_label">동료 찾기</div>
+            <table style="min-width:0;margin-top:8px;">
+              <tbody>
+                <tr><td>Agus Wijaya</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="app.more.status_active">근무중</span></td></tr>
+                <tr><td>Dewi Lestari</td><td style="text-align:right;"><span class="pill" data-i18n="app.more.status_away">오늘 부재중</span></td></tr>
+                <tr><td>Ujang Supriadi</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="app.more.status_active">근무중</span></td></tr>
+                <tr><td>Jiwon Park</td><td style="text-align:right;"><span class="pill pill-success" data-i18n="app.more.status_active">근무중</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="phone-card">
+            <button class="btn btn-sm" type="button" style="width:100%;justify-content:center;" data-i18n="app.more.btn_logout">로그아웃</button>
           </div>
         </div>
       </div>
@@ -5650,6 +5719,29 @@ const I18N = {
 "app.credit.active_loan":{ko:"일반대출 8.0M 상환중 (4/10회차)",en:"Standard Loan 8.0M Repaying (4/10)",id:"Pinjaman Standar 8,0Jt Sedang Dibayar (4/10)",zh:"普通贷款8.0M还款中(4/10期)",ja:"一般融資8.0M返済中(4/10回)"},
 "app.credit.active_loan_detail":{ko:"잔액 4.8M · 이번달 공제 800,000",en:"Balance 4.8M · This month's deduction 800,000",id:"Saldo 4,8Jt · Potongan bulan ini 800.000",zh:"余额4.8M·本月扣款800,000",ja:"残高4.8M・今月控除800,000"},
 "app.credit.btn_apply":{ko:"대출 신청",en:"Apply for Loan",id:"Ajukan Pinjaman",zh:"申请贷款",ja:"融資申請"},
+"app.payslip.title":{ko:"급여명세",en:"Payslip",id:"Slip Gaji",zh:"工资明细",ja:"給与明細"},
+"app.payslip.period":{ko:"2026년 8월 (지급 예정 08-28)",en:"August 2026 (Pay date 08-28)",id:"Agustus 2026 (Tgl bayar 08-28)",zh:"2026年8月(预计发放08-28)",ja:"2026年8月(支給予定08-28)"},
+"app.payslip.net_title":{ko:"실지급액",en:"Net Pay",id:"Gaji Bersih",zh:"实发工资",ja:"手取り額"},
+"app.payslip.gross_label":{ko:"지급총액",en:"Gross Pay",id:"Gaji Kotor",zh:"应发合计",ja:"支給総額"},
+"app.payslip.deduction_total_label":{ko:"공제 합계",en:"Total Deductions",id:"Total Potongan",zh:"扣款合计",ja:"控除合計"},
+"app.payslip.ded_bpjs_kes":{ko:"BPJS Kesehatan",en:"BPJS Kesehatan",id:"BPJS Kesehatan",zh:"BPJS Kesehatan",ja:"BPJS Kesehatan"},
+"app.payslip.ded_bpjs_jht":{ko:"BPJS JHT",en:"BPJS JHT",id:"BPJS JHT",zh:"BPJS JHT",ja:"BPJS JHT"},
+"app.payslip.ded_bpjs_jp":{ko:"BPJS JP",en:"BPJS JP",id:"BPJS JP",zh:"BPJS JP",ja:"BPJS JP"},
+"app.payslip.ded_pph21":{ko:"PPh 21",en:"PPh 21",id:"PPh 21",zh:"PPh 21",ja:"PPh 21"},
+"app.payslip.ded_loan":{ko:"사내대출 상환",en:"Company Loan Repayment",id:"Pembayaran Pinjaman Perusahaan",zh:"公司贷款还款",ja:"社内融資返済"},
+"app.payslip.btn_download":{ko:"급여명세서 다운로드",en:"Download Payslip",id:"Unduh Slip Gaji",zh:"下载工资单",ja:"給与明細ダウンロード"},
+"app.payslip.btn_download_1721":{ko:"1721-A1 연간증명서 다운로드",en:"Download 1721-A1 Annual Certificate",id:"Unduh Sertifikat Tahunan 1721-A1",zh:"下载1721-A1年度证明",ja:"1721-A1年間証明書ダウンロード"},
+"app.more.title":{ko:"더보기",en:"More",id:"Lainnya",zh:"更多",ja:"もっと見る"},
+"app.more.profile_sub":{ko:"MF-0104 · 사원 · 조립1라인",en:"MF-0104 · Staff · Assembly Line 1",id:"MF-0104 · Staf · Lini Perakitan 1",zh:"MF-0104·职员·组装1线",ja:"MF-0104・社員・組立1ライン"},
+"app.more.btn_request_change":{ko:"개인정보 변경 요청",en:"Request Data Change",id:"Ajukan Perubahan Data",zh:"申请变更个人信息",ja:"個人情報変更申請"},
+"app.more.announce_label":{ko:"공지사항",en:"Announcements",id:"Pengumuman",zh:"公告",ja:"お知らせ"},
+"app.more.announce_title":{ko:"8월 정기급여 지급일 안내 (08-28)",en:"August Regular Pay Date Notice (08-28)",id:"Pemberitahuan Tanggal Gaji Agustus (08-28)",zh:"8月正常薪资发放日通知(08-28)",ja:"8月定期給与支給日のお知らせ(08-28)"},
+"app.more.announce_more":{ko:"자세히 보기",en:"See details",id:"Lihat detail",zh:"查看详情",ja:"詳細を見る"},
+"app.more.announce_body":{ko:"2026년 8월 정기급여는 8월 28일(금) 지급됩니다. 급여명세서는 지급일 당일 앱에서 확인 가능합니다.",en:"August 2026 regular pay will be disbursed on Friday, Aug 28. The payslip will be available in the app on the pay date.",id:"Gaji reguler Agustus 2026 akan dibayarkan pada Jumat, 28 Agustus. Slip gaji dapat dilihat di aplikasi pada tanggal pembayaran.",zh:"2026年8月正常薪资将于8月28日(周五)发放。工资单将在发放当天于应用内可查看。",ja:"2026年8月の定期給与は8月28日(金)に支給されます。給与明細は支給日当日にアプリでご確認いただけます。"},
+"app.more.colleagues_label":{ko:"동료 찾기",en:"Find Colleagues",id:"Cari Rekan Kerja",zh:"查找同事",ja:"同僚を探す"},
+"app.more.status_active":{ko:"근무중",en:"Working",id:"Sedang Bekerja",zh:"工作中",ja:"勤務中"},
+"app.more.status_away":{ko:"오늘 부재중",en:"Away Today",id:"Tidak Hadir Hari Ini",zh:"今日缺勤",ja:"本日不在"},
+"app.more.btn_logout":{ko:"로그아웃",en:"Log Out",id:"Keluar",zh:"退出登录",ja:"ログアウト"},
 "app.flow_bar":{ko:"앱 체크인 → 근태 마감(G1) → 급여 계산(G2) → 앱 실시간 급여 갱신 · 연차 승인 → 급여 일할 반영 · 대출 승인 → 상환 원장 → 급여 공제 자동 생성",en:"App Check-in → Attendance Close (G1) → Payroll Calc. (G2) → App Live Pay Update · Leave Approval → Prorated Pay Reflection · Loan Approval → Repayment Ledger → Auto Payroll Deduction",id:"Check-in Aplikasi → Penutupan Absensi (G1) → Perhitungan Gaji (G2) → Update Gaji Langsung di Aplikasi · Persetujuan Cuti → Refleksi Gaji Prorata · Persetujuan Pinjaman → Buku Besar Pembayaran → Potongan Gaji Otomatis",zh:"应用签到 → 考勤截止(G1) → 薪资计算(G2) → 应用实时薪资更新·年假审批 → 薪资按日反映·贷款审批 → 还款台账 → 薪资扣款自动生成",ja:"アプリチェックイン → 勤怠締め(G1) → 給与計算(G2) → アプリ給与リアルタイム更新・有給承認 → 給与日割反映・融資承認 → 返済台帳 → 給与控除自動生成"},
 "master.title":{ko:"직원 마스터",en:"Employee Master",id:"Master Karyawan",zh:"员工主数据",ja:"従業員マスタ"},
 "master.pill.count":{ko:"412명 관리중",en:"412 Employees Managed",id:"412 Karyawan Dikelola",zh:"管理中 412人",ja:"412名管理中"},
