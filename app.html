@@ -6500,5 +6500,395 @@ document.getElementById('langSelect').addEventListener('change', function(ev){ a
 applyLang('ko');
 </script>
 
+
+<!-- ===== 급여 계산 엔진 (추가) ===== -->
+<script>
+/* =====================================================================
+ *  GajiOne 급여 계산 엔진 — 브라우저판
+ *  의존성 0. BigInt 고정소수점(스케일 1e6)으로 부동소수점 오차 제거.
+ *
+ *  이 파일이 하는 일:
+ *    1) 급여 계산 엔진 (TypeScript 판과 동일 로직)
+ *    2) 412명 데모 데이터셋 생성 (시드 고정 → 항상 동일 결과)
+ *    3) G2 화면의 하드코딩 표·KPI를 계산 결과로 교체
+ *    4) 정책 화면(OT 배율·분모)을 바꾸면 즉시 재계산
+ * ===================================================================== */
+(function () {
+  "use strict";
+
+  /* ---------------- 금액: BigInt 고정소수점 ---------------- */
+  var S = 1000000n;
+  function M(x) { return BigInt(Math.round(x * 1e6)); }        // number -> money
+  function num(a) { return Number(a) / 1e6; }                   // money  -> number
+  function mulf(a, f) {                                         // money × 실수
+    var r = a * M(f);
+    return r >= 0n ? (r + S / 2n) / S : -((-r + S / 2n) / S);
+  }
+  function divf(a, f) { return (a * S) / M(f); }                // money ÷ 실수
+  function idr(a) {                                             // IDR 정수 반올림
+    var half = S / 2n;
+    return a >= 0n ? ((a + half) / S) * S : -(((-a + half) / S) * S);
+  }
+  function minM(a, b) { return a < b ? a : b; }
+  function sumM(arr) { return arr.reduce(function (x, y) { return x + y; }, 0n); }
+
+  /* ---------------- 규정 (rule_versions.payload) ----------------
+   * ⚠ TER 세율표는 구조 검증용 샘플. 실제 PP 58/2023 별표로 교체 필요.
+   * -------------------------------------------------------------- */
+  var RULES = {
+    ot: {
+      divisor: 173,
+      weekday: [{ from: 0, to: 1, mult: 1.5 }, { from: 1, to: null, mult: 2.0 }],
+      holidayW6: [{ from: 0, to: 7, mult: 2.0 }, { from: 7, to: 8, mult: 3.0 }, { from: 8, to: null, mult: 4.0 }],
+      holidayW5: [{ from: 0, to: 8, mult: 2.0 }, { from: 8, to: 9, mult: 3.0 }, { from: 9, to: null, mult: 4.0 }],
+      capPerDay: 4, capPerWeek: 18, fixedAllowance75Rule: true
+    },
+    bpjs: {
+      kesehatan: { ee: 0.01, er: 0.04, cap: 12000000, floorUmk: true },
+      jht:       { ee: 0.02, er: 0.037, cap: null,    floorUmk: false },
+      jp:        { ee: 0.01, er: 0.02,  cap: 10547400, floorUmk: false },
+      jkm:       { ee: 0,    er: 0.003, cap: null,    floorUmk: false },
+      jkp:       { ee: 0,    er: 0.0022, cap: 5000000, floorUmk: false },
+      jkk:       { ee: 0,    er: 0,     cap: null,    floorUmk: false, byCompany: true }
+    },
+    pph21: {
+      nonNpwpSurcharge: 0.20,
+      ter: {
+        A: [[5400000,0],[5650000,0.0025],[5950000,0.005],[6300000,0.0075],[6750000,0.01],
+            [7500000,0.015],[8550000,0.02],[9650000,0.025],[10050000,0.03],[10350000,0.035],
+            [11600000,0.04],[12500000,0.05],[13750000,0.06],[15100000,0.07],[16950000,0.08],
+            [19750000,0.09],[24150000,0.10],[26450000,0.11],[28000000,0.12],[30050000,0.13],
+            [32400000,0.14],[35400000,0.15],[39100000,0.16],[43850000,0.17],[47800000,0.18],
+            [51400000,0.19],[56300000,0.20],[null,0.21]],
+        B: [[6200000,0],[6500000,0.0025],[6850000,0.005],[7300000,0.0075],[9200000,0.01],
+            [10750000,0.015],[11250000,0.02],[11600000,0.025],[12600000,0.03],[13600000,0.04],
+            [14950000,0.05],[16400000,0.06],[18450000,0.07],[21850000,0.08],[26000000,0.09],
+            [27700000,0.10],[29350000,0.11],[31450000,0.12],[33950000,0.13],[37100000,0.14],
+            [41100000,0.15],[45800000,0.16],[49500000,0.17],[53800000,0.18],[58500000,0.19],
+            [null,0.20]],
+        C: [[6600000,0],[6950000,0.0025],[7350000,0.005],[7800000,0.0075],[8850000,0.01],
+            [9800000,0.0125],[10950000,0.015],[11200000,0.0175],[12050000,0.02],[12950000,0.03],
+            [14150000,0.04],[15550000,0.05],[17050000,0.06],[19500000,0.07],[22700000,0.08],
+            [26600000,0.09],[28100000,0.10],[30100000,0.11],[32600000,0.12],[35400000,0.13],
+            [38900000,0.14],[43000000,0.15],[47400000,0.16],[51200000,0.17],[55800000,0.18],
+            [null,0.19]]
+      }
+    },
+    umk: { "ID-JB-BEKASI": 5690000 }
+  };
+
+  var COMPANY = { workweek: 6, jkkRate: 0.0089, use75: false };
+  var MEAL = 600000, TRANSPORT = 450000;
+
+  /* ---------------- 계산 엔진 ---------------- */
+  function otTiers(dayType, ot, workweek) {
+    if (dayType === "WEEKDAY") return ot.weekday;
+    return workweek === 5 ? ot.holidayW5 : ot.holidayW6;
+  }
+
+  function calcOvertime(e, otBase, pol) {
+    if (!e.otEligible) return { amount: 0n, hours: 0, byTier: {} };
+    var hourly = divf(otBase, pol.divisor);
+    var byTier = {}, total = 0n, hours = 0;
+
+    function run(dayHours, dayType) {
+      var tiers = otTiers(dayType, pol, COMPANY.workweek);
+      var remain = dayHours;
+      for (var i = 0; i < tiers.length && remain > 0; i++) {
+        var t = tiers[i];
+        var span = t.to === null ? remain : Math.min(remain, t.to - t.from);
+        if (span <= 0) continue;
+        var amt = mulf(mulf(hourly, t.mult), span);
+        total += amt;
+        var k = t.mult + "x";
+        byTier[k] = byTier[k] || { h: 0, amt: 0n };
+        byTier[k].h += span; byTier[k].amt += amt;
+        remain -= span;
+      }
+    }
+    // 평일 OT는 일 단위로 분해해야 배율 구간이 맞음
+    var wd = e.otWeekdayHours, perDay = 3;
+    while (wd > 0) { var h = Math.min(perDay, wd); run(h, "WEEKDAY"); hours += h; wd -= h; }
+    if (e.otHolidayHours > 0) { run(e.otHolidayHours, "HOLIDAY"); hours += e.otHolidayHours; }
+
+    if (pol.method === "FIXED") {
+      total = mulf(M(pol.fixedRate), hours);
+      byTier = { "고정요율": { h: hours, amt: total } };
+    }
+    return { amount: idr(total), hours: hours, byTier: byTier, hourly: hourly };
+  }
+
+  function terRate(gross, cat) {
+    var br = RULES.pph21.ter[cat], g = num(gross);
+    for (var i = 0; i < br.length; i++) if (br[i][0] === null || g <= br[i][0]) return br[i][1];
+    return 0;
+  }
+
+  function calcPph21(gross, cat, hasNpwp) {
+    var rate = terRate(gross, cat);
+    var tax = mulf(gross, rate);
+    if (!hasNpwp) tax = mulf(tax, 1 + RULES.pph21.nonNpwpSurcharge);
+    return { tax: idr(tax), rate: rate };
+  }
+
+  function calcPayroll(e, pol) {
+    var warnings = [];
+    // ① 일할계수
+    var prorate = e.scheduledDays > 0
+      ? Math.max(0, e.scheduledDays - e.unpaidDays) / e.scheduledDays : 0;
+    // ② 기본급
+    var basic = idr(mulf(M(e.basic), prorate));
+    // 수당
+    var shift = idr(mulf(M(e.shiftAllowance), prorate));               // 고정수당 (OT/BPJS 기준 포함)
+    var attRatio = e.scheduledDays > 0 ? e.presentDays / e.scheduledDays : 0;
+    var meal = idr(mulf(M(MEAL), attRatio));                           // 출근일수 연동
+    var transport = idr(mulf(M(TRANSPORT), attRatio));
+
+    // 기준액 3종
+    var otBase = idr(basic + shift);
+    if (RULES.ot.fixedAllowance75Rule && COMPANY.use75 && otBase > 0n
+        && Number(shift) / Number(otBase) > 0.25) otBase = idr(mulf(otBase, 0.75));
+    var bpjsBase = idr(basic + shift);
+
+    // ③ OT
+    var ot = calcOvertime(e, otBase, pol);
+
+    // ⑤ Gross
+    var allowances = shift + meal + transport;
+    var gross = idr(basic + ot.amount + allowances);
+
+    // UMK 하한
+    var umk = M(RULES.umk["ID-JB-BEKASI"]);
+    if (prorate >= 1 && basic + shift < umk) warnings.push("UMK 하한 미달");
+
+    // ⑥ BPJS
+    var eeTotal = 0n, erTotal = 0n, bpjsDetail = {};
+    for (var code in RULES.bpjs) {
+      var r = RULES.bpjs[code], base = bpjsBase;
+      if (r.cap !== null) base = minM(base, M(r.cap));
+      if (r.floorUmk && base < umk) base = umk;
+      var ee = idr(mulf(base, r.ee));
+      var er = idr(mulf(base, r.byCompany ? COMPANY.jkkRate : r.er));
+      eeTotal += ee; erTotal += er;
+      bpjsDetail[code] = { ee: ee, er: er };
+    }
+
+    // ⑦ PPh21 (TER)
+    var tax = calcPph21(gross, e.terCat, e.hasNpwp);
+
+    // ⑧ 기타공제
+    var loan = M(e.loanDeduction || 0);
+
+    // ⑨ Net
+    var deduction = idr(eeTotal + tax.tax + loan);
+    var net = idr(gross - deduction);
+    if (net <= 0n) warnings.push("실지급 0원 이하");
+    if (loan > 0n && net + loan > 0n && Number(loan) / Number(net + loan) > 0.3)
+      warnings.push("대출공제 30% 초과");
+
+    return {
+      no: e.no, name: e.name, dept: e.dept, status: e.status,
+      basic: basic, ot: ot.amount, otHours: ot.hours, otByTier: ot.byTier,
+      allowance: allowances, shift: shift, meal: meal, transport: transport,
+      otBase: otBase, bpjsBase: bpjsBase, gross: gross,
+      bpjs: bpjsDetail, bpjsEE: eeTotal, bpjsER: erTotal,
+      tax: tax.tax, taxRate: tax.rate,
+      loan: loan, deduction: deduction, net: net,
+      employerCost: erTotal, prorate: prorate, warnings: warnings
+    };
+  }
+
+  /* ---------------- 데모 데이터셋 (시드 고정) ---------------- */
+  function lcg(seed) { var s = seed >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+  var DEPTS = ["조립1라인", "조립2라인", "프레스", "용접", "도장", "물류"];
+  var FIRST = ["Budi","Agus","Joko","Dewi","Siti","Eko","Ratna","Sri","Andi","Hendra","Tono","Rudi","Ayu",
+               "Bambang","Wawan","Nia","Rina","Yusuf","Dedi","Lina","Fajar","Indah","Hadi","Novi","Slamet",
+               "Tuti","Gunawan","Yanti","Iwan","Maya","Arif","Wulan","Bagus","Fitri","Heri","Dian"];
+  var LAST = ["Santoso","Wijaya","Susilo","Lestari","Rahayu","Prasetyo","Sari","Wahyuni","Saputra","Gunawan",
+              "Pratama","Kusuma","Hartono","Nugroho","Setiawan","Handayani","Firmansyah","Utami","Permana","Anggraini"];
+  var PTKP = [["TK/0","A"],["TK/1","A"],["K/0","A"],["TK/2","B"],["K/1","B"],["K/2","B"],["K/3","C"]];
+
+  // 프로토타입 표에 있던 11명 — 사번·이름·부서·기본급은 원본 유지
+  var SEED11 = [
+    ["MF-0104","Budi Santoso","조립1라인",6340000,1580000,1689400,""],
+    ["MF-0212","Agus Wijaya","프레스",8120000,1640000,2430000,""],
+    ["MF-0155","Joko Susilo","프레스",7450000,1390000,2100000,""],
+    ["MF-0233","Dewi Lestari","도장",6980000,1490000,850000,""],
+    ["MF-0341","Siti Rahayu","조립2라인",5690000,1060000,380000,""],
+    ["MF-0512","Eko Prasetyo","용접",7120000,1340000,610000,""],
+    ["MF-0287","Ratna Sari","도장",6110000,1140000,250000,""],
+    ["MF-0501","Sri Wahyuni","조립1라인",6900000,1290000,550000,""],
+    ["MF-0587","Andi Saputra","물류",5980000,1020000,320000,""],
+    ["MF-0620","Hendra Gunawan","조립2라인",4200000,786000,0,"휴직"],
+    ["MF-0198","Tono Wijaya","물류",6300000,2090000,200000,"퇴사예정"]
+  ];
+
+  function buildDataset() {
+    var rnd = lcg(20260816), list = [], used = {};
+
+    SEED11.forEach(function (s) {
+      var basic = s[3], allow = s[4], origOt = s[5];
+      var shift = Math.max(0, allow - MEAL - TRANSPORT);
+      // OT 시간은 근태 입력값. 원본 금액에서 역산해 근사치로 배정 (평균 배율 1.8 가정)
+      var hourly = (basic + shift) / RULES.ot.divisor;
+      var h = origOt > 0 ? Math.round((origOt / (hourly * 1.8)) * 2) / 2 : 0;
+      used[s[0]] = 1;
+      list.push({
+        no: s[0], name: s[1], dept: s[2], basic: basic, shiftAllowance: shift,
+        status: s[6] || "재직", otEligible: true,
+        ptkp: "K/2", terCat: "B", hasNpwp: basic > 6000000,
+        scheduledDays: 22,
+        presentDays: s[6] === "휴직" ? 12 : 22,
+        unpaidDays: s[6] === "휴직" ? 10 : 0,
+        otWeekdayHours: Math.min(h, 40), otHolidayHours: h > 20 ? 8 : 0,
+        loanDeduction: s[0] === "MF-0104" ? 800000 : 0
+      });
+    });
+
+    while (list.length < 412) {
+      var no = "MF-" + String(Math.floor(rnd() * 8999) + 1000);
+      if (used[no]) continue;
+      used[no] = 1;
+      var p = PTKP[Math.floor(rnd() * PTKP.length)];
+      var basic = Math.round((5690000 + rnd() * 2600000) / 10000) * 10000;
+      var isMgr = rnd() < 0.06;
+      var sched = 22, unpaid = rnd() < 0.08 ? Math.ceil(rnd() * 3) : 0;
+      list.push({
+        no: no,
+        name: FIRST[Math.floor(rnd() * FIRST.length)] + " " + LAST[Math.floor(rnd() * LAST.length)],
+        dept: DEPTS[Math.floor(rnd() * DEPTS.length)],
+        basic: isMgr ? basic + 3000000 : basic,
+        shiftAllowance: Math.round((300000 + rnd() * 900000) / 10000) * 10000,
+        status: "재직", otEligible: !isMgr,
+        ptkp: p[0], terCat: p[1], hasNpwp: rnd() > 0.28,
+        scheduledDays: sched, presentDays: sched - unpaid, unpaidDays: unpaid,
+        otWeekdayHours: isMgr ? 0 : Math.round(rnd() * 20 * 2) / 2,
+        otHolidayHours: !isMgr && rnd() < 0.25 ? Math.round(rnd() * 8) : 0,
+        loanDeduction: rnd() < 0.18 ? Math.round(rnd() * 900000 / 50000) * 50000 : 0
+      });
+    }
+    return list;
+  }
+
+  /* ---------------- 화면 반영 ---------------- */
+  function fmtN(m) { return num(m).toLocaleString("en-US", { maximumFractionDigits: 0 }); }
+  function fmtM(m) { return (num(m) / 1000000).toFixed(1) + "M"; }
+
+  function readPolicy() {
+    function v(id, d) { var el = document.getElementById(id); return el && el.value !== "" ? parseFloat(el.value) : d; }
+    var methodEl = document.getElementById("otMethod");
+    var method = methodEl && /고정|fixed|FIXED/i.test(methodEl.value || methodEl.selectedOptions && methodEl.selectedOptions[0] && methodEl.selectedOptions[0].textContent || "")
+      ? "FIXED" : "MULT";
+    return {
+      divisor: v("otDivisor", RULES.ot.divisor),
+      fixedRate: v("otFixedRate", 45000),
+      method: method,
+      weekday: [
+        { from: 0, to: 1, mult: v("otTier1", 1.5) },
+        { from: 1, to: null, mult: v("otTier2", 2.0) }
+      ],
+      holidayW6: RULES.ot.holidayW6,
+      holidayW5: RULES.ot.holidayW5
+    };
+  }
+
+  function setKpi(i18nKey, text) {
+    var lab = document.querySelector('[data-i18n="' + i18nKey + '"]');
+    if (!lab) return;
+    var item = lab.closest(".kpi-item");
+    if (!item) return;
+    var val = item.querySelector(".kpi-value");
+    if (val) val.textContent = text;
+  }
+
+  function render() {
+    var pol = readPolicy();
+    var t0 = performance.now();
+    var results = DATA.map(function (e) { return calcPayroll(e, pol); });
+    var ms = (performance.now() - t0).toFixed(0);
+
+    var tbody = document.getElementById("g2RegisterBody");
+    if (tbody) {
+      var html = results.map(function (r) {
+        var warn = r.warnings.length
+          ? ' title="' + r.warnings.join(" / ") + '" style="color:var(--danger);"' : "";
+        var tag = r.status !== "재직" ? ' <span style="opacity:.6;font-size:11px;">' + r.status + "</span>" : "";
+        return '<tr data-search="' + (r.no + " " + r.name).toLowerCase() + '">' +
+          "<td" + warn + ">" + r.no + "</td><td>" + r.name + tag + "</td><td>" + r.dept + "</td>" +
+          '<td style="text-align:right;">' + fmtN(r.basic) + "</td>" +
+          '<td style="text-align:right;" title="' + r.otHours + 'h">' + fmtN(r.ot) + "</td>" +
+          '<td style="text-align:right;">' + fmtN(r.allowance) + "</td>" +
+          '<td style="text-align:right;font-weight:700;">' + fmtN(r.gross) + "</td>" +
+          '<td style="text-align:right;color:var(--danger);">−' + fmtN(r.deduction) + "</td>" +
+          '<td style="text-align:right;font-weight:800;">' + fmtN(r.net) + "</td></tr>";
+      }).join("");
+      tbody.innerHTML = html;
+    }
+
+    var gross = sumM(results.map(function (r) { return r.gross; }));
+    var ded = sumM(results.map(function (r) { return r.deduction; }));
+    var net = sumM(results.map(function (r) { return r.net; }));
+    var erc = sumM(results.map(function (r) { return r.employerCost; }));
+
+    setKpi("g2.kpi.gross", "Rp" + fmtM(gross));
+    setKpi("g2.kpi.deduction", "−" + fmtM(ded));
+    setKpi("kpi.net_payout", fmtM(net));
+    setKpi("g2.kpi.avg", (num(gross) / results.length / 1000000).toFixed(2) + "M");
+
+    var sub = document.querySelector('[data-i18n="g2.register_sub"]');
+    if (sub) {
+      sub.removeAttribute("data-i18n");
+      sub.textContent = results.length + "명 전원 표시 · 엔진 계산값 (" + ms + "ms) · 회사부담 " + fmtM(erc);
+    }
+
+    var flagged = results.filter(function (r) { return r.warnings.length; });
+    var banner = document.getElementById("engineBanner");
+    if (banner) {
+      banner.innerHTML =
+        '<strong>계산 엔진 연결됨</strong> — 표의 모든 금액은 하드코딩이 아니라 근태·정책·규정으로부터 계산된 값입니다. ' +
+        "OT " + fmtM(sumM(results.map(function (r) { return r.ot; }))) +
+        " · PPh21 " + fmtM(sumM(results.map(function (r) { return r.tax; }))) +
+        " · BPJS(직원) " + fmtM(sumM(results.map(function (r) { return r.bpjsEE; }))) +
+        (flagged.length ? ' · <span style="color:var(--danger);">검증 경고 ' + flagged.length + "건</span>" : " · 검증 경고 0건") +
+        '<br><span style="opacity:.75;">정책 화면에서 OT 배율·시급 분모를 바꾸면 이 표가 즉시 다시 계산됩니다. ' +
+        "TER 세율표는 샘플이므로 세액은 실제 별표로 교체 후 신뢰하십시오.</span>";
+    }
+    window.GajiOne.results = results;
+  }
+
+  /* ---------------- 초기화 ---------------- */
+  var DATA = buildDataset();
+  window.GajiOne = { calcPayroll: calcPayroll, data: DATA, rules: RULES, render: render, results: [] };
+
+  function injectBanner() {
+    var tbody = document.getElementById("g2RegisterBody");
+    if (!tbody || document.getElementById("engineBanner")) return;
+    var wrap = tbody.closest(".table-wrap");
+    if (!wrap) return;
+    var div = document.createElement("div");
+    div.id = "engineBanner";
+    div.className = "card";
+    div.style.cssText = "padding:12px 16px;margin-bottom:10px;font-size:13px;line-height:1.6;border-left:3px solid var(--accent,#3b82f6);";
+    wrap.parentNode.insertBefore(div, wrap);
+  }
+
+  function boot() {
+    injectBanner();
+    render();
+    ["otDivisor", "otTier1", "otTier2", "otTier3Min", "otTier3Max", "otTier4", "otFixedRate", "otMethod"]
+      .forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener("change", render);
+      });
+    var saveBtn = document.getElementById("otSaveBtn");
+    if (saveBtn) saveBtn.addEventListener("click", function () { setTimeout(render, 50); });
+  }
+
+  if (document.readyState === "complete") boot();
+  else window.addEventListener("load", boot);
+})();
+
+</script>
 </body>
 </html>
