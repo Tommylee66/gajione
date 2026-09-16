@@ -7045,6 +7045,7 @@ applyLang('ko');
   var LAST = ["Santoso","Wijaya","Susilo","Lestari","Rahayu","Prasetyo","Sari","Wahyuni","Saputra","Gunawan",
               "Pratama","Kusuma","Hartono","Nugroho","Setiawan","Handayani","Firmansyah","Utami","Permana","Anggraini"];
   var PTKP = [["TK/0","A"],["TK/1","A"],["K/0","A"],["TK/2","B"],["K/1","B"],["K/2","B"],["K/3","C"]];
+  var BANKS = ["BCA", "Mandiri", "BNI", "BRI", "Hana"];
   var SEED11 = [
     ["MF-0104","Budi Santoso","조립1라인",6340000,1580000,1689400,""],
     ["MF-0212","Agus Wijaya","프레스",8120000,1640000,2430000,""],
@@ -7073,7 +7074,9 @@ applyLang('ko');
         hasNpwp: s[3] > 6000000, scheduledDays: 22,
         presentDays: s[6] === "휴직" ? 12 : 22, unpaidDays: s[6] === "휴직" ? 10 : 0,
         otWeekdayHours: Math.min(h, 40), otHolidayHours: h > 20 ? 8 : 0,
-        loanDeduction: s[0] === "MF-0104" ? 800000 : 0
+        loanDeduction: s[0] === "MF-0104" ? 800000 : 0,
+        bankName: BANKS[list.length % BANKS.length],
+        bankAccount: String(4100000000 + list.length * 7919)
       });
     });
     while (list.length < 412) {
@@ -7095,8 +7098,21 @@ applyLang('ko');
         hasNpwp: rnd() > 0.28, scheduledDays: 22, presentDays: 22 - unpaid, unpaidDays: unpaid,
         otWeekdayHours: isMgr ? 0 : Math.round(rnd() * 20 * 2) / 2,
         otHolidayHours: !isMgr && rnd() < 0.25 ? Math.round(rnd() * 8) : 0,
-        loanDeduction: rnd() < 0.18 ? Math.round(rnd() * 900000 / 50000) * 50000 : 0
+        loanDeduction: rnd() < 0.18 ? Math.round(rnd() * 900000 / 50000) * 50000 : 0,
+        bankName: BANKS[Math.floor(rnd() * BANKS.length)],
+        bankAccount: String(Math.floor(rnd() * 9e9) + 1e9)
       });
+    }
+    // 데모 데이터에 검증 동작 확인용 이상 건을 의도적으로 포함
+    list.forEach(function (e, i) {
+      if (!e.bankName) { e.bankName = BANKS[i % BANKS.length]; e.bankAccount = String(3200000000 + i); }
+    });
+    if (list.length > 60) {
+      list[41].bankName = list[17].bankName;                 // 중복 계좌
+      list[41].bankAccount = list[17].bankAccount;
+      list[23].bankAccount = "";                              // 계좌 누락
+      list[35].bankAccount = "12-AB-77";                      // 형식 오류
+      list[52].status = "퇴사";                                // 퇴사자 정기급여
     }
     return list;
   }
@@ -7160,11 +7176,14 @@ applyLang('ko');
         " · PPh21 " + fmtM(sumM(res.map(function (r) { return r.tax; }))) +
         " · BPJS(직원) " + fmtM(sumM(res.map(function (r) { return r.bpjsEE; }))) +
         " · 회사부담 " + fmtM(erc) +
-        (flagged.length ? ' · <span style="color:var(--danger);">검증 경고 ' + flagged.length + "건</span>" : " · 경고 0건") +
+        (flagged.length ? ' · <span style="color:var(--danger);">계산 경고 ' + flagged.length + "건</span>" : " · 계산 경고 0건") +
         '<br><span style="opacity:.75;">요율·상한은 <b>고객사 설정</b> 화면에서 변경합니다. PPh21은 TER 별표(A44/B40/C41) 기준입니다.</span>';
     }
+    var g3 = runG3(res, data);
+    renderG3(g3, res.length, usingReal);
     window.GajiOne.results = res;
     window.GajiOne.dataset = data;
+    window.GajiOne.g3 = g3;
   }
 
   function injectBanner() {
@@ -7518,6 +7537,171 @@ applyLang('ko');
     });
   }
 
+
+
+  /* ================= G3 품질게이트 — 1단계 자동검증 ================= */
+  function runG3(res, data) {
+    var byNo = {};
+    data.forEach(function (e) { byNo[e.no] = e; });
+
+    function rule(code, name, desc, blocking, hits) {
+      return { code: code, name: name, desc: desc, blocking: blocking,
+               status: hits.length ? (blocking ? "FAIL" : "WARN") : "PASS", hits: hits };
+    }
+
+    /* R-01 계좌번호 누락 */
+    var missing = res.filter(function (r) {
+      var e = byNo[r.no] || {};
+      return !String(e.bankAccount || "").trim();
+    }).map(function (r) { return { no: r.no, name: r.name, detail: "계좌번호 없음" }; });
+
+    /* R-02 계좌번호 형식 오류 */
+    var badFmt = res.filter(function (r) {
+      var a = String((byNo[r.no] || {}).bankAccount || "").trim();
+      if (!a) return false;
+      var digits = a.replace(/[\s-]/g, "");
+      return !/^\d+$/.test(digits) || digits.length < 8 || digits.length > 20;
+    }).map(function (r) {
+      return { no: r.no, name: r.name, detail: "형식 오류: " + ((byNo[r.no] || {}).bankAccount || "") };
+    });
+
+    /* R-03 중복 계좌 (유령직원·부정 탐지) */
+    var acctMap = {};
+    res.forEach(function (r) {
+      var e = byNo[r.no] || {};
+      var a = String(e.bankAccount || "").replace(/[\s-]/g, "");
+      if (!a) return;
+      var k = (e.bankName || "?") + "|" + a;
+      (acctMap[k] = acctMap[k] || []).push(r);
+    });
+    var dup = [];
+    Object.keys(acctMap).forEach(function (k) {
+      if (acctMap[k].length > 1) {
+        var names = acctMap[k].map(function (x) { return x.no + " " + x.name; }).join(" / ");
+        acctMap[k].forEach(function (x) {
+          dup.push({ no: x.no, name: x.name, detail: k.replace("|", " ") + " — " + names });
+        });
+      }
+    });
+
+    /* R-04 퇴사자 정기급여 지급 */
+    var resigned = res.filter(function (r) { return /퇴사$/.test(String(r.status || "")); })
+      .map(function (r) { return { no: r.no, name: r.name, detail: "상태 '" + r.status + "' — 정기급여 대상 아님 (정산 차수로 분리)" }; });
+
+    /* R-05 실지급 0원 이하 */
+    var nonPos = res.filter(function (r) { return Number(r.net) <= 0; })
+      .map(function (r) { return { no: r.no, name: r.name, detail: "실지급 " + fmtN(r.net) }; });
+
+    /* R-06 사번 중복 */
+    var cnt = {}, dupNo = [];
+    data.forEach(function (e) { cnt[e.no] = (cnt[e.no] || 0) + 1; });
+    Object.keys(cnt).forEach(function (k) {
+      if (cnt[k] > 1) dupNo.push({ no: k, name: "-", detail: cnt[k] + "건 중복" });
+    });
+
+    /* R-07 대출공제 30% 초과 (경고) */
+    var loanOver = res.filter(function (r) {
+      var l = Number(r.loan), n = Number(r.net);
+      return l > 0 && n + l > 0 && l / (n + l) > 0.3;
+    }).map(function (r) {
+      var l = Number(r.loan), n = Number(r.net);
+      return { no: r.no, name: r.name, detail: "공제비율 " + (l / (n + l) * 100).toFixed(1) + "%" };
+    });
+
+    /* R-08 휴직자 지급 확인 (경고) */
+    var onLeave = res.filter(function (r) { return /휴직/.test(String(r.status || "")) && Number(r.net) > 0; })
+      .map(function (r) { return { no: r.no, name: r.name, detail: "휴직 중 지급 " + fmtN(r.net) }; });
+
+    var rules = [
+      rule("R-01", "계좌번호 누락", "계좌가 없으면 지급파일에서 누락되어 급여일에 미지급됩니다.", true, missing),
+      rule("R-02", "계좌번호 형식 오류", "숫자 8~20자리가 아니면 은행 전송 시 반송됩니다.", true, badFmt),
+      rule("R-03", "중복 계좌", "여러 직원이 같은 계좌를 쓰는 경우 — 유령직원·부정 지급의 전형적 패턴입니다.", true, dup),
+      rule("R-04", "퇴사자 정기급여", "퇴사자는 정기 차수가 아니라 퇴직정산 차수로 처리해야 합니다.", true, resigned),
+      rule("R-05", "실지급 0원 이하", "공제가 지급액을 초과했습니다. 공제 항목을 재확인해야 합니다.", true, nonPos),
+      rule("R-06", "사번 중복", "동일 사번이 2건 이상 존재합니다. 이중 지급 위험이 있습니다.", true, dupNo),
+      rule("R-07", "대출공제 30% 초과", "월 공제가 실지급의 30%를 넘습니다. 정책 상한 확인이 필요합니다.", false, loanOver),
+      rule("R-08", "휴직자 지급", "휴직 중 지급 건입니다. 유급휴직 여부를 확인하십시오.", false, onLeave)
+    ];
+
+    var fails = rules.filter(function (r) { return r.status === "FAIL"; });
+    var warns = rules.filter(function (r) { return r.status === "WARN"; });
+    var affected = {};
+    fails.forEach(function (r) { r.hits.forEach(function (h) { affected[h.no] = 1; }); });
+
+    return { rules: rules, failCount: fails.length, warnCount: warns.length,
+             blockedPeople: Object.keys(affected).length, passed: fails.length === 0 };
+  }
+
+  function renderG3(rep, total, usingReal) {
+    var view = document.getElementById("view-g3");
+    if (!view) return;
+    var host = document.getElementById("g3AutoCheck");
+    if (!host) {
+      host = document.createElement("div");
+      host.id = "g3AutoCheck";
+      host.className = "card";
+      host.style.cssText = "margin-bottom:12px;border-left:3px solid " +
+        (rep.passed ? "var(--success,#16a34a)" : "var(--danger,#dc2626)") + ";";
+      var header = view.querySelector(".page-header");
+      if (header && header.nextSibling) view.insertBefore(host, header.nextSibling);
+      else view.appendChild(host);
+    }
+    host.style.borderLeftColor = rep.passed ? "var(--success,#16a34a)" : "var(--danger,#dc2626)";
+
+    var rows = rep.rules.map(function (r) {
+      var color = r.status === "PASS" ? "var(--success,#16a34a)"
+                : r.status === "FAIL" ? "var(--danger,#dc2626)" : "var(--warn,#d97706)";
+      var label = r.status === "PASS" ? "통과" : r.status === "FAIL" ? "차단" : "경고";
+      var list = r.hits.length
+        ? '<details style="margin-top:5px;"><summary style="cursor:pointer;font-size:12px;opacity:.85;">' +
+            r.hits.length + "건 보기</summary><div style='font-size:12px;margin-top:5px;line-height:1.7;'>" +
+            r.hits.slice(0, 25).map(function (h) {
+              return "<b>" + esc(h.no) + "</b> " + esc(h.name) + " — " + esc(h.detail);
+            }).join("<br>") +
+            (r.hits.length > 25 ? "<br><span style='opacity:.7;'>… 외 " + (r.hits.length - 25) + "건</span>" : "") +
+          "</div></details>"
+        : "";
+      return "<tr>" +
+        '<td style="white-space:nowrap;font-weight:700;">' + r.code + "</td>" +
+        "<td><div style='font-weight:600;'>" + esc(r.name) + "</div>" +
+          "<div style='font-size:12px;opacity:.72;margin-top:2px;'>" + esc(r.desc) + "</div>" + list + "</td>" +
+        '<td style="text-align:center;white-space:nowrap;"><span style="color:' + color + ';font-weight:800;">' +
+          label + "</span></td>" +
+        '<td style="text-align:right;white-space:nowrap;">' + (r.hits.length || "—") + "</td></tr>";
+    }).join("");
+
+    host.innerHTML =
+      '<div class="card-title">자동 검증 (1단계)</div>' +
+      '<div class="card-sub">' + total + "명 · " + (usingReal ? "등록 직원 데이터" : "데모 데이터") +
+        " 기준 · 차단 규칙 6개 + 경고 규칙 2개를 매 계산마다 자동 실행합니다." +
+        (usingReal ? "" : " 데모 데이터에는 검증 동작 확인용 이상 건이 포함되어 있습니다.") + "</div>" +
+      '<div style="margin:10px 0;font-size:13.5px;font-weight:700;color:' +
+        (rep.passed ? "var(--success,#16a34a)" : "var(--danger,#dc2626)") + ';">' +
+        (rep.passed
+          ? "모든 차단 규칙 통과 — G4 승인 진행 가능"
+          : "차단 " + rep.failCount + "개 규칙 · 대상 " + rep.blockedPeople + "명 — 해소 전까지 G4 승인 불가") +
+        (rep.warnCount ? '<span style="color:var(--warn,#d97706);"> · 경고 ' + rep.warnCount + "개</span>" : "") +
+      "</div>" +
+      '<div class="table-wrap"><table><thead><tr>' +
+        "<th>규칙</th><th>내용</th><th style='text-align:center;'>결과</th><th style='text-align:right;'>건수</th>" +
+      "</tr></thead><tbody>" + rows + "</tbody></table></div>" +
+      '<div style="font-size:12px;opacity:.7;margin-top:8px;">' +
+      "전월 대비 변동률(±20%) 검증은 이전 차수 데이터가 필요하므로 서버 연동 후 추가됩니다.</div>";
+
+    var pill = document.getElementById("g3StatusPill");
+    if (pill) {
+      pill.textContent = rep.passed ? "자동검증 통과" : "자동검증 차단";
+      pill.className = "pill " + (rep.passed ? "pill-success" : "pill-danger");
+    }
+    var kl = document.querySelector('[data-i18n="g3.kpi.rulefail"]');
+    if (kl && kl.closest(".kpi-item")) {
+      var kv = kl.closest(".kpi-item").querySelector(".kpi-value");
+      if (kv) {
+        kv.textContent = rep.failCount + "건";
+        kv.className = "kpi-value" + (rep.failCount ? " warn" : "");
+      }
+    }
+  }
 
   /* ================= 계정 영역 (사이드바) ================= */
   function mountAccount() {
