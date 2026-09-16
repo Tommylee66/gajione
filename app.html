@@ -7528,23 +7528,24 @@ applyLang('ko');
 
     var box = document.createElement("div");
     box.id = "gjAccount";
-    box.style.cssText = "margin-bottom:10px;padding:10px 11px;border-radius:10px;" +
-      "background:var(--accent-soft,rgba(59,130,246,.10));border:1px solid var(--border,rgba(128,128,128,.25));";
+    box.style.cssText = "margin-bottom:10px;padding:10px 11px;border-radius:9px;color:#fff;" +
+      "background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);";
 
     if (acct) {
       box.innerHTML =
-        '<div style="font-size:12.5px;font-weight:700;line-height:1.35;">' + esc(acct.contactName || acct.email) + "</div>" +
-        '<div style="font-size:11px;opacity:.8;margin-top:2px;word-break:break-all;">' + esc(acct.email || "") + "</div>" +
-        '<div style="font-size:11px;opacity:.85;margin-top:5px;padding-top:5px;border-top:1px solid var(--border,rgba(128,128,128,.22));">' +
+        '<div style="font-size:12.5px;font-weight:700;line-height:1.35;color:#fff;">' + esc(acct.contactName || acct.email) + "</div>" +
+        '<div style="font-size:11px;color:rgba(255,255,255,.72);margin-top:2px;word-break:break-all;">' + esc(acct.email || "") + "</div>" +
+        '<div style="font-size:11px;color:rgba(255,255,255,.82);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.16);">' +
           esc(cfg.name) + (acct.position ? " · " + esc(acct.position) : "") + "</div>" +
-        '<button type="button" id="gjLogout" style="margin-top:8px;width:100%;padding:5px 0;font-size:11.5px;font-weight:700;' +
-          'cursor:pointer;border-radius:7px;border:1px solid var(--border,rgba(128,128,128,.3));background:transparent;color:inherit;">로그아웃</button>';
+        '<button type="button" id="gjLogout" style="margin-top:8px;width:100%;padding:6px 0;font-size:11.5px;font-weight:700;' +
+          'cursor:pointer;border-radius:7px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);color:#fff;">로그아웃</button>';
     } else {
       box.innerHTML =
-        '<div style="font-size:12px;opacity:.85;line-height:1.5;">로그인하지 않은 상태입니다.<br>' +
-        '<span style="opacity:.7;">데모 모드로 열람 중</span></div>' +
-        '<a href="auth.html" style="display:block;margin-top:8px;text-align:center;padding:5px 0;font-size:11.5px;font-weight:700;' +
-          'border-radius:7px;border:1px solid var(--border,rgba(128,128,128,.3));text-decoration:none;color:inherit;">로그인 / 회원가입</a>';
+        '<div style="font-size:12px;color:#fff;line-height:1.5;">로그인하지 않은 상태입니다.<br>' +
+        '<span style="color:rgba(255,255,255,.7);">데모 모드로 열람 중</span></div>' +
+        '<a href="auth.html" style="display:block;margin-top:8px;text-align:center;padding:6px 0;font-size:11.5px;font-weight:700;' +
+          'border-radius:7px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);' +
+          'text-decoration:none;color:#fff;">로그인 / 회원가입</a>';
     }
     footer.insertBefore(box, footer.firstChild);
 
