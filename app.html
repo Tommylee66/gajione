@@ -6501,7 +6501,363 @@ applyLang('ko');
 </script>
 
 
-<!-- ===== 고객사 설정 + 급여 계산 엔진 (추가) ===== -->
+<script>
+/* =====================================================================
+ *  GajiOne Core — auth.html 과 app.html 이 공유하는 모듈
+ *    · 고객사(테넌트) 설정 저장소
+ *    · 직원 데이터 저장소
+ *    · XLSX / CSV 리더 (의존성 0, DecompressionStream 사용)
+ *    · 컬럼 자동 매핑 (AI Pajak 등 외부 시스템 내보내기 파일 대응)
+ *  같은 도메인에서 두 페이지가 localStorage 를 공유합니다.
+ * ===================================================================== */
+(function (global) {
+  "use strict";
+
+  /* ================= 저장소 키 ================= */
+  var K_TENANT = "gajione.tenants.v1";
+  var K_EMP    = "gajione.employees.v1";
+  var K_ACCT   = "gajione.account.v1";
+
+  /* ================= JKK 위험등급 ================= */
+  var JKK_CLASSES = {
+    "I":   { rate: 0.0024, desc: "매우 낮음 (사무·서비스)" },
+    "II":  { rate: 0.0054, desc: "낮음 (경공업·조립)" },
+    "III": { rate: 0.0089, desc: "보통 (일반 제조)" },
+    "IV":  { rate: 0.0127, desc: "높음 (중공업·금속가공)" },
+    "V":   { rate: 0.0174, desc: "매우 높음 (광업·화학)" }
+  };
+
+  /* 업종 → JKK 등급 제안값 (BPJS 통지서로 반드시 확인 필요) */
+  var INDUSTRY_JKK = {
+    "제조업 - 금속가공": "IV", "제조업 - 섬유": "III", "제조업 - 전자": "II",
+    "식음료": "III", "물류": "III", "기타": "III"
+  };
+
+  var UMK_PRESETS = [
+    { code: "ID-JB-BEKASI",    label: "Kabupaten Bekasi (Jawa Barat)",   amount: 5690000 },
+    { code: "ID-JB-KARAWANG",  label: "Kabupaten Karawang (Jawa Barat)", amount: 5599000 },
+    { code: "ID-JK-JAKARTA",   label: "DKI Jakarta",                     amount: 5396761 },
+    { code: "ID-JB-BOGOR",     label: "Kabupaten Bogor (Jawa Barat)",    amount: 4877000 },
+    { code: "ID-BT-TANGERANG", label: "Kabupaten Tangerang (Banten)",    amount: 4900000 },
+    { code: "ID-JT-SEMARANG",  label: "Kota Semarang (Jawa Tengah)",     amount: 3243969 },
+    { code: "CUSTOM",          label: "직접 입력",                         amount: 0 }
+  ];
+
+  /* PTKP → TER 카테고리 */
+  function terCatOf(ptkp) {
+    var p = String(ptkp || "").toUpperCase().replace(/\s/g, "");
+    if (p === "K/3") return "C";
+    if (["TK/2", "TK/3", "K/1", "K/2"].indexOf(p) >= 0) return "B";
+    return "A";
+  }
+
+  /* ================= 고객사 설정 ================= */
+  function defaultConfig(name) {
+    return {
+      id: "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      name: name || "새 고객사", npwp: "", worksite: "", industry: "기타",
+      regionCode: "ID-JB-BEKASI", umkAmount: 5690000,
+      workweek: 6, otDivisor: 173, otMethod: "MULT", otFixedRate: 45000,
+      otCapPerDay: 4, otCapPerWeek: 18, use75Rule: false,
+      otWeekday: [{ to: 1, mult: 1.5 }, { to: null, mult: 2.0 }],
+      otHoliday6: [{ to: 7, mult: 2.0 }, { to: 8, mult: 3.0 }, { to: null, mult: 4.0 }],
+      otHoliday5: [{ to: 8, mult: 2.0 }, { to: 9, mult: 3.0 }, { to: null, mult: 4.0 }],
+      jkkClass: "III",
+      bpjs: {
+        kesehatan: { label: "BPJS Kesehatan", ee: 0.01, er: 0.04,  cap: 12000000, floorUmk: true,  on: true },
+        jht:       { label: "JHT (퇴직적립)",  ee: 0.02, er: 0.037, cap: null,     floorUmk: false, on: true },
+        jp:        { label: "JP (연금)",       ee: 0.01, er: 0.02,  cap: 10547400, floorUmk: false, on: true },
+        jkk:       { label: "JKK (산재)",      ee: 0,    er: 0.0089, cap: null,    floorUmk: false, on: true },
+        jkm:       { label: "JKM (사망)",      ee: 0,    er: 0.003,  cap: null,    floorUmk: false, on: true },
+        jkp:       { label: "JKP (실업)",      ee: 0,    er: 0.0022, cap: 5000000, floorUmk: false, on: true }
+      },
+      mealAllowance: 600000, transportAllowance: 450000, mealAttendanceLinked: true,
+      ruleLabel: "2026.1", effectiveFrom: "2026-01-01",
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function readJSON(key, fallback) {
+    try { var r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }
+    catch (e) { return fallback; }
+  }
+  function writeJSON(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); return true; } catch (e) { return false; }
+  }
+
+  var Tenants = {
+    state: null,
+    load: function () {
+      this.state = readJSON(K_TENANT, null);
+      if (!this.state || !this.state.list || !this.state.list.length) {
+        var d = defaultConfig("PT Karya Metal Presisi");
+        d.worksite = "Bekasi 공장";
+        this.state = { activeId: d.id, list: [d] };
+        this.save();
+      }
+      return this.state;
+    },
+    save: function () { return writeJSON(K_TENANT, this.state); },
+    active: function () {
+      var s = this.state || this.load();
+      return s.list.filter(function (c) { return c.id === s.activeId; })[0] || s.list[0];
+    },
+    setActive: function (id) { this.state.activeId = id; this.save(); },
+    add: function (c) { this.state.list.push(c); this.state.activeId = c.id; this.save(); return c; },
+    remove: function (id) {
+      if (this.state.list.length <= 1) return false;
+      this.state.list = this.state.list.filter(function (c) { return c.id !== id; });
+      if (this.state.activeId === id) this.state.activeId = this.state.list[0].id;
+      this.save(); return true;
+    }
+  };
+
+  /* ================= 직원 데이터 ================= */
+  function blankEmployee() {
+    return {
+      no: "", name: "", dept: "", position: "", nik: "", npwp: "",
+      ptkp: "TK/0", basic: 0, shiftAllowance: 0, joinDate: "",
+      employmentType: "PKWTT", status: "재직", otEligible: true,
+      bankName: "", bankAccount: "",
+      scheduledDays: 22, presentDays: 22, unpaidDays: 0,
+      otWeekdayHours: 0, otHolidayHours: 0, loanDeduction: 0,
+      source: "manual"
+    };
+  }
+
+  function normalizeEmployee(e) {
+    var r = blankEmployee();
+    Object.keys(r).forEach(function (k) { if (e[k] !== undefined && e[k] !== null && e[k] !== "") r[k] = e[k]; });
+    ["basic","shiftAllowance","scheduledDays","presentDays","unpaidDays",
+     "otWeekdayHours","otHolidayHours","loanDeduction"].forEach(function (k) {
+      r[k] = Number(String(r[k]).replace(/[^\d.-]/g, "")) || 0;
+    });
+    if (!r.presentDays) r.presentDays = r.scheduledDays;
+    r.ptkp = String(r.ptkp || "TK/0").toUpperCase().replace(/\s/g, "");
+    r.terCat = terCatOf(r.ptkp);
+    r.hasNpwp = !!(r.npwp && String(r.npwp).replace(/\D/g, "").length >= 12);
+    if (typeof r.otEligible === "string") r.otEligible = !/^(n|no|false|0|비대상|아니)/i.test(r.otEligible);
+    return r;
+  }
+
+  var Employees = {
+    load: function (tenantId) {
+      var all = readJSON(K_EMP, {});
+      return (all[tenantId] || []).map(normalizeEmployee);
+    },
+    save: function (tenantId, list) {
+      var all = readJSON(K_EMP, {});
+      all[tenantId] = list;
+      return writeJSON(K_EMP, all);
+    },
+    clear: function (tenantId) {
+      var all = readJSON(K_EMP, {}); delete all[tenantId]; return writeJSON(K_EMP, all);
+    },
+    count: function (tenantId) { return this.load(tenantId).length; }
+  };
+
+  /* ================= 계정 (데모) ================= */
+  var Account = {
+    get: function () { return readJSON(K_ACCT, null); },
+    set: function (a) { return writeJSON(K_ACCT, a); },
+    clear: function () { try { localStorage.removeItem(K_ACCT); } catch (e) {} }
+  };
+
+  /* ================= CSV 리더 ================= */
+  function parseCSV(text) {
+    var rows = [], row = [], cur = "", q = false;
+    text = text.replace(/^\uFEFF/, "");
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+        else cur += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === "," || ch === ";" || ch === "\t") { row.push(cur); cur = ""; }
+      else if (ch === "\n") { row.push(cur); rows.push(row); row = []; cur = ""; }
+      else if (ch !== "\r") cur += ch;
+    }
+    if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (c) { return String(c).trim() !== ""; }); });
+  }
+
+  /* ================= XLSX 리더 (ZIP + deflate-raw) ================= */
+  function u16(d, o) { return d[o] | (d[o + 1] << 8); }
+  function u32(d, o) { return (d[o] | (d[o + 1] << 8) | (d[o + 2] << 16) | (d[o + 3] << 24)) >>> 0; }
+
+  async function unzip(buf) {
+    var d = new Uint8Array(buf), files = {}, eocd = -1;
+    for (var i = d.length - 22; i >= 0 && i > d.length - 66000; i--) {
+      if (u32(d, i) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error("ZIP 형식이 아닙니다");
+    var n = u16(d, eocd + 10), off = u32(d, eocd + 16);
+    for (var k = 0; k < n; k++) {
+      var nl = u16(d, off + 28), el = u16(d, off + 30), cl = u16(d, off + 32);
+      var method = u16(d, off + 10), lho = u32(d, off + 42), csize = u32(d, off + 20);
+      var name = new TextDecoder().decode(d.subarray(off + 46, off + 46 + nl));
+      var lnl = u16(d, lho + 26), lel = u16(d, lho + 28);
+      var start = lho + 30 + lnl + lel;
+      var raw = d.subarray(start, start + csize);
+      if (method === 0) files[name] = new TextDecoder().decode(raw);
+      else {
+        var ds = new DecompressionStream("deflate-raw");
+        var blob = new Blob([raw]).stream().pipeThrough(ds);
+        files[name] = await new Response(blob).text();
+      }
+      off += 46 + nl + el + cl;
+    }
+    return files;
+  }
+
+  function sharedStrings(xml) {
+    if (!xml) return [];
+    return (xml.match(/<si[\s\S]*?<\/si>/g) || []).map(function (si) {
+      return (si.match(/<t[^>]*>([\s\S]*?)<\/t>/g) || []).map(function (t) {
+        return t.replace(/<[^>]+>/g, "");
+      }).join("").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+    });
+  }
+
+  function colIndex(ref) {
+    var m = /^([A-Z]+)/.exec(ref); if (!m) return 0;
+    var s = m[1], n = 0;
+    for (var i = 0; i < s.length; i++) n = n * 26 + (s.charCodeAt(i) - 64);
+    return n - 1;
+  }
+
+  function sheetRows(xml, ss) {
+    var out = [];
+    (xml.match(/<row[\s\S]*?<\/row>|<row[^>]*\/>/g) || []).forEach(function (r) {
+      var row = [];
+      (r.match(/<c[\s\S]*?<\/c>|<c[^>]*\/>/g) || []).forEach(function (c) {
+        var ref = (/r="([A-Z]+\d+)"/.exec(c) || [])[1] || "";
+        var t = (/t="([^"]+)"/.exec(c) || [])[1];
+        var v = (/<v>([\s\S]*?)<\/v>/.exec(c) || [])[1];
+        var isv = (/<is>[\s\S]*?<t[^>]*>([\s\S]*?)<\/t>/.exec(c) || [])[1];
+        var val = "";
+        if (t === "s" && v !== undefined) val = ss[Number(v)] || "";
+        else if (t === "inlineStr") val = isv || "";
+        else if (v !== undefined) val = v;
+        row[colIndex(ref)] = String(val).replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+      });
+      for (var i = 0; i < row.length; i++) if (row[i] === undefined) row[i] = "";
+      out.push(row);
+    });
+    return out.filter(function (r) { return r.some(function (c) { return String(c).trim() !== ""; }); });
+  }
+
+  async function readWorkbook(file) {
+    var name = (file.name || "").toLowerCase();
+    if (/\.csv$|\.txt$/.test(name)) return parseCSV(await file.text());
+    var files = await unzip(await file.arrayBuffer());
+    var ss = sharedStrings(files["xl/sharedStrings.xml"]);
+    var sheetKey = Object.keys(files).filter(function (k) { return /^xl\/worksheets\/sheet\d+\.xml$/.test(k); }).sort()[0];
+    if (!sheetKey) throw new Error("시트를 찾을 수 없습니다");
+    return sheetRows(files[sheetKey], ss);
+  }
+
+  /* ================= 컬럼 자동 매핑 =================
+   * AI Pajak 등 외부 시스템 내보내기 파일의 헤더를 우리 필드에 짝지음.
+   * 인도네시아어·영어·한국어 표기를 모두 후보로 둠. 매칭 실패 시 사용자가 수동 선택.
+   * ================================================= */
+  var FIELDS = [
+    { key: "no",             label: "사번",            required: true,
+      aliases: ["nik karyawan","no karyawan","nomor induk","employee id","employee no","emp id","id karyawan","사번","nip","no. induk"] },
+    { key: "name",           label: "이름",            required: true,
+      aliases: ["nama","nama karyawan","nama lengkap","employee name","name","이름","성명"] },
+    { key: "nik",            label: "NIK (주민번호)",   required: false,
+      aliases: ["nik","no ktp","nomor ktp","ktp","nik ktp","identity number"] },
+    { key: "npwp",           label: "NPWP",            required: false,
+      aliases: ["npwp","no npwp","nomor npwp","tax id"] },
+    { key: "ptkp",           label: "PTKP 상태",        required: false,
+      aliases: ["ptkp","status ptkp","status pajak","tk/k","marital status","kode ptkp"] },
+    { key: "dept",           label: "부서/라인",        required: false,
+      aliases: ["departemen","department","bagian","divisi","unit","부서","라인","seksi"] },
+    { key: "position",       label: "직급",            required: false,
+      aliases: ["jabatan","posisi","position","title","golongan","직급","직위"] },
+    { key: "basic",          label: "기본급",           required: true,
+      aliases: ["gaji pokok","basic salary","gapok","upah pokok","기본급","salary","gaji"] },
+    { key: "shiftAllowance", label: "고정수당",          required: false,
+      aliases: ["tunjangan tetap","tunjangan jabatan","fixed allowance","tunjangan","고정수당","allowance"] },
+    { key: "joinDate",       label: "입사일",           required: false,
+      aliases: ["tanggal masuk","tgl masuk","join date","hire date","tmt","입사일","tanggal bergabung"] },
+    { key: "employmentType", label: "고용형태",          required: false,
+      aliases: ["status karyawan","jenis kontrak","employment type","status kerja","고용형태","pkwt/pkwtt"] },
+    { key: "bankName",       label: "은행",            required: false,
+      aliases: ["bank","nama bank","bank name","은행"] },
+    { key: "bankAccount",    label: "계좌번호",          required: false,
+      aliases: ["no rekening","rekening","account number","nomor rekening","계좌"] },
+    { key: "scheduledDays",  label: "소정근로일수",       required: false,
+      aliases: ["hari kerja","working days","소정일수","jumlah hari kerja"] },
+    { key: "presentDays",    label: "출근일수",          required: false,
+      aliases: ["hari hadir","kehadiran","present days","출근일수","absensi"] },
+    { key: "otWeekdayHours", label: "평일 OT 시간",      required: false,
+      aliases: ["lembur","jam lembur","overtime hours","ot hours","평일ot","lembur biasa"] },
+    { key: "otHolidayHours", label: "휴일 OT 시간",      required: false,
+      aliases: ["lembur libur","lembur hari libur","holiday overtime","휴일ot"] }
+  ];
+
+  function norm(s) { return String(s || "").toLowerCase().replace(/[\s_.\-()]/g, ""); }
+
+  function autoMap(headers) {
+    var map = {}, usedCols = {};
+    FIELDS.forEach(function (f) {
+      var best = -1, bestScore = 0;
+      headers.forEach(function (h, i) {
+        if (usedCols[i]) return;
+        var nh = norm(h);
+        if (!nh) return;
+        var score = 0;
+        f.aliases.forEach(function (a) {
+          var na = norm(a);
+          if (nh === na) score = Math.max(score, 100);
+          else if (nh.indexOf(na) >= 0 || na.indexOf(nh) >= 0) score = Math.max(score, 60 + Math.min(na.length, nh.length));
+        });
+        if (score > bestScore) { bestScore = score; best = i; }
+      });
+      if (best >= 0 && bestScore >= 60) { map[f.key] = best; usedCols[best] = 1; }
+    });
+    return map;
+  }
+
+  function applyMapping(rows, headerRowIdx, map) {
+    var out = [], errors = [], seen = {};
+    for (var i = headerRowIdx + 1; i < rows.length; i++) {
+      var r = rows[i], e = blankEmployee(), rowNo = i + 1;
+      Object.keys(map).forEach(function (k) {
+        var ci = map[k];
+        if (ci === undefined || ci < 0) return;
+        var v = r[ci];
+        if (v !== undefined && v !== null && String(v).trim() !== "") e[k] = String(v).trim();
+      });
+      e.source = "import";
+      var n = normalizeEmployee(e);
+      var errs = [];
+      if (!n.no) errs.push("사번 없음");
+      else if (seen[n.no]) errs.push("사번 중복");
+      if (!n.name) errs.push("이름 없음");
+      if (!n.basic) errs.push("기본급 없음/0");
+      if (errs.length) errors.push({ row: rowNo, no: n.no, name: n.name, errors: errs });
+      else { seen[n.no] = 1; out.push(n); }
+    }
+    return { employees: out, errors: errors };
+  }
+
+  /* ================= export ================= */
+  global.GajiOneCore = {
+    keys: { tenant: K_TENANT, employee: K_EMP, account: K_ACCT },
+    JKK_CLASSES: JKK_CLASSES, INDUSTRY_JKK: INDUSTRY_JKK, UMK_PRESETS: UMK_PRESETS,
+    FIELDS: FIELDS,
+    defaultConfig: defaultConfig, terCatOf: terCatOf,
+    blankEmployee: blankEmployee, normalizeEmployee: normalizeEmployee,
+    Tenants: Tenants, Employees: Employees, Account: Account,
+    parseCSV: parseCSV, readWorkbook: readWorkbook,
+    autoMap: autoMap, applyMapping: applyMapping
+  };
+})(typeof window !== "undefined" ? window : this);
+
+</script>
 <script>
 /* =====================================================================
  *  GajiOne — 고객사별 설정(멀티테넌트) + 급여 계산 엔진
@@ -6561,101 +6917,10 @@ applyLang('ko');
         [null,0.34]]
   };
 
-  /* JKK 산재 위험등급 — BPJS가 사업장별로 부여. 등급 선택 시 요율 자동 입력 */
-  var JKK_CLASSES = {
-    "I":   { rate: 0.0024, desc: "매우 낮음 (사무·서비스)" },
-    "II":  { rate: 0.0054, desc: "낮음 (경공업·조립)" },
-    "III": { rate: 0.0089, desc: "보통 (일반 제조)" },
-    "IV":  { rate: 0.0127, desc: "높음 (중공업·금속가공)" },
-    "V":   { rate: 0.0174, desc: "매우 높음 (광업·화학)" }
-  };
-
-  var UMK_PRESETS = [
-    { code: "ID-JB-BEKASI",    label: "Kabupaten Bekasi (Jawa Barat)",  amount: 5690000 },
-    { code: "ID-JB-KARAWANG",  label: "Kabupaten Karawang (Jawa Barat)", amount: 5599000 },
-    { code: "ID-JK-JAKARTA",   label: "DKI Jakarta",                     amount: 5396761 },
-    { code: "ID-JB-BOGOR",     label: "Kabupaten Bogor (Jawa Barat)",    amount: 4877000 },
-    { code: "ID-BT-TANGERANG", label: "Kabupaten Tangerang (Banten)",    amount: 4900000 },
-    { code: "ID-JT-SEMARANG",  label: "Kota Semarang (Jawa Tengah)",     amount: 3243969 },
-    { code: "CUSTOM",          label: "직접 입력",                        amount: 0 }
-  ];
-
-  /* ================= 고객사 설정 기본값 ================= */
-  function defaultConfig(name) {
-    return {
-      id: "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      name: name || "새 고객사",
-      npwp: "",
-      worksite: "",
-      regionCode: "ID-JB-BEKASI",
-      umkAmount: 5690000,
-
-      workweek: 6,
-      otDivisor: 173,
-      otMethod: "MULT",              // MULT | FIXED
-      otFixedRate: 45000,
-      otCapPerDay: 4,
-      otCapPerWeek: 18,
-      use75Rule: false,
-      otWeekday: [{ to: 1, mult: 1.5 }, { to: null, mult: 2.0 }],
-      otHoliday6: [{ to: 7, mult: 2.0 }, { to: 8, mult: 3.0 }, { to: null, mult: 4.0 }],
-      otHoliday5: [{ to: 8, mult: 2.0 }, { to: 9, mult: 3.0 }, { to: null, mult: 4.0 }],
-
-      jkkClass: "III",
-      bpjs: {
-        kesehatan: { label: "BPJS Kesehatan",  ee: 0.01, er: 0.04,   cap: 12000000, floorUmk: true,  on: true },
-        jht:       { label: "JHT (퇴직적립)",   ee: 0.02, er: 0.037,  cap: null,     floorUmk: false, on: true },
-        jp:        { label: "JP (연금)",        ee: 0.01, er: 0.02,   cap: 10547400, floorUmk: false, on: true },
-        jkk:       { label: "JKK (산재)",       ee: 0,    er: 0.0089, cap: null,     floorUmk: false, on: true },
-        jkm:       { label: "JKM (사망)",       ee: 0,    er: 0.003,  cap: null,     floorUmk: false, on: true },
-        jkp:       { label: "JKP (실업)",       ee: 0,    er: 0.0022, cap: 5000000,  floorUmk: false, on: true }
-      },
-
-      mealAllowance: 600000,
-      transportAllowance: 450000,
-      mealAttendanceLinked: true,
-
-      ruleLabel: "2026.1",
-      effectiveFrom: "2026-01-01",
-      updatedAt: new Date().toISOString()
-    };
-  }
-
-  /* ================= 저장소 ================= */
-  var KEY = "gajione.tenants.v1";
-  var Store = {
-    state: null,
-    load: function () {
-      try {
-        var raw = localStorage.getItem(KEY);
-        if (raw) { this.state = JSON.parse(raw); }
-      } catch (e) { /* localStorage 차단 환경 */ }
-      if (!this.state || !this.state.list || !this.state.list.length) {
-        var d = defaultConfig("PT Karya Metal Presisi");
-        d.worksite = "Bekasi 공장";
-        this.state = { activeId: d.id, list: [d] };
-        this.save();
-      }
-      return this.state;
-    },
-    save: function () {
-      this.state.list.forEach(function (c) { if (!c.updatedAt) c.updatedAt = new Date().toISOString(); });
-      try { localStorage.setItem(KEY, JSON.stringify(this.state)); return true; }
-      catch (e) { return false; }
-    },
-    active: function () {
-      var st = this.state || this.load();
-      return st.list.filter(function (c) { return c.id === st.activeId; })[0] || st.list[0];
-    },
-    setActive: function (id) { this.state.activeId = id; this.save(); },
-    add: function (cfg) { this.state.list.push(cfg); this.state.activeId = cfg.id; this.save(); },
-    remove: function (id) {
-      if (this.state.list.length <= 1) return false;
-      this.state.list = this.state.list.filter(function (c) { return c.id !== id; });
-      if (this.state.activeId === id) this.state.activeId = this.state.list[0].id;
-      this.save(); return true;
-    }
-  };
+  /* ============ 공용 코어(gajione-core.js) 위임 ============ */
+  var C = window.GajiOneCore;
+  var JKK_CLASSES = C.JKK_CLASSES, UMK_PRESETS = C.UMK_PRESETS;
+  var defaultConfig = C.defaultConfig, Store = C.Tenants;
 
   /* ================= 계산 엔진 ================= */
   function otTiersFor(cfg, dayType) {
@@ -6846,7 +7111,9 @@ applyLang('ko');
 
   function renderPayroll() {
     var cfg = Store.active();
-    var data = buildDataset(cfg);
+    var imported = C.Employees.load(cfg.id);
+    var usingReal = imported.length > 0;
+    var data = usingReal ? imported : buildDataset(cfg);
     var t0 = (window.performance && performance.now) ? performance.now() : 0;
     var res = data.map(function (e) { return calcPayroll(e, cfg); });
     var ms = ((window.performance && performance.now ? performance.now() : 0) - t0).toFixed(0);
@@ -6883,7 +7150,9 @@ applyLang('ko');
     var banner = document.getElementById("engineBanner");
     if (banner) {
       banner.innerHTML =
-        '<strong>' + esc(cfg.name) + '</strong> 설정 기준으로 계산됨 · ' +
+        '<strong>' + esc(cfg.name) + '</strong> 설정 기준 · ' +
+        (usingReal ? '<span style="color:var(--success,#16a34a);">등록 직원 ' + res.length + '명</span>'
+                   : '<span style="opacity:.8;">데모 데이터 ' + res.length + '명</span>') + ' · ' +
         "주" + cfg.workweek + "일제 · 시급분모 " + cfg.otDivisor +
         " · JKK " + cfg.jkkClass + "등급 " + (cfg.bpjs.jkk.er * 100).toFixed(2) + "%" +
         " · UMK " + fmtN(M(cfg.umkAmount)) +
@@ -7011,6 +7280,20 @@ applyLang('ko');
       "</div>" +
     "</div>" +
 
+    /* 5. 직원 데이터 */
+    '<div class="card" style="margin-top:12px;">' +
+      '<div class="card-title">5. 직원 데이터</div>' +
+      '<div class="card-sub">AI Pajak 등 외부 시스템에서 내보낸 파일(.xlsx/.csv)을 올리면 컬럼을 자동으로 짝지어 가져옵니다.</div>' +
+      '<div id="cfgEmpStat" style="font-size:13px;margin:10px 0;"></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+        '<button class="btn" id="cfgEmpImportBtn">파일에서 가져오기</button>' +
+        '<input type="file" id="cfgEmpFile" accept=".xlsx,.xls,.csv" style="display:none;">' +
+        '<button class="btn btn-sm" id="cfgEmpClearBtn">등록 직원 삭제 (데모로 전환)</button>' +
+      '</div>' +
+      '<div id="cfgEmpMap" style="display:none;margin-top:12px;"></div>' +
+      '<div id="cfgEmpNote" style="font-size:12px;margin-top:8px;opacity:.85;"></div>' +
+    '</div>' +
+
     /* 액션 */
     '<div class="card" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
       '<button class="btn btn-primary" id="cfgSaveBtn">저장하고 다시 계산</button>' +
@@ -7067,6 +7350,7 @@ applyLang('ko');
 
     sec.querySelector("#cfgTenantSelect").addEventListener("change", function () {
       Store.setActive(this.value); paintSettings(); renderPayroll();
+      var ab = document.getElementById("gjAccount"); if (ab) { ab.remove(); mountAccount(); }
     });
     sec.querySelector("#cfgAddBtn").addEventListener("click", function () {
       var n = prompt("새 고객사 이름"); if (!n) return;
@@ -7146,6 +7430,78 @@ applyLang('ko');
     sec.querySelector("#cfgImportBtn").addEventListener("click", function () {
       sec.querySelector("#cfgImportFile").click();
     });
+    /* ---- 직원 데이터 ---- */
+    var empState = { rows: [], headers: [], headerRow: 0, map: {} };
+    function empStat() {
+      var n = C.Employees.count(Store.active().id);
+      var el = sec.querySelector("#cfgEmpStat");
+      if (el) el.innerHTML = n
+        ? '등록된 직원 <b>' + n + '명</b> — 급여 계산에 이 데이터가 사용됩니다.'
+        : '등록된 직원이 없습니다 — 데모 데이터 412명으로 계산 중입니다.';
+    }
+    empStat();
+    sec.querySelector("#cfgEmpImportBtn").addEventListener("click", function () {
+      sec.querySelector("#cfgEmpFile").click();
+    });
+    sec.querySelector("#cfgEmpClearBtn").addEventListener("click", function () {
+      if (!confirm("등록된 직원 데이터를 모두 지우고 데모 데이터로 돌아갈까요?")) return;
+      C.Employees.clear(Store.active().id); empStat(); renderPayroll();
+    });
+    sec.querySelector("#cfgEmpFile").addEventListener("change", async function (ev) {
+      var f = ev.target.files && ev.target.files[0]; if (!f) return;
+      var note = sec.querySelector("#cfgEmpNote");
+      note.textContent = "읽는 중…";
+      try {
+        var rows = await C.readWorkbook(f);
+        var best = 0, bc = 0;
+        for (var i = 0; i < Math.min(5, rows.length); i++) {
+          var c = rows[i].filter(function (x) { return String(x).trim() !== ""; }).length;
+          if (c > bc) { bc = c; best = i; }
+        }
+        empState.rows = rows; empState.headerRow = best;
+        empState.headers = rows[best].map(function (h) { return String(h || "").trim(); });
+        empState.map = C.autoMap(empState.headers);
+        var area = sec.querySelector("#cfgEmpMap");
+        area.style.display = "";
+        area.innerHTML = '<div style="font-size:12px;opacity:.75;margin-bottom:8px;">자동 매칭된 항목은 미리 선택돼 있습니다. 사번·이름·기본급은 필수입니다.</div>' +
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">' +
+          C.FIELDS.map(function (fd) {
+            var selI = empState.map[fd.key] === undefined ? -1 : empState.map[fd.key];
+            return '<div><div style="font-size:12px;margin-bottom:3px;">' + esc(fd.label) +
+              (fd.required ? ' <span style="color:var(--danger);">*</span>' : '') + '</div>' +
+              '<select class="input empmap" data-field="' + fd.key + '" style="width:100%;">' +
+              '<option value="-1">— 사용 안 함 —</option>' +
+              empState.headers.map(function (h, i) {
+                return '<option value="' + i + '"' + (i === selI ? ' selected' : '') + '>' + esc(h || ('열 ' + (i + 1))) + '</option>';
+              }).join('') + '</select></div>';
+          }).join('') + '</div>' +
+          '<button class="btn btn-primary" id="cfgEmpApply" style="margin-top:10px;">가져오기 실행</button>';
+        area.querySelectorAll('.empmap').forEach(function (selEl) {
+          selEl.addEventListener('change', function () {
+            var v = Number(this.value);
+            if (v < 0) delete empState.map[this.getAttribute('data-field')];
+            else empState.map[this.getAttribute('data-field')] = v;
+          });
+        });
+        sec.querySelector('#cfgEmpApply').addEventListener('click', function () {
+          var need = ['no','name','basic'].filter(function (k) { return empState.map[k] === undefined; });
+          if (need.length) { note.textContent = '필수 컬럼 미지정: ' + need.join(', '); note.style.color = 'var(--danger)'; return; }
+          var r = C.applyMapping(empState.rows, empState.headerRow, empState.map);
+          C.Employees.save(Store.active().id, r.employees);
+          note.style.color = '';
+          note.innerHTML = '가져오기 완료 — 정상 <b>' + r.employees.length + '명</b>' +
+            (r.errors.length ? ' · <span style="color:var(--danger);">오류 ' + r.errors.length + '행 (사번·이름·기본급 누락 또는 중복)</span>' : '');
+          area.style.display = 'none';
+          empStat(); renderPayroll();
+        });
+        note.textContent = '컬럼 ' + empState.headers.length + '개 인식 · 자동 매칭 ' + Object.keys(empState.map).length + '개 — 아래에서 확인 후 실행하세요.';
+      } catch (e) {
+        note.style.color = 'var(--danger)';
+        note.textContent = '읽기 실패: ' + e.message;
+      }
+      ev.target.value = '';
+    });
+
     sec.querySelector("#cfgImportFile").addEventListener("change", function (ev) {
       var f = ev.target.files && ev.target.files[0]; if (!f) return;
       var fr = new FileReader();
@@ -7162,15 +7518,53 @@ applyLang('ko');
     });
   }
 
+
+  /* ================= 계정 영역 (사이드바) ================= */
+  function mountAccount() {
+    var footer = document.querySelector(".sidebar-footer");
+    if (!footer || document.getElementById("gjAccount")) return;
+    var acct = C.Account.get();
+    var cfg = Store.active();
+
+    var box = document.createElement("div");
+    box.id = "gjAccount";
+    box.style.cssText = "margin-bottom:10px;padding:10px 11px;border-radius:10px;" +
+      "background:var(--accent-soft,rgba(59,130,246,.10));border:1px solid var(--border,rgba(128,128,128,.25));";
+
+    if (acct) {
+      box.innerHTML =
+        '<div style="font-size:12.5px;font-weight:700;line-height:1.35;">' + esc(acct.contactName || acct.email) + "</div>" +
+        '<div style="font-size:11px;opacity:.8;margin-top:2px;word-break:break-all;">' + esc(acct.email || "") + "</div>" +
+        '<div style="font-size:11px;opacity:.85;margin-top:5px;padding-top:5px;border-top:1px solid var(--border,rgba(128,128,128,.22));">' +
+          esc(cfg.name) + (acct.position ? " · " + esc(acct.position) : "") + "</div>" +
+        '<button type="button" id="gjLogout" style="margin-top:8px;width:100%;padding:5px 0;font-size:11.5px;font-weight:700;' +
+          'cursor:pointer;border-radius:7px;border:1px solid var(--border,rgba(128,128,128,.3));background:transparent;color:inherit;">로그아웃</button>';
+    } else {
+      box.innerHTML =
+        '<div style="font-size:12px;opacity:.85;line-height:1.5;">로그인하지 않은 상태입니다.<br>' +
+        '<span style="opacity:.7;">데모 모드로 열람 중</span></div>' +
+        '<a href="auth.html" style="display:block;margin-top:8px;text-align:center;padding:5px 0;font-size:11.5px;font-weight:700;' +
+          'border-radius:7px;border:1px solid var(--border,rgba(128,128,128,.3));text-decoration:none;color:inherit;">로그인 / 회원가입</a>';
+    }
+    footer.insertBefore(box, footer.firstChild);
+
+    var out = document.getElementById("gjLogout");
+    if (out) out.addEventListener("click", function () {
+      if (!confirm("로그아웃할까요? 고객사 설정과 직원 데이터는 그대로 보관됩니다.")) return;
+      C.Account.clear();
+      location.href = "auth.html";
+    });
+  }
+
   /* ================= 초기화 ================= */
-  Store.load();
+  C.Tenants.load();
   window.GajiOne = {
     calcPayroll: calcPayroll, buildDataset: buildDataset, render: renderPayroll,
     store: Store, ter: TER, jkkClasses: JKK_CLASSES, umkPresets: UMK_PRESETS,
     config: function () { return Store.active(); }, results: [], dataset: []
   };
 
-  function boot() { injectBanner(); mountSettings(); renderPayroll(); }
+  function boot() { mountAccount(); injectBanner(); mountSettings(); renderPayroll(); }
   if (document.readyState === "complete") boot();
   else window.addEventListener("load", boot);
 })();
