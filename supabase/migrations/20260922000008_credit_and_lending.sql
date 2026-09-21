@@ -15,7 +15,10 @@ create table credit_score_factors (
   code varchar(40) not null unique,
   name varchar(255) not null,
   weight numeric(5,2) not null,                  -- 30 = 30%
-  max_points integer not null,
+  -- Numeric, not integer: the weights divide the 550 points above the base
+  -- into 165 / 137.5 / 137.5 / 110, and rounding those to whole numbers puts
+  -- the maximum at 851 instead of 850.
+  max_points numeric(8,2) not null,
   source varchar(100),                           -- 근태마감(G1) / 대출상환원장 / 인사마스터
   active boolean not null default true,
   effective_from date not null default current_date,
