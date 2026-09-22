@@ -5,6 +5,7 @@ import { getSession, canSeeSensitive } from '@/lib/auth/session';
 import { getEmployee, listSalaryHistory } from '@/lib/data-access/employees';
 import { listDepartments, listPositions } from '@/lib/data-access/org';
 import { formatRupiah, formatDate, employmentLabel } from '@/lib/format';
+import { SalaryChange } from '@/components/salary-change';
 
 export default async function EmployeeDetailPage({
   params,
@@ -20,6 +21,7 @@ export default async function EmployeeDetailPage({
   if (!employee) notFound();
 
   const sensitive = canSeeSensitive(session.role) || session.employee_id === employee.id;
+  const canEdit = session.role === 'hr_admin' || session.role === 'operator_admin';
 
   // Salary history is only fetched for viewers allowed to see amounts. Reading
   // it and hiding it in the component would still ship the numbers.
@@ -46,11 +48,21 @@ export default async function EmployeeDetailPage({
             {position?.name ?? '직급 미지정'}
           </p>
         </div>
-        {employee.resign_date && (
-          <span className="rounded bg-neutral-200 px-2 py-1 text-xs text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-            {formatDate(employee.resign_date)} 퇴사
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {employee.resign_date && (
+            <span className="rounded bg-neutral-200 px-2 py-1 text-xs text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+              {formatDate(employee.resign_date)} 퇴사
+            </span>
+          )}
+          {canEdit && (
+            <Link
+              href={`/employees/${employee.id}/edit`}
+              className="rounded-md border border-neutral-300 px-4 py-1.5 text-sm dark:border-neutral-700"
+            >
+              정보 수정
+            </Link>
+          )}
+        </div>
       </header>
 
       <section className="mt-8">
@@ -86,7 +98,12 @@ export default async function EmployeeDetailPage({
 
       {sensitive && (
         <section className="mt-8">
-          <h2 className="text-base font-semibold">급여 변경 이력</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-base font-semibold">급여 변경 이력</h2>
+            {canEdit && (
+              <SalaryChange employeeId={employee.id} currentSalary={employee.base_salary} />
+            )}
+          </div>
           {history.length === 0 ? (
             <p className="mt-3 text-sm text-neutral-500">기록이 없습니다.</p>
           ) : (
