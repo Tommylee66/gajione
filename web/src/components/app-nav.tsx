@@ -14,6 +14,7 @@ const LINKS = [
   { href: '/loans', label: '대출·신용' },
   { href: '/devices', label: '장치' },
   { href: '/reports', label: '리포트' },
+  { href: '/admin', label: '운영', operatorOnly: true },
 ];
 
 /**
@@ -50,7 +51,9 @@ export async function AppNav() {
     <nav className="border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
         <span className="text-sm font-semibold">GajiOne</span>
-        {LINKS.map((l) => (
+        {LINKS.filter(
+          (l) => !('operatorOnly' in l) || session.role === 'operator_admin'
+        ).map((l) => (
           <Link
             key={l.href}
             href={l.href}
