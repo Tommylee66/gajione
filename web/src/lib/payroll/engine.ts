@@ -149,12 +149,15 @@ export interface EngineOutput {
 }
 
 /**
- * PTKP status decides which TER schedule applies (PMK 168/2023).
+ * PTKP status decides which TER schedule applies.
  *
- * ⚠️ Confirm with the company's tax adviser before the first live run. The
- * mapping is regulatory, it is not printed anywhere in the mockups, and
- * getting it wrong withholds the wrong amount for everyone in the affected
- * band — which is recoverable but embarrassing, and visible on a tax filing.
+ * Taken from PP 58/2023 art. 2(4) verbatim, not inferred:
+ *   A — tidak kawin tanpa tanggungan (TK/0), tidak kawin dengan 1 tanggungan
+ *       (TK/1), kawin tanpa tanggungan (K/0)
+ *   B — TK/2, TK/3, K/1, K/2
+ *   C — K/3
+ * The regulation's own PTKP figures line up: A is 54/58.5 juta, B 63/67.5
+ * juta, C 72 juta.
  */
 const TER_CATEGORY: Record<string, string> = {
   'TK/0': 'A',

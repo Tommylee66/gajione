@@ -86,6 +86,24 @@ export async function createRunAction(period: string): Promise<RunResult> {
  * order, a rate looked up by a moving date. Finding that here costs a rerun;
  * finding it after payment costs 412 corrections.
  */
+/**
+ * A readable reason for a thrown value.
+ *
+ * PostgREST errors arrive as plain objects with `message`/`code`/`details`,
+ * not as Error instances, so `e instanceof Error` skips every database
+ * failure and the screen reports only "it failed" — which is the one thing
+ * the person already knows.
+ */
+function describeError(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (e && typeof e === 'object') {
+    const o = e as { message?: string; details?: string; hint?: string; code?: string };
+    const parts = [o.message, o.details, o.hint].filter(Boolean);
+    if (parts.length > 0) return `${parts.join(' · ')}${o.code ? ` (${o.code})` : ''}`;
+  }
+  return String(e);
+}
+
 export async function computeRunAction(runId: string): Promise<RunResult> {
   try {
     const session = await requirePayrollRole();
@@ -165,7 +183,7 @@ export async function computeRunAction(runId: string): Promise<RunResult> {
       warnings: first.results.reduce((s, r) => s + r.warnings.length, 0),
     };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : '계산에 실패했습니다.' };
+    return { ok: false, error: `계산에 실패했습니다: ${describeError(e)}` };
   }
 }
 
@@ -212,9 +230,25 @@ async function loadEngineInput(
     supabase.from('umk_rates').select('region, amount'),
   ]);
 
-  const taxRows = (taxRes.data ?? []).filter((t) => t.effective_to === null);
-  if (taxRows.length === 0) {
+  // Exactly one version, never the union of every open one. Two schedules
+  // left open at the same time would merge into a single set with overlapping
+  // bands, and the rate an employee got would depend on row order — which is
+  // not a rule anybody could defend to a tax office.
+  const openTax = (taxRes.data ?? []).filter((t) => t.effective_to === null);
+  if (openTax.length === 0) {
     return { error: '적용 중인 PPh 21 세율표가 없습니다. 정책·요율 화면에서 먼저 등록하세요.' };
+  }
+  const chosenVersion = openTax.reduce((best, t) =>
+    String(t.effective_from) > String(best.effective_from) ? t : best
+  ).version as string;
+  const taxRows = openTax.filter((t) => t.version === chosenVersion);
+  const otherOpen = [...new Set(openTax.map((t) => t.version as string))].filter(
+    (v) => v !== chosenVersion
+  );
+  if (otherOpen.length > 0) {
+    return {
+      error: `적용 중인 세율표가 ${otherOpen.length + 1}개입니다 (${chosenVersion}, ${otherOpen.join(', ')}). 하나만 남기고 종료한 뒤 다시 계산하세요.`,
+    };
   }
   const policy = policyRes.data;
   if (!policy) return { error: '급여 정책이 설정되어 있지 않습니다.' };
@@ -295,9 +329,36 @@ async function persist(
   hash: string
 ) {
   const input = loaded.value;
+
+  // Anything downstream that points at these items blocks the clear-out, by
+  // design: a distributed payslip refers to a figure somebody has already been
+  // shown, and a remitted deduction to money already sent. Checked up front so
+  // the refusal names the reason, rather than the delete failing silently and
+  // the insert coming back as a duplicate-key violation nobody can read.
+  const { data: oldItems } = await supabase
+    .from('payroll_items')
+    .select('id')
+    .eq('run_id', runId);
+  const oldIds = (oldItems ?? []).map((i) => i.id as string);
+  if (oldIds.length > 0) {
+    const [slipRes, execRes] = await Promise.all([
+      supabase.from('payslips').select('id', { count: 'exact', head: true }).in('payroll_item_id', oldIds),
+      supabase.from('deduction_executions').select('id', { count: 'exact', head: true }).eq('run_id', runId),
+    ]);
+    const blockers: string[] = [];
+    if ((slipRes.count ?? 0) > 0) blockers.push(`배포된 명세서 ${slipRes.count}건`);
+    if ((execRes.count ?? 0) > 0) blockers.push(`집행된 급여공제 ${execRes.count}건`);
+    if (blockers.length > 0) {
+      throw new Error(
+        `${blockers.join(' · ')}이(가) 이 차수를 참조하고 있어 다시 계산할 수 없습니다. 정정 차수로 처리하세요.`
+      );
+    }
+  }
+
   // Lines cascade from their item, so clearing the items clears everything
   // derived. Safe to re-run: only an unlocked run reaches here.
-  await supabase.from('payroll_items').delete().eq('run_id', runId);
+  const { error: clearError } = await supabase.from('payroll_items').delete().eq('run_id', runId);
+  if (clearError) throw clearError;
 
   const items = output.results.map((r) => ({
     company_id: companyId,

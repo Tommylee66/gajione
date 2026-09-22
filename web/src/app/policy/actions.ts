@@ -87,6 +87,26 @@ export async function uploadTaxTableAction(input: {
       return { ok: false, error: `${version} 은 이미 등록되어 있습니다. 다른 버전 이름을 쓰세요.` };
     }
 
+    // A schedule that starts on or before one already in force cannot simply
+    // be loaded: closing only earlier versions would leave two open at once,
+    // and the calculation would then read both sets of bands as one schedule
+    // with overlapping ranges. Refused rather than guessed, because the right
+    // answer — retire the newer one, or pick a different date — is the
+    // operator's call and the wrong one withholds the wrong tax.
+    const { data: open } = await supabase
+      .from('tax_tables')
+      .select('version, effective_from')
+      .is('effective_to', null)
+      .gte('effective_from', input.effectiveFrom)
+      .limit(1);
+    if ((open ?? []).length > 0) {
+      const blocking = open![0];
+      return {
+        ok: false,
+        error: `${blocking.version} 이(가) ${blocking.effective_from}부터 적용 중입니다. 시작일이 그보다 빠른 세율표는 올릴 수 없습니다. 기존 버전을 먼저 종료하세요.`,
+      };
+    }
+
     // Close the version that was in force, so a lookup by date resolves to
     // exactly one schedule.
     const dayBefore = new Date(`${input.effectiveFrom}T00:00:00Z`);
