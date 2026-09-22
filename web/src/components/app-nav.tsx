@@ -11,6 +11,7 @@ const LINKS = [
   { href: '/policy', label: '정책·요율' },
   { href: '/payroll', label: '급여' },
   { href: '/loans', label: '대출·신용' },
+  { href: '/devices', label: '장치' },
 ];
 
 /**
