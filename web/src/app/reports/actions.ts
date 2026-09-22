@@ -311,18 +311,30 @@ async function build(supabase: Supabase, def: ReportDef, p: ReportParams): Promi
     case 'bpjs_period': {
       const { items } = await itemsFor({ runId: p.runId });
       const lines = await linesFor(items.map((i) => i.id as string));
+      const er = await employerRates(supabase, [p.runId!]);
       return items.map((i) => {
         const m = lines.get(i.id as string) ?? new Map<string, number>();
-        const employeeTotal = [...m.entries()]
-          .filter(([c]) => c.startsWith('BPJS_'))
-          .reduce((s, [, v]) => s + v, 0);
+        const base = Number(i.bpjs_base);
+        const cost = (prog: string) => employerCost(er, p.runId!, base, prog);
+        const employerTotal = ['kesehatan', 'jht', 'jp', 'jkk', 'jkm'].reduce(
+          (s, prog) => s + cost(prog),
+          0
+        );
         return {
           ...who(i.employee_id as string),
-          bpjs_base: Number(i.bpjs_base),
+          bpjs_base: base,
           kesehatan: m.get('BPJS_KESEHATAN') ?? 0,
           jht: m.get('BPJS_JHT') ?? 0,
           jp: m.get('BPJS_JP') ?? 0,
-          employee_total: employeeTotal,
+          employee_total: [...m.entries()]
+            .filter(([c]) => c.startsWith('BPJS_'))
+            .reduce((s, [, v]) => s + v, 0),
+          employer_kesehatan: cost('kesehatan'),
+          employer_jht: cost('jht'),
+          employer_jp: cost('jp'),
+          employer_jkk: cost('jkk'),
+          employer_jkm: cost('jkm'),
+          employer_total: employerTotal,
         };
       });
     }
@@ -332,14 +344,21 @@ async function build(supabase: Supabase, def: ReportDef, p: ReportParams): Promi
         periodTo: p.to!.slice(0, 7),
       });
       const lines = await linesFor(items.map((i) => i.id as string));
+      const er = await employerRates(supabase, [...runsById.keys()]);
       return items.map((i) => {
         const m = lines.get(i.id as string) ?? new Map<string, number>();
+        const runId = i.run_id as string;
+        const base = Number(i.bpjs_base);
         return {
-          period: runsById.get(i.run_id as string)?.period ?? '',
+          period: runsById.get(runId)?.period ?? '',
           ...who(i.employee_id as string),
           employee_total: [...m.entries()]
             .filter(([c]) => c.startsWith('BPJS_'))
             .reduce((s, [, v]) => s + v, 0),
+          employer_total: ['kesehatan', 'jht', 'jp', 'jkk', 'jkm'].reduce(
+            (s, prog) => s + employerCost(er, runId, base, prog),
+            0
+          ),
         };
       });
     }
@@ -347,15 +366,25 @@ async function build(supabase: Supabase, def: ReportDef, p: ReportParams): Promi
       const b = yearBounds(p.year!);
       const { items } = await itemsFor({ periodFrom: b.periodFrom, periodTo: b.periodTo });
       const lines = await linesFor(items.map((i) => i.id as string));
-      const agg = new Map<string, { kes: number; jht: number; jp: number; total: number }>();
+      const er = await employerRates(supabase, [
+        ...new Set(items.map((i) => i.run_id as string)),
+      ]);
+      const agg = new Map<
+        string,
+        { kes: number; jht: number; jp: number; total: number; employer: number }
+      >();
       for (const i of items) {
         const key = i.employee_id as string;
         const m = lines.get(i.id as string) ?? new Map<string, number>();
-        const a = agg.get(key) ?? { kes: 0, jht: 0, jp: 0, total: 0 };
+        const a = agg.get(key) ?? { kes: 0, jht: 0, jp: 0, total: 0, employer: 0 };
         a.kes += m.get('BPJS_KESEHATAN') ?? 0;
         a.jht += m.get('BPJS_JHT') ?? 0;
         a.jp += m.get('BPJS_JP') ?? 0;
         a.total += [...m.entries()].filter(([c]) => c.startsWith('BPJS_')).reduce((s, [, v]) => s + v, 0);
+        a.employer += ['kesehatan', 'jht', 'jp', 'jkk', 'jkm'].reduce(
+          (s, prog) => s + employerCost(er, i.run_id as string, Number(i.bpjs_base), prog),
+          0
+        );
         agg.set(key, a);
       }
       return [...agg.entries()].map(([id, a]) => ({
@@ -364,6 +393,7 @@ async function build(supabase: Supabase, def: ReportDef, p: ReportParams): Promi
         jht_total: a.jht,
         jp_total: a.jp,
         employee_total: a.total,
+        employer_total: a.employer,
       }));
     }
 
@@ -602,6 +632,59 @@ async function build(supabase: Supabase, def: ReportDef, p: ReportParams): Promi
     default:
       return [];
   }
+}
+
+/**
+ * Employer BPJS cost, computed rather than stored.
+ *
+ * Only the employee's share reaches a payslip, so nothing in payroll_lines
+ * carries the employer side — but the filing and the cost report both need it.
+ * It is derived from the rate version the run itself recorded, never from
+ * whatever is in force today: a run has to keep costing what it cost.
+ */
+async function employerRates(supabase: Supabase, runIds: string[]) {
+  if (runIds.length === 0) return new Map<string, Map<string, number>>();
+  const [runRes, rateRes] = await Promise.all([
+    supabase.from('payroll_runs').select('id, bpjs_rate_version').in('id', runIds),
+    supabase.from('bpjs_rates').select('version, program, employer_rate, wage_cap'),
+  ]);
+  const byVersion = new Map<string, { program: string; rate: number; cap: number | null }[]>();
+  for (const r of rateRes.data ?? []) {
+    const v = r.version as string;
+    const list = byVersion.get(v) ?? [];
+    list.push({
+      program: r.program as string,
+      rate: Number(r.employer_rate),
+      cap: r.wage_cap === null ? null : Number(r.wage_cap),
+    });
+    byVersion.set(v, list);
+  }
+  const byRun = new Map<string, Map<string, number>>();
+  for (const run of runRes.data ?? []) {
+    const version = (run.bpjs_rate_version as string | null) ?? '';
+    const rates = byVersion.get(version) ?? [];
+    byRun.set(run.id as string, new Map(rates.map((r) => [r.program, r.rate])));
+    // The cap belongs with the rate, so it travels in a parallel map keyed the
+    // same way; a programme with no cap stores Infinity so the caller can
+    // apply Math.min unconditionally.
+    byRun.set(
+      `${run.id}:caps`,
+      new Map(rates.map((r) => [r.program, r.cap === null ? Number.POSITIVE_INFINITY : r.cap]))
+    );
+  }
+  return byRun;
+}
+
+function employerCost(
+  byRun: Map<string, Map<string, number>>,
+  runId: string,
+  bpjsBase: number,
+  program: string
+): number {
+  const rate = byRun.get(runId)?.get(program) ?? 0;
+  if (rate <= 0) return 0;
+  const cap = byRun.get(`${runId}:caps`)?.get(program) ?? Number.POSITIVE_INFINITY;
+  return Math.round(Math.min(bpjsBase, cap) * rate);
 }
 
 async function mandateIndex(supabase: Supabase) {
