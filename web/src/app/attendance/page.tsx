@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { listDevices, listDaysInPeriod, listAnomalies } from '@/lib/data-access/attendance';
 import { evaluateG1 } from '@/lib/attendance/build-days';
+import { findWeeklyOverages } from '@/lib/attendance/overtime';
 import { AttendancePanel } from '@/components/attendance-panel';
 
 /** Cut-off runs 26th to 25th by default (see payroll_policies); the period
@@ -61,7 +62,13 @@ export default async function AttendancePage({
     devicesSynced: synced,
     openAnomalies: anomalies.filter((a) => a.status === 'open').length,
     otMinutesWithoutApproval: Math.max(0, otMinutes - approvedMinutes),
-    employeesOverWeeklyCap: 0,
+    // Counted properly now that the overtime screen shares the helper; it
+    // used to be hardcoded to zero, which made the check decorative.
+    employeesOverWeeklyCap: new Set(
+      findWeeklyOverages(days.map((d) => ({ employee_id: d.employee_id, work_date: d.work_date, ot_minutes: d.ot_minutes }))).map(
+        (o) => o.employee_id
+      )
+    ).size,
   });
 
   const canEdit = ['hr_admin', 'payroll_staff', 'operator_admin'].includes(session.role);
@@ -75,6 +82,9 @@ export default async function AttendancePage({
         </Link>
         <Link href="/shifts" className="text-blue-600 underline">
           교대 · 스케줄
+        </Link>
+        <Link href="/overtime" className="text-blue-600 underline">
+          초과근무 승인
         </Link>
       </div>
 
