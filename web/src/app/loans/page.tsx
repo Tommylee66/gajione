@@ -270,11 +270,11 @@ export default async function LoansPage() {
           600~699점 수동심사, 600점 미만은 전달하지 않습니다. 점수와 무관하게 정보제공 동의가
           없거나 공제 여력을 넘으면 전달되지 않습니다.
         </p>
-        {/* Stated on the screen, not only in a code comment: the curve is not
-            signed off, and a score people are refused on has to be defensible. */}
-        <p className="mt-2 text-sm text-amber-700 dark:text-amber-500">
-          ⚠️ 항목별 정규화 곡선은 잠정값입니다. 실제 거절 근거로 쓰기 전에 신용리스크 기준 확정이
-          필요합니다.
+        {/* The curve is now a setting, not a hardcoded guess — but somebody
+            still has to decide it, and the screen says where. */}
+        <p className="mt-2 text-sm text-neutral-500">
+          항목별 환산 곡선은 정책·요율 화면의 &lsquo;신용점수 산출 곡선&rsquo;에서 설정합니다.
+          현재 값은 초기값이므로, 실제 거절 근거로 쓰기 전에 신용리스크 기준을 확정하세요.
         </p>
       </section>
     </main>

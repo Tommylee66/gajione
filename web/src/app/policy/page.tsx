@@ -23,6 +23,7 @@ import {
   type PayrollTypeRow,
   type PositionRow,
 } from '@/components/policy-extra';
+import { CurvePanel, type CurveFactorRow } from '@/components/curve-panel';
 
 export default async function PolicyPage() {
   const session = await getSession();
@@ -57,7 +58,7 @@ export default async function PolicyPage() {
     supabase.from('gate_rules').select('threshold').eq('code', 'G3_NET_VARIANCE').maybeSingle(),
     supabase
       .from('credit_score_factors')
-      .select('code, name, weight, max_points, source')
+      .select('code, name, weight, max_points, source, curve')
       .eq('active', true)
       .order('weight', { ascending: false }),
     supabase
@@ -209,6 +210,10 @@ export default async function PolicyPage() {
           companyBasis={(policyRes.data?.proration_basis as string) ?? 'calendar'}
           departments={(deptRes.data ?? []) as unknown as DepartmentRow[]}
           canEdit={canEditPolicy}
+        />
+        <CurvePanel
+          rows={(factorRes.data ?? []) as unknown as CurveFactorRow[]}
+          canEdit={isOperator}
         />
         <PolicyHistorySection rows={auditRows} />
       </div>

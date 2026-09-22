@@ -13,6 +13,7 @@ import {
   type FactorInput,
   type ScoreFactor,
 } from '@/lib/credit/scoring';
+import { withDefaults, type Curve } from '@/lib/credit/curves';
 
 const HR_ROLES = ['hr_admin', 'operator_admin'];
 
@@ -64,6 +65,17 @@ export async function scoreEmployeesAction(runId: string): Promise<LoanActionRes
 
     const factors = (factorRes.data ?? []) as unknown as ScoreFactor[];
     if (factors.length === 0) return { ok: false, error: '신용점수 항목이 설정되어 있지 않습니다.' };
+
+    // The curves come from the same rows as the weights. Read here rather than
+    // defaulted in the scoring functions, so a curve set on the policy screen
+    // is the curve the score is actually built from.
+    const curves = new Map<string, Curve>(
+      (factorRes.data ?? []).map((f) => [
+        f.code as string,
+        withDefaults(f.code as string, (f as { curve?: unknown }).curve),
+      ])
+    );
+    const curveOf = (code: string) => curves.get(code) ?? withDefaults(code, null);
     const employees = empRes.data ?? [];
     if (employees.length === 0) return { ok: false, error: '재직 중인 직원이 없습니다.' };
 
@@ -114,10 +126,10 @@ export async function scoreEmployeesAction(runId: string): Promise<LoanActionRes
       const rate = workDays ? Math.min(100, (Number(workDays) / 22) * 100) : 0;
 
       const inputs: FactorInput[] = [
-        normalizeAttendance(rate, absences),
-        normalizeRepayment(history.completed, history.late),
-        normalizeTenure(years, (e.employment_type as string) ?? 'contract'),
-        normalizePayStability(nets),
+        normalizeAttendance(rate, absences, curveOf('attendance')),
+        normalizeRepayment(history.completed, history.late, curveOf('repayment')),
+        normalizeTenure(years, (e.employment_type as string) ?? 'contract', curveOf('tenure')),
+        normalizePayStability(nets, curveOf('pay_stability')),
       ];
       const result = computeScore(factors, inputs);
       detailsByEmployee.set(id, result);

@@ -45,6 +45,8 @@ export interface ScoreResult {
   details: ScoreDetail[];
 }
 
+import { CURVE_DEFAULTS, type Curve } from './curves';
+
 export const BASE_POINTS = 300;
 export const MAX_SCORE = 850;
 /** The points the weighted factors divide between them. */
@@ -246,17 +248,22 @@ function downgrade(current: Band, to: Band): Band {
 /**
  * Normalisation of the raw signals into 0–100.
  *
- * Kept here rather than in SQL so the mapping is visible next to the scoring
- * it feeds, and so a change to it is a code change somebody reviews.
- *
- * ⚠️ The curves below are provisional. Where the bands sit — how fast a score
- * should fall for a point of absenteeism, what a year of tenure is worth — is
- * a credit-risk decision, not an engineering one, and needs signing off before
- * anyone is turned down on the strength of it. The mockup's worked example
- * (99.1% attendance → 92/100) implies a steeper curve than these.
+ * The shapes are here; the numbers that set them are in credit_score_factors
+ * and reach these functions as `curve`. Where a score falls for a point of
+ * absenteeism is a credit-risk decision, and it should not take a deployment
+ * to change one.
  */
-export function normalizeAttendance(attendanceRate: number, absences: number): FactorInput {
-  const value = clamp(attendanceRate - absences * 5, 0, 100);
+export function normalizeAttendance(
+  attendanceRate: number,
+  absences: number,
+  curve: Curve = CURVE_DEFAULTS.attendance
+): FactorInput {
+  const zeroAt = Number(curve.zero_at_percent ?? 0);
+  // Rescaled between the zero point and 100 rather than taken as the rate
+  // itself: at zeroAt = 90, 95% attendance is halfway, not 95 out of 100.
+  const scaled =
+    zeroAt >= 100 ? 0 : ((clamp(attendanceRate, zeroAt, 100) - zeroAt) / (100 - zeroAt)) * 100;
+  const value = clamp(scaled - absences * Number(curve.absence_penalty ?? 0), 0, 100);
   return {
     code: 'attendance',
     normalized: value,
@@ -264,32 +271,40 @@ export function normalizeAttendance(attendanceRate: number, absences: number): F
   };
 }
 
-export function normalizeRepayment(completedLoans: number, lateCount: number): FactorInput {
-  // No history is not a bad history, but it is not a good one either: a
-  // neutral 60 rather than 0 or 100.
-  //
+export function normalizeRepayment(
+  completedLoans: number,
+  lateCount: number,
+  curve: Curve = CURVE_DEFAULTS.repayment
+): FactorInput {
+  const noHistory = completedLoans === 0 && lateCount === 0;
   // Depth counts as well as cleanliness. One repaid loan and no lateness is
-  // evidence, but it is thin evidence — scoring it the same as three would
-  // let a single small advance max the factor out.
-  const value =
-    completedLoans === 0 && lateCount === 0
-      ? 60
-      : 70 + Math.min(completedLoans, 3) * 10 - lateCount * 30;
+  // evidence, but it is thin evidence — scoring it the same as three would let
+  // a single small advance max the factor out.
+  const value = noHistory
+    ? Number(curve.no_history ?? 0)
+    : Number(curve.base ?? 0) +
+      Math.min(completedLoans, Number(curve.max_completed ?? 0)) * Number(curve.per_completed ?? 0) -
+      lateCount * Number(curve.late_penalty ?? 0);
   return {
     code: 'repayment',
     normalized: clamp(value, 0, 100),
-    raw_metric:
-      completedLoans === 0 && lateCount === 0
-        ? '대출 이력 없음'
-        : `기존대출${completedLoans}건 완주·연체${lateCount}회`,
+    raw_metric: noHistory ? '대출 이력 없음' : `기존대출${completedLoans}건 완주·연체${lateCount}회`,
   };
 }
 
-export function normalizeTenure(years: number, employmentType: string): FactorInput {
+export function normalizeTenure(
+  years: number,
+  employmentType: string,
+  curve: Curve = CURVE_DEFAULTS.tenure
+): FactorInput {
   const permanent = employmentType === 'permanent';
-  // Probation is a lending restriction in the product rules, not a low score.
   const probation = employmentType === 'probation';
-  const value = probation ? 0 : clamp(years * 18, 0, 90) + (permanent ? 10 : 0);
+  if (probation && curve.probation_scores_zero !== false) {
+    return { code: 'tenure', normalized: 0, raw_metric: `근속${years.toFixed(1)}년·수습` };
+  }
+  const value =
+    clamp(years * Number(curve.per_year ?? 0), 0, Number(curve.years_cap ?? 100)) +
+    (permanent ? Number(curve.permanent_bonus ?? 0) : 0);
   return {
     code: 'tenure',
     normalized: clamp(value, 0, 100),
@@ -302,19 +317,55 @@ export function normalizeTenure(years: number, employmentType: string): FactorIn
  * whose take-home swings is not a worse worker, but their capacity to carry a
  * fixed instalment is genuinely less predictable.
  */
-export function normalizePayStability(nets: number[]): FactorInput {
+export function normalizePayStability(
+  nets: number[],
+  curve: Curve = CURVE_DEFAULTS.pay_stability
+): FactorInput {
   const usable = nets.filter((n) => n > 0);
-  if (usable.length < 2) {
-    return { code: 'pay_stability', normalized: 50, raw_metric: '급여 이력 부족 (2개월 미만)' };
+  const minMonths = Number(curve.min_months ?? 2);
+  if (usable.length < minMonths) {
+    return {
+      code: 'pay_stability',
+      normalized: Number(curve.insufficient_score ?? 50),
+      raw_metric: `급여 이력 부족 (${minMonths}개월 미만)`,
+    };
   }
   const mean = usable.reduce((s, n) => s + n, 0) / usable.length;
   const variance = usable.reduce((s, n) => s + (n - mean) ** 2, 0) / usable.length;
   const cv = mean > 0 ? Math.sqrt(variance) / mean : 1;
   return {
     code: 'pay_stability',
-    normalized: clamp(100 - cv * 400, 0, 100),
+    normalized: clamp(100 - cv * Number(curve.cv_multiplier ?? 400), 0, 100),
     raw_metric: `${usable.length}개월 실수령 변동계수 ${(cv * 100).toFixed(1)}%`,
   };
+}
+
+/**
+ * Runs one factor's curve against sample inputs, for the preview on the policy
+ * screen. Routed through the same functions the scorer uses, so what the
+ * screen shows is what the model will do.
+ */
+export function normalizeSample(code: string, curve: Curve, args: number[]): number {
+  switch (code) {
+    case 'attendance':
+      return normalizeAttendance(args[0], args[1], curve).normalized;
+    case 'repayment':
+      return normalizeRepayment(args[0], args[1], curve).normalized;
+    case 'tenure':
+      return normalizeTenure(
+        args[0],
+        args[1] === 1 ? 'permanent' : args[1] === 0 ? 'contract' : 'probation',
+        curve
+      ).normalized;
+    case 'pay_stability': {
+      if (args[0] < 0) return normalizePayStability([1_000_000], curve).normalized;
+      // A two-month series with the requested coefficient of variation.
+      const cv = args[0];
+      return normalizePayStability([1_000_000 * (1 - cv), 1_000_000 * (1 + cv)], curve).normalized;
+    }
+    default:
+      return 0;
+  }
 }
 
 function clamp(n: number, lo: number, hi: number): number {

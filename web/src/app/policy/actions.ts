@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { requireSession } from '@/lib/auth/session';
 import { parseTaxTableCsv, type TaxParseError } from '@/lib/rates/tax-table-csv';
 import { pointsForWeight, validateWeights } from '@/lib/credit/scoring';
+import { validateCurve } from '@/lib/credit/curves';
 
 /**
  * Statutory rates are the operator's to change, not a tenant's. BPJS
@@ -642,4 +643,91 @@ export async function updatePayrollTypeAction(input: {
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : '저장에 실패했습니다.' };
   }
+}
+
+/**
+ * Changes the scoring curves.
+ *
+ * Operator-only for the same reason the weights are: credit_score_factors has
+ * no company_id, so one customer's risk appetite would become everyone's.
+ *
+ * Issued scores do not move — credit_score_details keeps the points each
+ * factor actually contributed — so a change applies from the next scoring run
+ * and a decision already made still explains itself under the rules that
+ * applied when it was made.
+ */
+export async function updateCreditCurvesAction(
+  curves: { code: string; curve: Record<string, number | boolean> }[]
+): Promise<Result> {
+  try {
+    const session = await requireOperator();
+
+    const problems = curves.flatMap((c) => validateCurve(c.code, c.curve));
+    if (problems.length > 0) {
+      return {
+        ok: false,
+        error: problems.map((p) => `${p.code}.${p.key}: ${p.reason}`).join(' · '),
+      };
+    }
+
+    const supabase = await createClient();
+    const { data: current } = await supabase
+      .from('credit_score_factors')
+      .select('code, curve')
+      .eq('active', true);
+    const before = new Map((current ?? []).map((c) => [c.code as string, c.curve]));
+
+    const changed: Record<string, string> = {};
+    for (const c of curves) {
+      if (!before.has(c.code)) return { ok: false, error: `알 수 없는 항목입니다: ${c.code}` };
+      // Compared with keys sorted, because jsonb hands back its own key order
+      // and a plain stringify then reports a change on every save — writing an
+      // audit entry for something nobody altered.
+      const wasJson = canonical(before.get(c.code));
+      const nowJson = canonical(c.curve);
+      if (wasJson === nowJson) continue;
+      changed[c.code] = nowJson;
+
+      const { data: touched, error } = await supabase
+        .from('credit_score_factors')
+        .update({ curve: c.curve })
+        .eq('code', c.code)
+        .select('code');
+      if (error) throw error;
+      // RLS filters an UPDATE rather than failing it, so a zero-row result is
+      // a refusal that would otherwise be reported as success.
+      if ((touched ?? []).length === 0) {
+        return { ok: false, error: `${c.code} 항목을 변경할 권한이 없습니다.` };
+      }
+    }
+
+    if (Object.keys(changed).length === 0) return { ok: false, error: '변경된 항목이 없습니다.' };
+
+    await supabase.rpc('log_audit', {
+      p_action: 'CREDIT_CURVES_UPDATED',
+      p_target_table: 'credit_score_factors',
+      p_target_id: session.company_id,
+      p_details: { changed },
+    });
+
+    revalidatePath('/policy');
+    revalidatePath('/loans');
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : '저장에 실패했습니다.' };
+  }
+}
+
+/** Stable JSON for comparing two objects regardless of key order. */
+function canonical(value: unknown): string {
+  if (!value || typeof value !== 'object') return JSON.stringify(value ?? {});
+  const o = value as Record<string, unknown>;
+  return JSON.stringify(
+    Object.keys(o)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, k) => {
+        acc[k] = o[k];
+        return acc;
+      }, {})
+  );
 }
