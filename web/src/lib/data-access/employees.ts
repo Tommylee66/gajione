@@ -28,11 +28,13 @@ export async function listEmployees(
   viewer: AppUser,
   filter: EmployeeFilter = {}
 ): Promise<EmployeeListRow[]> {
-  // No embedded select. PostgREST resolves `departments(name)` through the
-  // foreign key, and this schema has none by design — so the names are looked
-  // up separately and joined here. Every list view in this app has to do the
-  // same; there is no shape of query that will work around it.
-  let query = supabase.from('employees').select('*').order('employee_no');
+  // Embedded select, resolved by PostgREST through the foreign keys added in
+  // 20260922000011. Before those existed this had to fetch the lookup tables
+  // separately and join in memory — which is most of why they were added.
+  let query = supabase
+    .from('employees')
+    .select('*, departments(name), positions(name)')
+    .order('employee_no');
 
   if (!filter.includeResigned) query = query.is('resign_date', null);
   if (filter.departmentId) query = query.eq('department_id', filter.departmentId);
@@ -44,26 +46,19 @@ export async function listEmployees(
   const { data, error } = await query;
   if (error) throw error;
 
-  const employees = (data ?? []) as Employee[];
+  type JoinedRow = Employee & {
+    departments: { name: string } | null;
+    positions: { name: string } | null;
+  };
 
-  // Two small reads rather than one per row. Both tables are per-tenant and
-  // short — a company has tens of departments, not thousands — so fetching
-  // them whole and mapping in memory beats a second round trip per employee.
-  const [departments, positions] = await Promise.all([
-    supabase.from('departments').select('id, name'),
-    supabase.from('positions').select('id, name'),
-  ]);
-  if (departments.error) throw departments.error;
-  if (positions.error) throw positions.error;
-
-  const deptNames = new Map((departments.data ?? []).map((d) => [d.id as string, d.name as string]));
-  const posNames = new Map((positions.data ?? []).map((p) => [p.id as string, p.name as string]));
-
-  const rows: EmployeeListRow[] = employees.map((e) => ({
-    ...e,
-    department_name: e.department_id ? (deptNames.get(e.department_id) ?? null) : null,
-    position_name: e.position_id ? (posNames.get(e.position_id) ?? null) : null,
-  }));
+  const rows: EmployeeListRow[] = (data ?? []).map((row) => {
+    const { departments, positions, ...rest } = row as JoinedRow;
+    return {
+      ...rest,
+      department_name: departments?.name ?? null,
+      position_name: positions?.name ?? null,
+    };
+  });
 
   const masked = applyEmployeeListMasking(rows, viewer);
   assertMasked(masked, viewer);
