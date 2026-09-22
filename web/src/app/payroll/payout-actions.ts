@@ -142,7 +142,10 @@ export async function signApprovalAction(
     await supabase.rpc('log_audit', {
       p_action: 'PAYROLL_APPROVAL_SIGNED',
       p_target_table: 'approvals',
-      p_target_id: `${runId}|${stepNo}`,
+      // Keyed by the run, not by run+step: the step is already in the details,
+      // and a composite key here would drop the signature out of the run's own
+      // event history.
+      p_target_id: runId,
       p_details: { step_no: stepNo, role_label: rows.find((r) => r.step_no === stepNo)?.role_label },
     });
 

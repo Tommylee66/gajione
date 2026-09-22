@@ -10,7 +10,9 @@ const PROTECTED_PREFIXES = ['/employees', '/org', '/payroll', '/attendance', '/s
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  // '/' is the payroll home, so it is listed exactly rather than as a
+  // prefix — every path starts with '/'.
+  const isProtected = pathname === '/' || PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
   const isAuthRoute = pathname.startsWith('/login');
 
   if (!isProtected && !isAuthRoute) return NextResponse.next();
@@ -23,7 +25,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
   if (isAuthRoute && user) {
-    return NextResponse.redirect(new URL('/employees', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
   return supabaseResponse;
 }
