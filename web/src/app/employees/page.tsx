@@ -40,6 +40,12 @@ export default async function EmployeesPage({
         </div>
         <div className="flex items-center gap-3">
           <Link
+            href="/attendance"
+            className="rounded-md border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
+          >
+            근태 마감
+          </Link>
+          <Link
             href="/org"
             className="rounded-md border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
           >
