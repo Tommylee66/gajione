@@ -6,7 +6,7 @@ import { updateSession } from '@/lib/supabase/middleware';
  * server component sees a valid token; authorisation is the pages' own job,
  * and tenant isolation is the database's.
  */
-const PROTECTED_PREFIXES = ['/employees', '/departments', '/payroll', '/attendance', '/admin'];
+const PROTECTED_PREFIXES = ['/employees', '/org', '/payroll', '/attendance', '/admin'];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
