@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/overtime', label: 'OT' },
   { href: '/policy', label: '정책·요율' },
   { href: '/payroll', label: '급여' },
+  { href: '/loans', label: '대출·신용' },
 ];
 
 /**
