@@ -46,6 +46,12 @@ export default async function EmployeesPage({
             근태 마감
           </Link>
           <Link
+            href="/policy"
+            className="rounded-md border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
+          >
+            정책 · 요율
+          </Link>
+          <Link
             href="/org"
             className="rounded-md border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
           >
