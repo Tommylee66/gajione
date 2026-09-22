@@ -253,11 +253,14 @@ export function DevicePanel({
           지문인식기 · 모바일 GPS → API 폴링({integration.polling_minutes}분마다) → 근태 레코드
           갱신 → 근태 마감(G1) → 급여 계산(G2)
         </p>
-        {/* Stated because the screen's buttons are manual pulls. A scheduled
-            poll needs something outside the request cycle to run it. */}
-        <p className="mt-2 text-sm text-amber-700 dark:text-amber-500">
-          ⚠️ 현재는 이 화면의 버튼으로 수동 수집만 합니다. {integration.polling_minutes}분 주기
-          자동 폴링은 별도 스케줄러(cron) 연결이 필요합니다.
+        {/* The interval is honoured by the scheduler, not by this page. Said
+            plainly because a setting that looks like it runs itself, and does
+            not, is worse than one that admits what it needs. */}
+        <p className="mt-2 text-sm text-neutral-500">
+          자동 폴링은 스케줄러가 <span className="font-mono">/api/cron/device-sync</span> 를
+          호출할 때 실행됩니다. 마지막 시도로부터 {integration.polling_minutes}분이 지난 회사만
+          수집하며, 연속 실패가 쌓이면 설정을 확인할 때까지 중단합니다. 이 화면의 버튼은 주기와
+          무관하게 즉시 수집합니다.
         </p>
       </section>
     </>
