@@ -1,1 +1,27 @@
 project_id = "gajione"
+
+[auth]
+# Where a magic link, a confirmation link or a password-reset link may send
+# somebody. Supabase refuses any redirect not on this list, so a link that
+# points anywhere else silently lands on the Supabase error page instead of
+# the app — which is how a reset flow looks broken while every part of it works.
+site_url = "https://gajione.vercel.app"
+additional_redirect_urls = [
+  "https://gajione.vercel.app/reset",
+  "https://gajione.vercel.app/pending",
+  "https://gajione.vercel.app/login",
+  # Kept so the same links work against a local dev server.
+  "http://localhost:3000/reset",
+  "http://localhost:3000/pending",
+  "http://localhost:3000/login",
+]
+
+# Restored explicitly. `supabase config push` writes the CLI's defaults for any
+# auth setting the file does not mention, so pushing a file that only set the
+# redirect URLs also reset these two — the email cooldown from a minute to a
+# second, and the OTP from eight digits to six. Both are weaker, and neither
+# was intended. Anything that matters has to be stated here rather than left
+# to whatever the remote happens to hold.
+[auth.email]
+max_frequency = "1m0s"
+otp_length = 8
