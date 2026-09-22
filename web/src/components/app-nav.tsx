@@ -5,6 +5,7 @@ const LINKS = [
   { href: '/', label: '홈' },
   { href: '/employees', label: '직원' },
   { href: '/org', label: '부서·직급' },
+  { href: '/upload', label: '원천데이터' },
   { href: '/attendance', label: '근태' },
   { href: '/shifts', label: '교대' },
   { href: '/overtime', label: 'OT' },
