@@ -4,6 +4,12 @@ import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { formatRupiah } from '@/lib/format';
 import { GatePanel, type StoredGateResult, type VarianceCase } from '@/components/gate-panel';
+import {
+  PayoutPanel,
+  type ApprovalView,
+  type FilingView,
+  type PaymentFileView,
+} from '@/components/payout-panel';
 
 export default async function RunDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -12,13 +18,27 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const supabase = await createClient();
 
-  const [runRes, itemRes, recalcRes, gateRes, caseRes] = await Promise.all([
-    supabase.from('payroll_runs').select('*').eq('id', id).maybeSingle(),
-    supabase.from('payroll_items').select('*').eq('run_id', id).order('employee_no'),
-    supabase.from('payroll_recalcs').select('pass_no, batch_hash, matched_count, mismatch_count').eq('run_id', id).order('pass_no'),
-    supabase.from('gate_results').select('rule_code, passed, severity, detail').eq('run_id', id),
-    supabase.from('variance_cases').select('*').eq('run_id', id),
-  ]);
+  const [runRes, itemRes, recalcRes, gateRes, caseRes, approvalRes, fileRes, filingRes] =
+    await Promise.all([
+      supabase.from('payroll_runs').select('*').eq('id', id).maybeSingle(),
+      supabase.from('payroll_items').select('*').eq('run_id', id).order('employee_no'),
+      supabase.from('payroll_recalcs').select('pass_no, batch_hash, matched_count, mismatch_count').eq('run_id', id).order('pass_no'),
+      supabase.from('gate_results').select('rule_code, passed, severity, detail').eq('run_id', id),
+      supabase.from('variance_cases').select('*').eq('run_id', id),
+      supabase
+        .from('approvals')
+        .select('step_no, role_label, approver_id, signed_at, status')
+        .eq('run_id', id)
+        .order('step_no'),
+      supabase
+        .from('payment_files')
+        .select('id, file_hash, total_amount, record_count, status, generated_at')
+        .eq('run_id', id)
+        .order('generated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase.from('tax_filings').select('kind, period, total_amount, status').eq('run_id', id),
+    ]);
 
   const run = runRes.data;
   if (!run) notFound();
@@ -49,6 +69,43 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
   const canDecide = ['hr_admin', 'operator_admin'].includes(session.role);
   const recalcs = recalcRes.data ?? [];
   const hashesAgree = recalcs.length === 2 && recalcs[0].batch_hash === recalcs[1].batch_hash;
+
+  // Signer names are looked up rather than stored on the approval row: the
+  // signature's meaning is the user id and the moment, and a name copied at
+  // signing time would drift from the person record.
+  const approvalRows = approvalRes.data ?? [];
+  const signerIds = [
+    ...new Set(approvalRows.map((a) => a.approver_id as string | null).filter(Boolean)),
+  ] as string[];
+  const signerNames = new Map<string, string>();
+  if (signerIds.length > 0) {
+    const { data: signers } = await supabase
+      .from('users')
+      .select('id, full_name')
+      .in('id', signerIds);
+    for (const s of signers ?? []) signerNames.set(s.id as string, s.full_name as string);
+  }
+  const approvals: ApprovalView[] = approvalRows.map((a) => ({
+    step_no: a.step_no as number,
+    role_label: a.role_label as string,
+    approver_id: (a.approver_id as string | null) ?? null,
+    approver_name: a.approver_id ? (signerNames.get(a.approver_id as string) ?? null) : null,
+    signed_at: (a.signed_at as string | null) ?? null,
+    status: a.status as string,
+  }));
+
+  const { data: slipRows } = await supabase
+    .from('payslips')
+    .select('channel, status, opened_at')
+    .in('payroll_item_id', items.length > 0 ? items.map((i) => i.id as string) : ['']);
+  const byChannel = new Map<string, { queued: number; opened: number }>();
+  for (const s of slipRows ?? []) {
+    const key = s.channel as string;
+    const entry = byChannel.get(key) ?? { queued: 0, opened: 0 };
+    entry.queued += 1;
+    if (s.opened_at) entry.opened += 1;
+    byChannel.set(key, entry);
+  }
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -96,6 +153,21 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
         canRun={canRun}
         canExplain={canExplain}
         canDecide={canDecide}
+      />
+
+      <PayoutPanel
+        runId={id}
+        runStatus={run.status as string}
+        approvals={approvals}
+        paymentFile={(fileRes.data as PaymentFileView | null) ?? null}
+        filings={(filingRes.data ?? []) as FilingView[]}
+        payslips={{
+          total: (slipRows ?? []).length,
+          byChannel: [...byChannel.entries()].map(([channel, v]) => ({ channel, ...v })),
+        }}
+        employeeCount={items.length}
+        canAct={canRun}
+        currentUserId={session.id}
       />
 
       <section className="mt-10">
