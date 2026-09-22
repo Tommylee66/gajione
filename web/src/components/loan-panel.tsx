@@ -18,6 +18,8 @@ import {
   REFERRAL_STATUS_LABELS,
   type Assessment,
 } from '@/lib/credit/scoring';
+import { REPAYMENT_LABELS, OFFER_STATUS_LABELS, type RepaymentMethod } from '@/lib/credit/offer';
+import { respondToOfferAction } from '@/app/loans/actions';
 
 export interface ScoreDetailView {
   factor_name: string;
@@ -49,6 +51,23 @@ export interface ReferralView {
   consentId: string | null;
   assessment: Assessment;
   hasMandate: boolean;
+  offer: LiveOffer | null;
+}
+
+export interface LiveOffer {
+  id: string;
+  annual_rate: number;
+  months: number;
+  fee_percent: number;
+  repayment_method: string;
+  monthly_amount: number;
+  first_month_amount: number | null;
+  total_repayment: number;
+  expires_at: string;
+  status: string;
+  /** Computed on the server. The action re-checks it anyway, so a page left
+   *  open past the expiry is refused there rather than here. */
+  expired: boolean;
 }
 
 export interface MandateView {
@@ -436,7 +455,11 @@ function ReferralCard({
         />
       )}
 
-      {canAct && item.status === 'referred' && (
+      {item.offer && <OfferBox offer={item.offer} canAct={canAct} onRun={onRun} pending={pending} />}
+
+      {/* Only for partners not on the portal. One on the portal records their
+          own decision, and this form would be somebody retyping it. */}
+      {canAct && item.status === 'referred' && !item.offer && (
         <DecisionForm id={item.id} onRun={onRun} pending={pending} />
       )}
     </div>
@@ -484,6 +507,81 @@ function ReferForm({
       >
         {outcome === 'manual' ? '검토 후 전달' : '금융기관 전달'}
       </button>
+    </div>
+  );
+}
+
+function OfferBox({
+  offer,
+  canAct,
+  onRun,
+  pending,
+}: {
+  offer: LiveOffer;
+  canAct: boolean;
+  onRun: (fn: () => Promise<{ ok: boolean; error?: string }>, ok: string) => void;
+  pending: boolean;
+}) {
+  const [reason, setReason] = useState('');
+  const expired = offer.expired;
+  const instalment = offer.first_month_amount ?? offer.monthly_amount;
+
+  return (
+    <div className="mt-3 rounded-md border border-violet-300 bg-violet-50 p-3 dark:border-violet-900 dark:bg-violet-950">
+      <p className="text-sm font-medium">
+        금융기관 오퍼 · {OFFER_STATUS_LABELS[offer.status] ?? offer.status}
+      </p>
+      <p className="mt-1 text-sm">
+        연 {offer.annual_rate}% · {offer.months}개월 · 수수료 {offer.fee_percent}% ·{' '}
+        {REPAYMENT_LABELS[offer.repayment_method as RepaymentMethod] ?? offer.repayment_method}
+      </p>
+      <p className="mt-1 text-sm">
+        월 상환액 <strong>{formatRupiah(instalment)}</strong> · 총 상환{' '}
+        {formatRupiah(offer.total_repayment)}
+      </p>
+      <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
+        유효기간 {new Date(offer.expires_at).toLocaleString('ko-KR')}
+        {expired && ' · 만료됨'}
+      </p>
+
+      {canAct && offer.status === 'sent' && !expired && (
+        <div className="mt-3 flex flex-wrap items-end gap-2">
+          {/* Relayed, not decided. The employee app does not exist yet, so HR
+              records what the worker said and their name goes on the record. */}
+          <p className="w-full text-xs text-neutral-600 dark:text-neutral-400">
+            직원의 응답을 대신 기록합니다. 직원 앱이 생기면 본인이 직접 응답합니다.
+          </p>
+          <button
+            disabled={pending}
+            onClick={() =>
+              onRun(() => respondToOfferAction(offer.id, 'accepted', ''), '수락으로 기록했습니다.')
+            }
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            직원 수락
+          </button>
+          <input
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="거절 사유"
+            className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-950"
+          />
+          <button
+            disabled={pending}
+            onClick={() =>
+              onRun(() => respondToOfferAction(offer.id, 'declined', reason), '거절로 기록했습니다.')
+            }
+            className="rounded-md border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700 disabled:opacity-50"
+          >
+            직원 거절
+          </button>
+        </div>
+      )}
+      {offer.status === 'accepted' && (
+        <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+          금융기관의 대출 실행을 기다리는 중입니다. 실행이 기록되면 급여공제를 등록할 수 있습니다.
+        </p>
+      )}
     </div>
   );
 }

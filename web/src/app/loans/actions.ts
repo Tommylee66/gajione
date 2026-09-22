@@ -305,6 +305,16 @@ export async function referAction(
       };
     }
 
+    // Frozen here, not looked up by the partner. The lender gets the profile
+    // GajiOne computed and nothing else: no NIK, no NPWP, no payslip, no
+    // employee row. Consent scope decides how much of even that travels.
+    const profile = await buildProfileSnapshot(
+      supabase,
+      ref.employee_id as string,
+      consent.scope as string,
+      check.scoreId
+    );
+
     const { error } = await supabase
       .from('loan_referrals')
       .update({
@@ -314,6 +324,7 @@ export async function referAction(
         lender_decision: 'pending',
         score_snapshot: check.score,
         credit_score_id: check.scoreId,
+        profile_snapshot: profile,
         updated_at: new Date().toISOString(),
       })
       .eq('id', referralId);
@@ -339,6 +350,53 @@ export async function referAction(
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : '전달에 실패했습니다.' };
   }
+}
+
+
+/**
+ * The summary the partner portal shows.
+ *
+ * Built from what has already been computed rather than from the employee
+ * record, and cut to the consent scope: 'score_only' really does mean the
+ * score, with tenure and attendance withheld. A partner who needs more has to
+ * be given a broader consent, not a broader query.
+ */
+async function buildProfileSnapshot(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  employeeId: string,
+  scope: string,
+  scoreId: string | null
+): Promise<Record<string, unknown>> {
+  const [empRes, companyRes, detailRes] = await Promise.all([
+    supabase.from('employees').select('employee_no, join_date, employment_type').eq('id', employeeId).maybeSingle(),
+    supabase.from('companies').select('name').maybeSingle(),
+    scoreId
+      ? supabase.from('credit_score_details').select('factor_code, raw_metric, normalized').eq('credit_score_id', scoreId)
+      : Promise.resolve({ data: [] as { factor_code: string; raw_metric: string; normalized: number }[] }),
+  ]);
+
+  const base: Record<string, unknown> = {
+    employee_no: empRes.data?.employee_no ?? null,
+    employer: companyRes.data?.name ?? null,
+    scope,
+  };
+  if (scope === 'score_only') return base;
+
+  const join = empRes.data?.join_date as string | null;
+  const years = join ? (Date.now() - new Date(join).getTime()) / (365.25 * 86_400_000) : null;
+  const detail = (code: string) =>
+    (detailRes.data ?? []).find((d) => d.factor_code === code);
+
+  return {
+    ...base,
+    tenure_years: years === null ? null : Number(years.toFixed(1)),
+    employment_type: empRes.data?.employment_type ?? null,
+    // The raw metrics the score was built from — the same strings the employee
+    // sees on their own breakdown, so the two cannot disagree.
+    attendance: detail('attendance')?.raw_metric ?? null,
+    repayment: detail('repayment')?.raw_metric ?? null,
+    pay_stability: detail('pay_stability')?.raw_metric ?? null,
+  };
 }
 
 /**
@@ -440,21 +498,51 @@ export async function createMandateAction(
     if (check.outcome === 'declined') {
       return { ok: false, error: `공제를 등록할 수 없습니다: ${check.reasons.join(' · ')}` };
     }
-    if (check.monthlyInstalment > check.monthlyAvailable) {
+
+    // The deduction is the lender's instalment, not the principal divided by
+    // the months. Those differ by the interest, and taking the second would
+    // under-collect every month and leave the loan unpaid at the end of a
+    // schedule that says it is finished.
+    //
+    // Under equal principal the first instalment is the largest, which is the
+    // one the ceiling has to clear and the one worth showing on the mandate.
+    const { data: offer } = await supabase
+      .from('loan_offers')
+      .select('months, monthly_amount, first_month_amount, repayment_method')
+      .eq('referral_id', referralId)
+      .eq('status', 'disbursed')
+      .order('disbursed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const monthlyAmount = offer
+      ? Number(offer.first_month_amount ?? offer.monthly_amount)
+      : check.monthlyInstalment;
+    if (monthlyAmount > check.monthlyAvailable) {
       return {
         ok: false,
-        error: `월공제 ${Math.round(check.monthlyInstalment).toLocaleString('id-ID')}가 공제 여력을 초과합니다.`,
+        error: `월공제 ${Math.round(monthlyAmount).toLocaleString('id-ID')}가 공제 여력 ${Math.round(check.monthlyAvailable).toLocaleString('id-ID')}을 초과합니다.`,
       };
     }
 
-    const months = Number(ref.months ?? 0) || 1;
+    const months = offer ? Number(offer.months) : Number(ref.months ?? 0) || 1;
+    // The borrower's name, recorded here and nowhere earlier. From this point
+    // there is a credit agreement and the lender is party to it; before it,
+    // they were assessing a staff number.
+    const { data: borrower } = await supabase
+      .from('employees')
+      .select('full_name')
+      .eq('id', ref.employee_id as string)
+      .maybeSingle();
+
     const { error } = await supabase.from('deduction_mandates').insert({
+      borrower_name: (borrower?.full_name as string | null) ?? null,
       company_id: session.company_id,
       employee_id: ref.employee_id as string,
       lender_id: ref.lender_id as string,
       referral_id: referralId,
       lender_ref_no: (ref.lender_ref_no as string | null) ?? null,
-      monthly_amount: check.monthlyInstalment,
+      monthly_amount: monthlyAmount,
       total_installments: months,
       start_period: startPeriod,
       max_rate: check.maxRatePercent,
@@ -471,7 +559,13 @@ export async function createMandateAction(
       p_action: 'DEDUCTION_MANDATE_CREATED',
       p_target_table: 'deduction_mandates',
       p_target_id: referralId,
-      p_details: { monthly: check.monthlyInstalment, months, start_period: startPeriod },
+      p_details: {
+        monthly: monthlyAmount,
+        months,
+        start_period: startPeriod,
+        // Says which figure was used, because the two differ by the interest.
+        source: offer ? 'lender_offer' : 'requested_amount',
+      },
     });
 
     revalidatePath('/loans');
@@ -560,4 +654,117 @@ async function assessReferral(supabase: Supabase, ref: Record<string, unknown>) 
     monthlyAvailable: result.limits.monthlyAvailable,
     maxRatePercent,
   };
+}
+
+/**
+ * Relays the employee's answer to an offer.
+ *
+ * The employee app does not exist yet, so HR records what the worker said —
+ * which is honest about who is speaking and leaves a name against the answer.
+ * When the app arrives this moves to the employee and this action goes.
+ */
+export async function respondToOfferAction(
+  offerId: string,
+  response: 'accepted' | 'declined',
+  reason: string
+): Promise<LoanActionResult> {
+  try {
+    const session = await requireRole(HR_ROLES);
+    const supabase = await createClient();
+
+    const { data: offer } = await supabase
+      .from('loan_offers')
+      .select('*')
+      .eq('id', offerId)
+      .maybeSingle();
+    if (!offer) return { ok: false, error: '오퍼를 찾을 수 없습니다.' };
+    if (offer.status !== 'sent') {
+      return { ok: false, error: '발송 상태의 오퍼에만 응답할 수 있습니다.' };
+    }
+    // Checked against the clock rather than trusted to a background job: an
+    // expired offer accepted on the screen is an agreement on terms the lender
+    // has already stopped standing behind.
+    if (Date.parse(offer.expires_at as string) <= Date.now()) {
+      return { ok: false, error: '유효기간이 지난 오퍼입니다. 금융기관에 재발송을 요청하세요.' };
+    }
+
+    if (response === 'accepted') {
+      // The ceiling is checked again here, against the instalment the offer
+      // actually carries — which under equal-principal is the first month's,
+      // the largest. The assessment before referral used the requested amount
+      // divided by months, and the lender may have offered different terms.
+      const [policyRes, itemRes, mandateRes] = await Promise.all([
+        supabase.from('payroll_policies').select('max_loan_deduction_rate').maybeSingle(),
+        supabase
+          .from('payroll_items')
+          .select('net')
+          .eq('employee_id', (await referralOf(supabase, offer.referral_id as string)) ?? '')
+          .order('created_at', { ascending: false })
+          .limit(3),
+        supabase
+          .from('deduction_mandates')
+          .select('monthly_amount')
+          .eq('employee_id', (await referralOf(supabase, offer.referral_id as string)) ?? '')
+          .eq('status', 'active'),
+      ]);
+      const nets = (itemRes.data ?? []).map((i) => Number(i.net));
+      const monthlyNet = nets.length > 0 ? nets.reduce((s, n) => s + n, 0) / nets.length : 0;
+      const committed = (mandateRes.data ?? []).reduce((s, m) => s + Number(m.monthly_amount), 0);
+      const maxRate = Number(policyRes.data?.max_loan_deduction_rate ?? 30);
+      const available = Math.max(0, Math.floor((monthlyNet * maxRate) / 100) - committed);
+      const instalment = Number(offer.first_month_amount ?? offer.monthly_amount);
+      if (monthlyNet > 0 && instalment > available) {
+        return {
+          ok: false,
+          error: `오퍼의 월 상환액 ${instalment.toLocaleString('id-ID')}이 공제 여력 ${available.toLocaleString('id-ID')}을 넘습니다. 조건 조정을 요청하세요.`,
+        };
+      }
+    }
+
+    const now = new Date().toISOString();
+    const { data: touched, error } = await supabase
+      .from('loan_offers')
+      .update({
+        status: response,
+        responded_at: now,
+        decline_reason: response === 'declined' ? reason : null,
+        updated_at: now,
+      })
+      .eq('id', offerId)
+      .select('id');
+    if (error) throw error;
+    if ((touched ?? []).length === 0) return { ok: false, error: '변경할 권한이 없습니다.' };
+
+    if (response === 'declined') {
+      await supabase
+        .from('loan_referrals')
+        .update({ status: 'cancelled', updated_at: now })
+        .eq('id', offer.referral_id as string);
+    }
+
+    await supabase.rpc('log_audit', {
+      p_action: 'LOAN_OFFER_RESPONSE_RELAYED',
+      p_target_table: 'loan_offers',
+      p_target_id: offerId,
+      p_details: { response, reason: reason || null, relayed_by: session.id },
+    });
+
+    revalidatePath('/loans');
+    revalidatePath('/partner');
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : '처리에 실패했습니다.' };
+  }
+}
+
+async function referralOf(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  referralId: string
+): Promise<string | null> {
+  const { data } = await supabase
+    .from('loan_referrals')
+    .select('employee_id')
+    .eq('id', referralId)
+    .maybeSingle();
+  return (data?.employee_id as string | null) ?? null;
 }

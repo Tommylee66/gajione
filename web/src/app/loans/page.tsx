@@ -7,6 +7,7 @@ import {
   LoanPanel,
   type MandateView,
   type ReferralView,
+  type LiveOffer,
   type ScoreDetailView,
 } from '@/components/loan-panel';
 
@@ -42,6 +43,7 @@ export default async function LoansPage() {
     itemRes,
     runRes,
     execRes,
+    offerRes,
   ] = await Promise.all([
     supabase.from('loan_referrals').select('*').order('created_at', { ascending: false }),
     supabase.from('deduction_mandates').select('*').order('created_at', { ascending: false }),
@@ -55,6 +57,7 @@ export default async function LoansPage() {
     supabase.from('payroll_items').select('employee_id, net, created_at').order('created_at', { ascending: false }),
     supabase.from('payroll_runs').select('id, period, status').order('period', { ascending: false }),
     supabase.from('deduction_executions').select('mandate_id, period, amount, status'),
+    supabase.from('loan_offers').select('*').order('sent_at', { ascending: false }),
   ]);
 
   const employees = new Map(
@@ -139,6 +142,35 @@ export default async function LoansPage() {
     (mandateRes.data ?? []).map((m) => m.referral_id as string).filter(Boolean)
   );
 
+  // Read once, per request. This is a server component with force-dynamic, so
+  // "now" is the moment the page was asked for — which is exactly what an
+  // expiry has to be measured against. The purity rule is aimed at client
+  // components re-rendering unpredictably; neither applies here, and the
+  // action re-checks the expiry server-side regardless.
+  // eslint-disable-next-line react-hooks/purity
+  const renderedAt = Date.now();
+
+  // The live offer on each application, so HR can relay the employee's answer.
+  const liveOfferByReferral = new Map<string, LiveOffer>();
+  for (const o of offerRes.data ?? []) {
+    const key = o.referral_id as string;
+    if (liveOfferByReferral.has(key)) continue;
+    if (o.status !== 'sent' && o.status !== 'accepted') continue;
+    liveOfferByReferral.set(key, {
+      id: o.id as string,
+      annual_rate: Number(o.annual_rate),
+      months: Number(o.months),
+      fee_percent: Number(o.fee_percent),
+      repayment_method: o.repayment_method as string,
+      monthly_amount: Number(o.monthly_amount),
+      first_month_amount: o.first_month_amount === null ? null : Number(o.first_month_amount),
+      total_repayment: Number(o.total_repayment),
+      expires_at: o.expires_at as string,
+      status: o.status as string,
+      expired: Date.parse(o.expires_at as string) <= renderedAt,
+    });
+  }
+
   const referrals: ReferralView[] = (referralRes.data ?? []).map((r) => {
     const employeeId = r.employee_id as string;
     const emp = employees.get(employeeId);
@@ -177,6 +209,7 @@ export default async function LoansPage() {
       consentId: consent?.id ?? null,
       assessment,
       hasMandate: mandateByReferral.has(r.id as string),
+      offer: liveOfferByReferral.get(r.id as string) ?? null,
     };
   });
 

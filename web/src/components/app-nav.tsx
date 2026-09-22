@@ -24,6 +24,22 @@ export async function AppNav() {
   const session = await getSession();
   if (!session) return null;
 
+  // A partner is not a tenant user. Showing them the payroll menu would be
+  // advertising routes RLS will refuse, and inviting the question of why.
+  if (session.role === 'lender_officer') {
+    return (
+      <nav className="border-b border-neutral-200 dark:border-neutral-800">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
+          <span className="text-sm font-semibold">GajiOne</span>
+          <Link href="/partner" className="text-sm text-neutral-600 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-50">
+            파트너 포털
+          </Link>
+          <span className="ml-auto text-sm text-neutral-500">{session.full_name}</span>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className="border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
