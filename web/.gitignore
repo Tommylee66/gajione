@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Test account credentials for the live demo data. Never committed.
+test-credentials.txt
