@@ -69,9 +69,14 @@ export default async function AttendancePage({
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8">
-      <Link href="/employees" className="text-sm text-blue-600 underline">
-        ← 직원 목록
-      </Link>
+      <div className="flex gap-4 text-sm">
+        <Link href="/employees" className="text-blue-600 underline">
+          ← 직원 목록
+        </Link>
+        <Link href="/shifts" className="text-blue-600 underline">
+          교대 · 스케줄
+        </Link>
+      </div>
 
       <header className="mt-4 flex flex-wrap items-end justify-between gap-3">
         <div>
