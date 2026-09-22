@@ -7,7 +7,9 @@ import {
   upsertUmkAction,
   updatePolicyAction,
   type Result,
+  updateCreditWeightsAction,
 } from '@/app/policy/actions';
+import { pointsForWeight, validateWeights } from '@/lib/credit/scoring';
 import { TAX_TABLE_TEMPLATE } from '@/lib/rates/tax-table-csv';
 import { formatRupiah } from '@/lib/format';
 
@@ -43,8 +45,17 @@ interface Props {
     maxLoanDeductionRate: number;
     weeklyOtCapHours: number;
   };
+  creditFactors: CreditFactorRow[];
   isOperator: boolean;
   canEditPolicy: boolean;
+}
+
+export interface CreditFactorRow {
+  code: string;
+  name: string;
+  weight: number;
+  max_points: number;
+  source: string | null;
 }
 
 const PROGRAM_LABELS: Record<string, string> = {
@@ -60,6 +71,7 @@ export function PolicyPanel({
   umk,
   taxVersions,
   policy,
+  creditFactors,
   isOperator,
   canEditPolicy,
 }: Props) {
@@ -69,6 +81,7 @@ export function PolicyPanel({
       <BpjsSection rows={bpjs} />
       <UmkSection rows={umk} isOperator={isOperator} />
       <GateSection policy={policy} canEdit={canEditPolicy} />
+      <CreditWeightSection rows={creditFactors} canEdit={isOperator} />
     </div>
   );
 }
@@ -452,6 +465,131 @@ function GateSection({
         {saved && <span className="text-sm text-neutral-500">저장했습니다.</span>}
         {error && <span className="text-sm text-red-600">{error}</span>}
       </form>
+    </section>
+  );
+}
+
+/**
+ * The credit-scoring weights.
+ *
+ * The running total is shown and the save is blocked until it is exactly 100:
+ * a set summing to 90 quietly lowers everyone's ceiling while each individual
+ * figure on screen still looks reasonable.
+ */
+function CreditWeightSection({ rows, canEdit }: { rows: CreditFactorRow[]; canEdit: boolean }) {
+  const router = useRouter();
+  const [weights, setWeights] = useState<Record<string, number>>(
+    Object.fromEntries(rows.map((r) => [r.code, r.weight]))
+  );
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const list = rows.map((r) => ({ code: r.code, weight: weights[r.code] ?? r.weight }));
+  const check = validateWeights(list);
+  const dirty = list.some((w) => rows.find((r) => r.code === w.code)?.weight !== w.weight);
+
+  async function save() {
+    setBusy(true);
+    setError(null);
+    setSaved(false);
+    const r = await updateCreditWeightsAction(list);
+    setBusy(false);
+    if (!r.ok) return setError(r.error ?? '저장에 실패했습니다.');
+    setSaved(true);
+    router.refresh();
+  }
+
+  if (rows.length === 0) {
+    return (
+      <section>
+        <h2 className="text-lg font-semibold">신용점수 가중치</h2>
+        <p className="mt-1 text-sm text-neutral-500">설정된 항목이 없습니다.</p>
+      </section>
+    );
+  }
+
+  return (
+    <section>
+      <h2 className="text-lg font-semibold">신용점수 가중치</h2>
+      <p className="mt-1 text-sm text-neutral-500">
+        기본 300점 위의 550점을 항목별로 나눕니다. 배점은 가중치에서 계산되므로 따로 입력하지
+        않습니다. 전 테넌트 공통 설정이라 운영사만 변경할 수 있습니다.
+      </p>
+      {/* Past decisions do not move: credit_score_details keeps the weight and
+          the points each factor actually contributed. */}
+      <p className="mt-1 text-sm text-neutral-500">
+        이미 산출된 점수는 바뀌지 않습니다. 변경한 가중치는 다음 산출부터 적용됩니다.
+      </p>
+
+      <div className="mt-4 overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
+        <table className="w-full min-w-[620px] text-sm">
+          <thead className="bg-neutral-50 text-left dark:bg-neutral-900">
+            <tr>
+              <th className="px-3 py-2 font-medium">항목</th>
+              <th className="px-3 py-2 font-medium">자료 출처</th>
+              <th className="px-3 py-2 text-right font-medium">가중치</th>
+              <th className="px-3 py-2 text-right font-medium">배점</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const w = weights[r.code] ?? r.weight;
+              return (
+                <tr key={r.code} className="border-t border-neutral-200 dark:border-neutral-800">
+                  <td className="px-3 py-2">{r.name}</td>
+                  <td className="px-3 py-2 text-neutral-500">{r.source ?? '—'}</td>
+                  <td className="px-3 py-2 text-right">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={w}
+                      disabled={!canEdit}
+                      onChange={(e) =>
+                        setWeights((prev) => ({ ...prev, [r.code]: Number(e.target.value) }))
+                      }
+                      className={`${input} w-24 text-right`}
+                    />
+                  </td>
+                  <td className="px-3 py-2 text-right tabular-nums text-neutral-500">
+                    {pointsForWeight(w)}점
+                  </td>
+                </tr>
+              );
+            })}
+            <tr className="border-t border-neutral-200 font-medium dark:border-neutral-800">
+              <td className="px-3 py-2" colSpan={2}>
+                합계
+              </td>
+              <td
+                className={`px-3 py-2 text-right tabular-nums ${check.ok ? '' : 'text-red-600'}`}
+              >
+                {Number(check.total.toFixed(2))}%
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums">
+                {Number((300 + pointsForWeight(check.total)).toFixed(1))}점 만점
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {canEdit && (
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <button
+            disabled={busy || !check.ok || !dirty}
+            onClick={save}
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            저장
+          </button>
+          {!check.ok && <span className="text-sm text-red-600">{check.error}</span>}
+          {saved && <span className="text-sm text-neutral-500">저장했습니다.</span>}
+          {error && <span className="text-sm text-red-600">{error}</span>}
+        </div>
+      )}
     </section>
   );
 }

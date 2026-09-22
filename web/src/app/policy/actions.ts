@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { requireSession } from '@/lib/auth/session';
 import { parseTaxTableCsv, type TaxParseError } from '@/lib/rates/tax-table-csv';
+import { pointsForWeight, validateWeights } from '@/lib/credit/scoring';
 
 /**
  * Statutory rates are the operator's to change, not a tenant's. BPJS
@@ -17,6 +18,15 @@ async function requireOperator() {
   const session = await requireSession();
   if (session.role !== 'operator_admin') {
     throw new Error('Forbidden: 법정 요율은 운영사만 변경할 수 있습니다.');
+  }
+  // The database's is_operator() means "attached to no tenant", not "holds the
+  // operator role". Checking only the role here would let an account the
+  // database does not consider an operator through the app, and RLS would then
+  // filter the write into a silent no-op.
+  if (session.company_id || session.lender_id) {
+    throw new Error(
+      'Forbidden: 운영사 계정은 특정 회사·금융기관에 소속되지 않아야 합니다.'
+    );
   }
   return session;
 }
@@ -182,12 +192,23 @@ export async function updatePolicyAction(input: {
       .eq('company_id', session.company_id);
     if (error) throw error;
 
-    // The variance band lives on the gate rule, since that is what reads it.
-    const { error: ruleError } = await supabase
+    // The variance band lives on the gate rule, since that is what reads it —
+    // but gate_rules is shared reference data and only the operator may write
+    // it. RLS filters the update instead of failing it, so a zero-row result is
+    // a refusal, not a no-op, and has to be reported as one.
+    const { data: ruleTouched, error: ruleError } = await supabase
       .from('gate_rules')
       .update({ threshold: input.varianceThreshold, updated_at: new Date().toISOString() })
-      .eq('code', 'G3_NET_VARIANCE');
+      .eq('code', 'G3_NET_VARIANCE')
+      .select('code');
     if (ruleError) throw ruleError;
+    if ((ruleTouched ?? []).length === 0) {
+      return {
+        ok: false,
+        error:
+          '회사 정책은 저장했지만 변동 임계값은 바꾸지 못했습니다. 게이트 규칙은 운영사만 변경할 수 있습니다.',
+      };
+    }
 
     await supabase.rpc('log_audit', {
       p_action: 'PAYROLL_POLICY_UPDATED',
@@ -197,6 +218,72 @@ export async function updatePolicyAction(input: {
     });
 
     revalidatePath('/policy');
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : '저장에 실패했습니다.' };
+  }
+}
+
+/**
+ * Changes the credit-scoring weights.
+ *
+ * max_points is derived rather than entered: it is the factor's share of the
+ * 550 points above the base, and letting the two be set independently would
+ * let the ceiling drift away from the 850 people are shown.
+ *
+ * Scores already issued do not move. credit_score_details keeps the weight and
+ * the points each factor actually contributed, so a decision made last month
+ * still explains itself under the rules that applied when it was made.
+ */
+export async function updateCreditWeightsAction(
+  weights: { code: string; weight: number }[]
+): Promise<Result> {
+  try {
+    // Operator-only, because credit_score_factors has no company_id: it is one
+    // row set shared by every tenant, so a customer editing it would rescore
+    // every other customer's employees.
+    const session = await requireOperator();
+    const check = validateWeights(weights);
+    if (!check.ok) return { ok: false, error: check.error };
+
+    const supabase = await createClient();
+    const { data: current } = await supabase
+      .from('credit_score_factors')
+      .select('code, weight')
+      .eq('active', true);
+    const before = new Map((current ?? []).map((c) => [c.code as string, Number(c.weight)]));
+
+    const changed: Record<string, string> = {};
+    for (const w of weights) {
+      if (!before.has(w.code)) return { ok: false, error: `알 수 없는 항목입니다: ${w.code}` };
+      if (before.get(w.code) !== w.weight) {
+        changed[w.code] = `${before.get(w.code)}% → ${w.weight}%`;
+      }
+      const { data: touched, error } = await supabase
+        .from('credit_score_factors')
+        .update({ weight: w.weight, max_points: pointsForWeight(w.weight) })
+        .eq('code', w.code)
+        .select('code');
+      if (error) throw error;
+      // RLS filters an UPDATE rather than failing it, so PostgREST answers a
+      // blocked write with success and zero rows. Without this the screen says
+      // saved, the audit log records a change, and nothing moved.
+      if ((touched ?? []).length === 0) {
+        return { ok: false, error: `${w.code} 항목을 변경할 권한이 없습니다.` };
+      }
+    }
+
+    if (Object.keys(changed).length === 0) return { ok: false, error: '변경된 항목이 없습니다.' };
+
+    await supabase.rpc('log_audit', {
+      p_action: 'CREDIT_WEIGHTS_UPDATED',
+      p_target_table: 'credit_score_factors',
+      p_target_id: session.company_id,
+      p_details: { changed },
+    });
+
+    revalidatePath('/policy');
+    revalidatePath('/loans');
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : '저장에 실패했습니다.' };

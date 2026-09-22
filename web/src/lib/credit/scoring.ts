@@ -47,6 +47,42 @@ export interface ScoreResult {
 
 export const BASE_POINTS = 300;
 export const MAX_SCORE = 850;
+/** The points the weighted factors divide between them. */
+export const SCORE_RANGE = MAX_SCORE - BASE_POINTS;
+
+/**
+ * Points a factor is worth at its weight.
+ *
+ * Not rounded: 25% of 550 is 137.5, and rounding each of the four to whole
+ * numbers puts the ceiling at 851 instead of 850. The column is numeric for
+ * this reason.
+ */
+export function pointsForWeight(weight: number): number {
+  return (SCORE_RANGE * weight) / 100;
+}
+
+/**
+ * Weights must total exactly 100.
+ *
+ * Not a warning: a set summing to 90 quietly lowers everyone's ceiling, and a
+ * set summing to 110 pushes scores past the maximum people are told about —
+ * both while every individual figure on the screen still looks reasonable.
+ */
+export function validateWeights(weights: { code: string; weight: number }[]): {
+  ok: boolean;
+  total: number;
+  error?: string;
+} {
+  const total = weights.reduce((s, w) => s + w.weight, 0);
+  if (weights.some((w) => !Number.isFinite(w.weight) || w.weight < 0)) {
+    return { ok: false, total, error: '가중치는 0 이상이어야 합니다.' };
+  }
+  // Tolerant to a cent of float noise, not to a percentage point.
+  if (Math.abs(total - 100) > 0.001) {
+    return { ok: false, total, error: `가중치 합계가 ${total}%입니다. 100%가 되어야 합니다.` };
+  }
+  return { ok: true, total };
+}
 
 /**
  * Base plus the weighted factors.

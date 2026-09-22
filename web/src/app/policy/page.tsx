@@ -2,14 +2,20 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
-import { PolicyPanel, type BpjsRow, type UmkRow, type TaxVersion } from '@/components/policy-panel';
+import {
+  PolicyPanel,
+  type BpjsRow,
+  type CreditFactorRow,
+  type UmkRow,
+  type TaxVersion,
+} from '@/components/policy-panel';
 
 export default async function PolicyPage() {
   const session = await getSession();
   if (!session) redirect('/login');
 
   const supabase = await createClient();
-  const [bpjsRes, umkRes, taxRes, policyRes, ruleRes] = await Promise.all([
+  const [bpjsRes, umkRes, taxRes, policyRes, ruleRes, factorRes] = await Promise.all([
     supabase.from('bpjs_rates').select('*').is('effective_to', null).order('program'),
     supabase.from('umk_rates').select('region, amount, year').order('region'),
     supabase
@@ -21,6 +27,11 @@ export default async function PolicyPage() {
       .select('max_loan_deduction_rate, weekly_ot_cap_minutes')
       .maybeSingle(),
     supabase.from('gate_rules').select('threshold').eq('code', 'G3_NET_VARIANCE').maybeSingle(),
+    supabase
+      .from('credit_score_factors')
+      .select('code, name, weight, max_points, source')
+      .eq('active', true)
+      .order('weight', { ascending: false }),
   ]);
 
   // Rolled up here rather than in SQL: the row count per version is what the
@@ -74,6 +85,11 @@ export default async function PolicyPage() {
           maxLoanDeductionRate: Number(policyRes.data?.max_loan_deduction_rate ?? 30),
           weeklyOtCapHours: Math.round((policyRes.data?.weekly_ot_cap_minutes ?? 1080) / 60),
         }}
+        creditFactors={((factorRes.data ?? []) as unknown as CreditFactorRow[]).map((f) => ({
+          ...f,
+          weight: Number(f.weight),
+          max_points: Number(f.max_points),
+        }))}
         isOperator={isOperator}
         canEditPolicy={canEditPolicy}
       />
