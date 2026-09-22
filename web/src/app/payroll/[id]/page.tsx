@@ -123,7 +123,11 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
               )}
               {items.map((i) => (
                 <tr key={i.id} className="border-t border-neutral-200 dark:border-neutral-800">
-                  <td className="px-3 py-2">{i.employee_no}</td>
+                  <td className="px-3 py-2">
+                    <Link href={`/payroll/${id}/slip/${i.id}`} className="text-blue-600 underline">
+                      {i.employee_no as string}
+                    </Link>
+                  </td>
                   <td className="px-3 py-2">{i.employee_name}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{i.work_days}</td>
                   <td className="px-3 py-2 text-right tabular-nums">

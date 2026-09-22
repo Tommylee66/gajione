@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* The payslip is a document people print and file. Chrome adds the page URL
+   and a timestamp to every printed page by default, which looks like part of
+   the document — @page margins are set in the browser's print dialog, so the
+   only thing worth doing here is making sure nothing is cut off and that the
+   ink-heavy chrome is gone. */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  main {
+    max-width: none;
+  }
+  /* A payslip must not break across pages in the middle of a total. */
+  table,
+  section {
+    break-inside: avoid;
+  }
+}
