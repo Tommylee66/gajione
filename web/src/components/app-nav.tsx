@@ -24,6 +24,11 @@ export async function AppNav() {
   const session = await getSession();
   if (!session) return null;
 
+  // An employee gets the app, not the payroll console. The tab bar in
+  // /me/layout is their navigation; a second one above it would only offer
+  // routes their role cannot open.
+  if (session.role === 'employee') return null;
+
   // A partner is not a tenant user. Showing them the payroll menu would be
   // advertising routes RLS will refuse, and inviting the question of why.
   if (session.role === 'lender_officer') {
@@ -35,6 +40,7 @@ export async function AppNav() {
             파트너 포털
           </Link>
           <span className="ml-auto text-sm text-neutral-500">{session.full_name}</span>
+          <SignOut />
         </div>
       </nav>
     );
@@ -54,7 +60,18 @@ export async function AppNav() {
           </Link>
         ))}
         <span className="ml-auto text-sm text-neutral-500">{session.full_name}</span>
+        <SignOut />
       </div>
     </nav>
+  );
+}
+
+function SignOut() {
+  return (
+    <form action="/api/auth/signout" method="post">
+      <button className="text-sm text-neutral-500 underline hover:text-neutral-950 dark:hover:text-neutral-50">
+        로그아웃
+      </button>
+    </form>
   );
 }
