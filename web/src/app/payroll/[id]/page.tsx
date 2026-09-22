@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getSession } from '@/lib/auth/session';
 import { formatRupiah } from '@/lib/format';
+import { GatePanel, type StoredGateResult, type VarianceCase } from '@/components/gate-panel';
 
 export default async function RunDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -11,15 +12,41 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const supabase = await createClient();
 
-  const [runRes, itemRes, recalcRes] = await Promise.all([
+  const [runRes, itemRes, recalcRes, gateRes, caseRes] = await Promise.all([
     supabase.from('payroll_runs').select('*').eq('id', id).maybeSingle(),
     supabase.from('payroll_items').select('*').eq('run_id', id).order('employee_no'),
     supabase.from('payroll_recalcs').select('pass_no, batch_hash, matched_count, mismatch_count').eq('run_id', id).order('pass_no'),
+    supabase.from('gate_results').select('rule_code, passed, severity, detail').eq('run_id', id),
+    supabase.from('variance_cases').select('*').eq('run_id', id),
   ]);
 
   const run = runRes.data;
   if (!run) notFound();
   const items = itemRes.data ?? [];
+  // Names are joined in here rather than duplicated onto the case row: the
+  // variance table stores only the employee id, and the payslip beside it
+  // already carries the frozen name.
+  const nameById = new Map(
+    items.map((i) => [i.employee_id as string, { no: i.employee_no as string, name: i.employee_name as string }])
+  );
+  const cases: VarianceCase[] = (caseRes.data ?? []).map((c) => ({
+    id: c.id as string,
+    employee_id: c.employee_id as string,
+    employee_no: nameById.get(c.employee_id as string)?.no ?? '—',
+    employee_name: nameById.get(c.employee_id as string)?.name ?? '(알 수 없음)',
+    prev_net: Number(c.prev_net ?? 0),
+    curr_net: Number(c.curr_net ?? 0),
+    change_rate: Number(c.change_rate ?? 0),
+    line_comment: (c.line_comment as string | null) ?? null,
+    line_submitted_at: (c.line_submitted_at as string | null) ?? null,
+    hr_decision: (c.hr_decision as string | null) ?? null,
+    hr_comment: (c.hr_comment as string | null) ?? null,
+    hr_decided_at: (c.hr_decided_at as string | null) ?? null,
+    status: c.status as string,
+  }));
+  const canRun = ['hr_admin', 'payroll_staff', 'operator_admin'].includes(session.role);
+  const canExplain = ['line_manager', 'hr_admin', 'operator_admin'].includes(session.role);
+  const canDecide = ['hr_admin', 'operator_admin'].includes(session.role);
   const recalcs = recalcRes.data ?? [];
   const hashesAgree = recalcs.length === 2 && recalcs[0].batch_hash === recalcs[1].batch_hash;
 
@@ -61,7 +88,17 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </section>
 
-      <section className="mt-8">
+      <GatePanel
+        runId={id}
+        runStatus={run.status as string}
+        results={(gateRes.data ?? []) as StoredGateResult[]}
+        cases={cases}
+        canRun={canRun}
+        canExplain={canExplain}
+        canDecide={canDecide}
+      />
+
+      <section className="mt-10">
         <h2 className="text-lg font-semibold">직원별 내역</h2>
         <div className="mt-3 overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
           <table className="w-full min-w-[860px] text-sm">
