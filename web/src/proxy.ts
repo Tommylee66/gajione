@@ -11,7 +11,7 @@ import { updateSession } from '@/lib/supabase/middleware';
  * would land on an empty payroll screen and reasonably conclude it is broken,
  * rather than that it is not theirs. This sends them where their screens are.
  */
-const PROTECTED_PREFIXES = ['/employees', '/org', '/payroll', '/attendance', '/shifts', '/overtime', '/policy', '/loans', '/devices', '/upload', '/reports', '/partner', '/me', '/admin'];
+const PROTECTED_PREFIXES = ['/pending', '/employees', '/org', '/payroll', '/attendance', '/shifts', '/overtime', '/policy', '/loans', '/devices', '/upload', '/reports', '/partner', '/me', '/admin'];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -28,6 +28,14 @@ export async function proxy(request: NextRequest) {
     const url = new URL('/login', request.url);
     url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
+  }
+
+  // Authenticated but not yet approved. Without this they bounce between
+  // /login and the page they asked for forever, because getSession refuses
+  // them and the proxy only knows that there is a session.
+  if (user && !pathname.startsWith('/pending')) {
+    const approved = await isApproved(request);
+    if (!approved) return NextResponse.redirect(new URL('/pending', request.url));
   }
   if (isAuthRoute && user) {
     return NextResponse.redirect(new URL(await homeFor(request), request.url));
@@ -75,4 +83,24 @@ async function homeFor(request: NextRequest): Promise<string> {
   if (data?.role === 'employee') return '/me';
   if (data?.role === 'lender_officer') return '/partner';
   return '/';
+}
+
+/** Whether the signed-in account has been approved and is still active. */
+async function isApproved(request: NextRequest): Promise<boolean> {
+  const { createServerClient } = await import('@supabase/ssr');
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => request.cookies.getAll(), setAll: () => {} } }
+  );
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data } = await supabase
+    .from('users')
+    .select('is_approved, is_active')
+    .eq('id', user.id)
+    .maybeSingle();
+  return Boolean(data?.is_approved && data?.is_active);
 }

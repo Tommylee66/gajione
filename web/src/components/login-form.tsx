@@ -25,7 +25,7 @@ export function LoginForm() {
       setBusy(false);
       return;
     }
-    router.replace(params.get('redirect') || '/employees');
+    router.replace(params.get('redirect') || '/');
     router.refresh();
   }
 
@@ -72,6 +72,20 @@ export function LoginForm() {
       >
         {busy ? '로그인 중…' : '로그인'}
       </button>
+      <div className="mt-4 flex items-center justify-between text-sm">
+        <a href="/forgot" className="text-neutral-500 underline">
+          비밀번호를 잊으셨나요?
+        </a>
+        <a href="/signup" className="text-blue-600 underline">
+          신규 고객사 가입
+        </a>
+      </div>
+      <p className="mt-4 text-center text-xs text-neutral-400">
+        <a href="/terms" className="underline">
+          이용약관 · 개인정보처리방침
+        </a>
+      </p>
+
     </form>
   );
 }

@@ -2,18 +2,21 @@ import { createClient } from '@/lib/supabase/server';
 import { formatRupiah } from '@/lib/format';
 import { COMPANY_STATUS_LABELS } from '@/lib/billing/invoice';
 import { CustomerTable, type CustomerRow } from '@/components/admin-customers';
+import { SignupQueue, type SignupRow } from '@/components/admin-signups';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminCustomers() {
   const supabase = await createClient();
-  const [coRes, subRes, planRes, empRes, invRes, runRes] = await Promise.all([
+  const [coRes, subRes, planRes, empRes, invRes, runRes, signupRes, umkRes] = await Promise.all([
     supabase.from('companies').select('*').order('name'),
     supabase.from('subscriptions').select('*').is('ended_on', null),
     supabase.from('plans').select('id, code, name'),
     supabase.from('employees').select('company_id, is_active'),
     supabase.from('billing_invoices').select('company_id, period, total_amount, status'),
     supabase.from('payroll_runs').select('company_id, status, period'),
+    supabase.from('signup_requests').select('*').order('created_at', { ascending: false }),
+    supabase.from('umk_rates').select('region').order('region'),
   ]);
 
   const plans = new Map((planRes.data ?? []).map((p) => [p.id as string, p.name as string]));
@@ -60,6 +63,9 @@ export default async function AdminCustomers() {
     (r) => r.status !== 'locked' && r.status !== 'cancelled'
   ).length;
 
+  const signups: SignupRow[] = (signupRes.data ?? []) as unknown as SignupRow[];
+  const regions = [...new Set((umkRes.data ?? []).map((u) => u.region as string))];
+
   return (
     <>
       <section className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
@@ -90,6 +96,12 @@ export default async function AdminCustomers() {
         </div>
         <CustomerTable rows={customers} />
       </section>
+
+      <SignupQueue
+        rows={signups}
+        plans={(planRes.data ?? []).map((p) => ({ id: p.id as string, name: p.name as string }))}
+        regions={regions}
+      />
     </>
   );
 }

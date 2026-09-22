@@ -365,3 +365,153 @@ export async function updateCustomerAction(input: {
     return { ok: false, error: e instanceof Error ? e.message : '저장에 실패했습니다.' };
   }
 }
+
+/**
+ * Approves a signup, which is the moment the customer starts existing.
+ *
+ * The company, the subscription and the approved user are created together.
+ * Doing it at signup instead would put unapproved prospects in the customer
+ * list and give an unreviewed account a tenant to sit in.
+ */
+export async function approveSignupAction(input: {
+  requestId: string;
+  planId: string;
+  umkRegion: string;
+}): Promise<AdminResult> {
+  try {
+    const session = await requireOperator();
+    const supabase = await createClient();
+
+    const { data: req } = await supabase
+      .from('signup_requests')
+      .select('*')
+      .eq('id', input.requestId)
+      .maybeSingle();
+    if (!req) return { ok: false, error: '신청을 찾을 수 없습니다.' };
+    if (req.status !== 'pending') return { ok: false, error: '이미 처리된 신청입니다.' };
+    if (!req.auth_user_id) return { ok: false, error: '계정이 연결되지 않은 신청입니다.' };
+
+    const { data: plan } = await supabase.from('plans').select('id').eq('id', input.planId).maybeSingle();
+    if (!plan) return { ok: false, error: '요금제를 선택하세요.' };
+    // Without a region the minimum-wage check has nothing to compare against
+    // and G2 would pass every employee while testing nothing.
+    if (!input.umkRegion.trim()) {
+      return { ok: false, error: 'UMK 지역을 지정해야 최저임금 검사가 동작합니다.' };
+    }
+
+    const now = new Date().toISOString();
+    const today = now.slice(0, 10);
+
+    const { data: company, error: coError } = await supabase
+      .from('companies')
+      .insert({
+        name: req.company_name as string,
+        industry: (req.industry as string | null) ?? null,
+        npwp: (req.npwp as string | null) ?? null,
+        umk_region: input.umkRegion.trim(),
+        // A new customer starts on trial. Billing skips trials, so nobody is
+        // invoiced for a month they were still deciding in.
+        status: 'trial',
+        joined_at: today,
+        contract_started_on: today,
+        cs_owner: session.full_name,
+      })
+      .select('id')
+      .single();
+    if (coError) throw coError;
+
+    const { error: subError } = await supabase.from('subscriptions').insert({
+      company_id: company.id as string,
+      plan_id: input.planId,
+      discount_rate: 0,
+      whitelabel: false,
+      annual_prepay: false,
+      started_on: today,
+    });
+    if (subError) throw subError;
+
+    const { data: touched, error: userError } = await supabase
+      .from('users')
+      .update({
+        company_id: company.id as string,
+        is_approved: true,
+        updated_at: now,
+      })
+      .eq('id', req.auth_user_id as string)
+      .select('id');
+    if (userError) throw userError;
+    if ((touched ?? []).length === 0) {
+      return { ok: false, error: '계정을 승인하지 못했습니다.' };
+    }
+
+    await supabase
+      .from('signup_requests')
+      .update({
+        status: 'approved',
+        reviewed_by: session.id,
+        reviewed_at: now,
+        company_id: company.id as string,
+        updated_at: now,
+      })
+      .eq('id', input.requestId);
+
+    await supabase.rpc('log_audit', {
+      p_action: 'SIGNUP_APPROVED',
+      p_target_table: 'signup_requests',
+      p_target_id: input.requestId,
+      p_details: { company: req.company_name, email: req.email, company_id: company.id },
+    });
+
+    revalidatePath('/admin');
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : '승인에 실패했습니다.' };
+  }
+}
+
+export async function rejectSignupAction(
+  requestId: string,
+  reason: string
+): Promise<AdminResult> {
+  try {
+    const session = await requireOperator();
+    if (!reason.trim()) return { ok: false, error: '거절 사유를 입력하세요.' };
+    const supabase = await createClient();
+
+    const { data: req } = await supabase
+      .from('signup_requests')
+      .select('status, email, auth_user_id')
+      .eq('id', requestId)
+      .maybeSingle();
+    if (!req) return { ok: false, error: '신청을 찾을 수 없습니다.' };
+    if (req.status !== 'pending') return { ok: false, error: '이미 처리된 신청입니다.' };
+
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('signup_requests')
+      .update({
+        status: 'rejected',
+        reviewed_by: session.id,
+        reviewed_at: now,
+        reject_reason: reason,
+        updated_at: now,
+      })
+      .eq('id', requestId);
+    if (error) throw error;
+
+    // The account stays unapproved rather than being deleted. A rejection can
+    // be reconsidered, and deleting the auth user would let the address be
+    // signed up again as though nothing had happened.
+    await supabase.rpc('log_audit', {
+      p_action: 'SIGNUP_REJECTED',
+      p_target_table: 'signup_requests',
+      p_target_id: requestId,
+      p_details: { email: req.email, reason },
+    });
+
+    revalidatePath('/admin');
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : '처리에 실패했습니다.' };
+  }
+}
