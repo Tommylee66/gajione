@@ -7,6 +7,12 @@ project_id = "gajione"
 # the app — which is how a reset flow looks broken while every part of it works.
 site_url = "https://gajione.vercel.app"
 additional_redirect_urls = [
+  # The custom domain, listed alongside the vercel.app one rather than
+  # replacing it: both resolve to the same deployment, and a link issued
+  # before the DNS cut over still has to work after it.
+  "https://app.aigaji.com/reset",
+  "https://app.aigaji.com/pending",
+  "https://app.aigaji.com/login",
   "https://gajione.vercel.app/reset",
   "https://gajione.vercel.app/pending",
   "https://gajione.vercel.app/login",
