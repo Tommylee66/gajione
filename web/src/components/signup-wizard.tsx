@@ -94,8 +94,15 @@ export function SignupWizard({ terms }: { terms: TermsDoc[] }) {
       <div className="mt-6 rounded-xl border border-neutral-200 bg-white p-8 dark:border-neutral-800 dark:bg-neutral-900">
         <h2 className="text-lg font-semibold">가입 신청이 완료되었습니다</h2>
         <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          GajiOne 운영팀 검토 후 계정이 활성화됩니다. 승인 전까지는 로그인해도 대기 화면만
-          표시됩니다.
+          <strong className="font-semibold text-neutral-900 dark:text-neutral-100">
+            {f.email}
+          </strong>
+          으로 확인 메일을 보냈습니다. 메일의 링크를 눌러 이메일을 확인해 주세요. 확인 전에는
+          로그인할 수 없습니다.
+        </p>
+        <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
+          이메일 확인 후에도 GajiOne 운영팀 검토를 거쳐야 계정이 활성화됩니다. 승인 전까지는
+          로그인해도 대기 화면만 표시됩니다.
         </p>
         <a
           href="/login"

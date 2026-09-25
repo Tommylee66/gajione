@@ -5,14 +5,14 @@ project_id = "gajione"
 # somebody. Supabase refuses any redirect not on this list, so a link that
 # points anywhere else silently lands on the Supabase error page instead of
 # the app — which is how a reset flow looks broken while every part of it works.
-site_url = "https://gajione.vercel.app"
+site_url = "https://app.aigaji.com"
 additional_redirect_urls = [
-  # The custom domain, listed alongside the vercel.app one rather than
-  # replacing it: both resolve to the same deployment, and a link issued
-  # before the DNS cut over still has to work after it.
   "https://app.aigaji.com/reset",
   "https://app.aigaji.com/pending",
   "https://app.aigaji.com/login",
+  # The vercel.app address, kept alongside the custom domain rather than
+  # replaced by it: both resolve to the same deployment, and a reset link
+  # issued before the cut-over still has to work after it.
   "https://gajione.vercel.app/reset",
   "https://gajione.vercel.app/pending",
   "https://gajione.vercel.app/login",
@@ -29,6 +29,15 @@ additional_redirect_urls = [
 # was intended. Anything that matters has to be stated here rather than left
 # to whatever the remote happens to hold.
 [auth.email]
+# Every one of these is stated rather than left to the remote, because a push
+# writes the CLI's default over anything this file does not mention. That is
+# how the cooldown and the OTP length were silently weakened once already —
+# and how confirmations ended up off, which meant signUp confirmed the address
+# itself and no mail was ever sent. Listing only the settings that have
+# already gone wrong just moves the trap.
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
 max_frequency = "1m0s"
 otp_length = 8
 

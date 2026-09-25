@@ -19,8 +19,19 @@ export function LoginForm() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      // Deliberately not distinguishing "no such account" from "wrong
-      // password": that difference tells an attacker which addresses exist.
+      // "Not confirmed" is the one case worth naming. Supabase only answers
+      // that way once the password has already matched, so it tells somebody
+      // who cannot sign in nothing they did not supply themselves — while
+      // "이메일 또는 비밀번호가 올바르지 않습니다" would send a person who just
+      // signed up correctly off to reset a password that was never wrong.
+      if (error.code === 'email_not_confirmed') {
+        setError('이메일 확인이 아직 완료되지 않았습니다. 받은편지함의 확인 메일 링크를 눌러 주세요.');
+        setBusy(false);
+        return;
+      }
+      // Otherwise deliberately not distinguishing "no such account" from
+      // "wrong password": that difference tells an attacker which addresses
+      // exist.
       setError('이메일 또는 비밀번호가 올바르지 않습니다.');
       setBusy(false);
       return;
