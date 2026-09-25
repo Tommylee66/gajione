@@ -31,3 +31,26 @@ additional_redirect_urls = [
 [auth.email]
 max_frequency = "1m0s"
 otp_length = 8
+
+# Mail goes out through Resend rather than Supabase's built-in sender. The
+# built-in one is rate-limited to a couple of messages an hour — enough to
+# demo, not enough for a signup confirmation and a password reset to both
+# arrive on the same afternoon. We hit that limit during testing.
+#
+# The password is read from the environment, never written here: this file is
+# in git, and the key can send mail as aigaji.com.
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 587
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "no-reply@aigaji.com"
+sender_name = "GajiOne"
+
+# Stated for the same reason the two settings above it are: a push writes the
+# CLI's default over anything this file leaves out, and that default is 2 an
+# hour — the built-in sender's limit, which is the whole reason for the block
+# above. Left unsaid, configuring Resend would have changed nothing.
+[auth.rate_limit]
+email_sent = 100
